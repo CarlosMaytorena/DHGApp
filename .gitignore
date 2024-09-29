@@ -1,0 +1,64 @@
+# .NET Core
+bin/
+obj/
+
+# VS Code
+.vscode/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files (backup, etc.)
+*.pdb
+*.log
+*.lock
+*.cache
+*.config
+*.tmp
+
+# Project and solution files
+*.csproj.user
+*.csproj.FileListAbsolute.txt
+*.vcxproj.user
+*.vcxproj.filters
+
+# NuGet
+*.nupkg
+*.snupkg
+# The packages folder can be ignored if package restore is enabled
+**/packages/*
+# Uncomment if necessary: #!**/packages/build/
+# Uncomment if necessary: #!**/packages/repositories.config
+
+# Rider
+.idea/
+.idea_modules/
+.idea_dataSources/
+.idea_system/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# JetBrains Rider settings
+.idea/
+
+# Resharper files
+_ReSharper*/
+*.DotSettings.user
+
+# Logs
+*.log
+
+# npm
+node_modules/
+
+# Optional - if using secrets.json to store sensitive information locally
+secrets.json
