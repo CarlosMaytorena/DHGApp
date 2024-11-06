@@ -29,3 +29,12 @@ D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\
 D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\AgricolaDH&GApp.pdb
 D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\AgricolaDH&GApp.genruntimeconfig.cache
 D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\ref\AgricolaDH&GApp.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\scopedcss\Views\Shared\_LTELayout.cshtml.rz.scp.css
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\Views\web.config
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\Antlr3.Runtime.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\System.Web.Optimization.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\Microsoft.Web.Infrastructure.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\Newtonsoft.Json.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\bin\Debug\net7.0\WebGrease.dll
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\AgricolaDH&GApp.csproj.CopyComplete
+D:\Carlitos\Documentos\CARLITOS\PolarTech\Agricola DH_G App\AgricolaDH&GApp\obj\Debug\net7.0\scopedcss\Views\Shared\_LTELeftMenu.cshtml.rz.scp.css

@@ -13,6 +13,14 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\js\\adminlte.min.js",
+      "PackagePath": "staticwebassets\\js\\adminlte.min.js"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\js\\adminlte.min.js.map",
+      "PackagePath": "staticwebassets\\js\\adminlte.min.js.map"
+    },
+    {
       "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
@@ -243,6 +251,66 @@
     {
       "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-brands-400.eot",
+      "PackagePath": "staticwebassets\\webfonts\\fa-brands-400.eot"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-brands-400.svg",
+      "PackagePath": "staticwebassets\\webfonts\\fa-brands-400.svg"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-brands-400.ttf",
+      "PackagePath": "staticwebassets\\webfonts\\fa-brands-400.ttf"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-brands-400.woff",
+      "PackagePath": "staticwebassets\\webfonts\\fa-brands-400.woff"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-brands-400.woff2",
+      "PackagePath": "staticwebassets\\webfonts\\fa-brands-400.woff2"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-regular-400.eot",
+      "PackagePath": "staticwebassets\\webfonts\\fa-regular-400.eot"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-regular-400.svg",
+      "PackagePath": "staticwebassets\\webfonts\\fa-regular-400.svg"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-regular-400.ttf",
+      "PackagePath": "staticwebassets\\webfonts\\fa-regular-400.ttf"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-regular-400.woff",
+      "PackagePath": "staticwebassets\\webfonts\\fa-regular-400.woff"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-regular-400.woff2",
+      "PackagePath": "staticwebassets\\webfonts\\fa-regular-400.woff2"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-solid-900.eot",
+      "PackagePath": "staticwebassets\\webfonts\\fa-solid-900.eot"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-solid-900.svg",
+      "PackagePath": "staticwebassets\\webfonts\\fa-solid-900.svg"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-solid-900.ttf",
+      "PackagePath": "staticwebassets\\webfonts\\fa-solid-900.ttf"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-solid-900.woff",
+      "PackagePath": "staticwebassets\\webfonts\\fa-solid-900.woff"
+    },
+    {
+      "Id": "D:\\Carlitos\\Documentos\\CARLITOS\\PolarTech\\Agricola DH_G App\\AgricolaDH&GApp\\wwwroot\\webfonts\\fa-solid-900.woff2",
+      "PackagePath": "staticwebassets\\webfonts\\fa-solid-900.woff2"
     },
     {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.AgricolaDH&GApp.Microsoft.AspNetCore.StaticWebAssets.props",

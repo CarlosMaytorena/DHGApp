@@ -15,9 +15,7 @@ namespace AgricolaDH_GApp.Controllers
 
 		public IActionResult Index()
 		{
-			// gagtito vro
-			Console.WriteLine("Cambio Dimas");
-			return View();
+			return View("~/Views/Dashboard/Index.cshtml");
 		}
 
 		public IActionResult Privacy()
