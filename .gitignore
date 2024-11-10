@@ -1,6 +1,6 @@
 # .NET Core
-bin/
-obj/
+bin/*
+obj/*
 
 # VS Code
 .vs/*
