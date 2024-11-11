@@ -18,8 +18,13 @@ namespace AgricolaDH_GApp.Controllers
 		{
 			return PartialView("~/Views/Ingresos/Index.cshtml");
 		}
+        [HttpPost]
+        public IActionResult RealizarIngreso()
+        {
+            return PartialView("~/Views/Ingresos/IngresoForm.cshtml");
+        }
 
-		public IActionResult Privacy()
+        public IActionResult Privacy()
 		{
 			return View();
 		}

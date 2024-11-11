@@ -1,5 +1,149 @@
 ﻿
+<head>   
+    <style>
+
+        /* Reduce the width of the first column */
+        .table th:first-child,
+        .table td:first-child {
+            width: 30px;
+        }
+    </style>
+</head>
+<body>
+
+
 <div class="text-center">
-    <h1 class="display-4">INGRESOS</h1>
-    <p></p>
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Ingreso</h4>
+        </div>
+
+        <div class="col-md-2">
+            <input class="form-control" placeholder="# Orden"/>
+        </div>
+
+        <div class="col-md-2">
+            <input  class="form-control" type="text" id="datepicker" placeholder="Fecha"/>
+        </div>
+            
+        <div class="col-md-2">
+            <button id="busquedaIngreso" class="btn btn-block secondary-background-color" style="color: white">
+                <i class="nav-icon fas fa-arrow-plus"></i>
+                Buscar alv
+            </button>
+        </div>
+    </div>
+    
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Ordenes para Recibo</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                 
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th># Orden</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Status</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                <td>181</td>
+                                <td>11-7-2014</td>
+                                <td>Carlos Maytorena</td>
+                                <td><span class="tag tag-success">Aceptada</span></td>
+                                <td>Área</td>
+                                <td>Cultivo</td>
+                                <td>Rancho</td>
+                                <td>Etapa</td>
+                            </tr>
+                            <tr>
+                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                <td>182</td>
+                                <td>11-7-2014</td>
+                                <td>Carlos Maytorena</td>
+                                <td><span class="tag tag-success">Aceptada</span></td>
+                                <td>Área</td>
+                                <td>Cultivo</td>
+                                <td>Rancho</td>
+                                <td>Etapa</td>
+                            </tr>
+                            <tr>
+                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                <td>183</td>
+                                <td>11-7-2014</td>
+                                <td>Carlos Maytorena</td>
+                                <td><span class="tag tag-success">Aceptada</span></td>
+                                <td>Área</td>
+                                <td>Cultivo</td>
+                                <td>Rancho</td>
+                                <td>Etapa</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
 </div>
+
+<script>
+    $(document).ready(function () {
+
+       
+        $("#datepicker").datepicker();
+
+
+
+  
+
+        $("#realizarIngreso").click(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RealizarIngreso", "Ingresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+
+
+    });
+</script>
+
+</body>
+</html>
