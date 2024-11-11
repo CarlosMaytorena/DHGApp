@@ -3,6 +3,7 @@ bin/
 obj/
 
 # VS Code
+.vs/*
 .vscode/
 
 # User-specific files
