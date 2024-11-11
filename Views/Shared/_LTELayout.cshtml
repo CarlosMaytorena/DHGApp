@@ -226,6 +226,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script>
     $(document).ready(function () {
         $("#dashboard").click(function () {
+            sidebarClickColor($(this));
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Dashboard")',
@@ -237,7 +238,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
-        $("#requisicion").click(function () {
+        $("#requisicion").click(function () {            
+            sidebarClickColor($(this));
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Requisicion")',
@@ -250,6 +252,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
 
         $("#ingresos").click(function () {
+            sidebarClickColor($(this));
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Ingresos")',
@@ -262,8 +265,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
         });
 
         $("#egresos").click(function () {
-            alert('Egresos click')
+            sidebarClickColor($(this));
         });
+
+        $("#usuarios").click(function () {
+            sidebarClickColor($(this));
+        });
+
+        $("#reportes").click(function () {
+            sidebarClickColor($(this));
+        });
+
+        function sidebarClickColor(id){
+            $(".nav-link").css("background-color", "")
+            id.css("background-color", "white");
+        }
     });
 </script>
 
