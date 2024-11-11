@@ -117,7 +117,15 @@
         });
 
         $("#egresos").click(function () {
-            alert('Egresos click')
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
         });
 
     });

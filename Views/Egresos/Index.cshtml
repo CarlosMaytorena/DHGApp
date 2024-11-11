@@ -1,5 +1,150 @@
 ﻿
 <div class="text-center">
-    <h1 class="display-4">EGRESOS</h1>
-    <p></p>
-</div>
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Egresos</h4>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <button id="crear-egreso" class="btn btn-block secondary-background-color" style="color: white">
+                <i class="nav-icon fas fa-arrow-plus"></i>
+                Crear Egreso
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Ultimos movimientos</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 500px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Solicitante</th>
+                                <th>Aprobado por</th>
+                                <th>Comentarios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                            <tr>
+                                <td>123</td>
+                                <td>11-7-2014</td>
+                                <td>Quimico 1</td>
+                                <td>5</td>
+                                <td>Dimas Trejo</td>
+                                <td>Dimas Trejo</td>
+                                <td>Limpieza de equipo</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#crear-egreso").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("CrearEgreso", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+    });
+</script>
+
