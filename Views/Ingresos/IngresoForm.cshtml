@@ -1,142 +1,129 @@
-﻿
 <div class="text-center">
 
     <div class="row top-row-spacer">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h4 class="page-title">Ingresar</h4>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
         </div>
         <div class="col-md-2">
-            <button id="enviarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
+            <button id="realizarIngreso" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-right"></i>
-                Enviar
+                Recibir
             </button>
         </div>
+        <div class="col-md-2">
+            <button id="imprimirEtiquetas" class="btn btn-block secondary-background-color" style="color: white">
+                <i class="nav-icon fas fa-print"></i>
+                Imprimir Etiquetas
+            </button>
+    </div>
+
     </div>
 
     <div class="card card-margin">
+        <!-- Order and Date Section -->
         <div class="row card-row-spacer">
+            <div class="col-md-8">
+                <label style="font-weight: normal; text-align: left; float: left">Orden de compra</label>
+                <input class="form-control" placeholder="Ingrese el número de orden de compra" readonly />
+            </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                <input class="form-control" />
+                <input type="date" class="form-control" readonly />
             </div>
         </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                <input class="form-control" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                <input class="form-control" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
-            &nbsp;
-            &nbsp;
-            &nbsp;
-            &nbsp;
-            <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
-            &nbsp;
-            &nbsp;
-            <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
 
-        </div>
+        <!-- Dynamic Product Section -->
         <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control" />
+            <label style="font-weight: normal; text-align: left; float: left; margin-right: 10px;">Productos a Ordenar</label>
+            <button id="addProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
+            &nbsp;
+            <button id="removeProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
+        </div>
+
+        <div id="productContainer">
+            <!-- Initial Product Row -->
+            <div class="row card-row-spacer product-row">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    <select class="form-control">
+                        <option value="">Seleccione un producto</option>
+                        <option value="1">Producto 1</option>
+                        <option value="2">Producto 2</option>
+                        <option value="3">Producto 3</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
+                    <input type="number" class="form-control" placeholder="Esperada" readonly />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Restante</label>
+                    <input type="number" class="form-control" placeholder="Restante" readonly />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Recibida</label>
+                    <input type="number" class="form-control" placeholder="Recibida" />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
+                    <input class="form-control" placeholder="Unidad" />
+                </div>
+                <div class="col-md-1">
+                    <label style="font-weight: normal; text-align: left; float: left">Total</label>
+                    <input type="number" class="form-control" placeholder="Total" readonly />
+                </div>
             </div>
         </div>
+
+        <!-- Additional Details -->
         <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Impuestos</label>
+                <input type="number" class="form-control" placeholder="Impuestos" />
             </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control" />
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Descuentos</label>
+                <input type="number" class="form-control" placeholder="Descuentos" />
             </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control" />
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Notas</label>
+                <textarea class="form-control" placeholder="Notas adicionales"></textarea>
             </div>
         </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-        </div>
+
     </div>
 
-
-
 </div>
+
 <script>
     $(document).ready(function () {
+        // Add Product Row
+        $("#addProductRow").click(function () {
+            let newRow = $(".product-row:first").clone();
+            newRow.find("input, select").val(""); // Clear values in the new row
+            $("#productContainer").append(newRow);
+        });
 
-        $("#enviarRequisicion").click(function () {
+        // Remove Product Row
+        $("#removeProductRow").click(function () {
+            if ($(".product-row").length > 1) {
+                $(".product-row:last").remove();
+            }
+        });
+
+        // Print Labels Handler
+        $("#imprimirEtiquetas").click(function () {
+            // Code for printing labels can be added here
+            alert("Función para imprimir etiquetas en desarrollo.");
+        });
+
+        // Submit Handler
+        $("#realizarIngreso").click(function () {
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("Index", "Requisicion")',
+                url: '@Url.Action("Index", "Ingresos")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
@@ -144,6 +131,5 @@
                 }
             });
         });
-
     });
 </script>

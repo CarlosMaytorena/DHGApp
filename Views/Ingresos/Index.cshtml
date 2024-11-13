@@ -1,7 +1,5 @@
-﻿
 <head>   
     <style>
-
         /* Reduce the width of the first column */
         .table th:first-child,
         .table td:first-child {
@@ -11,7 +9,6 @@
 </head>
 <body>
 
-
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -20,17 +17,17 @@
         </div>
 
         <div class="col-md-2">
-            <input class="form-control" placeholder="# Orden"/>
+                <input class="form-control" placeholder="# Orden" />
         </div>
 
         <div class="col-md-2">
-            <input  class="form-control" type="text" id="datepicker" placeholder="Fecha"/>
+                <input class="form-control" type="text" id="datepicker" placeholder="Fecha" />
         </div>
             
         <div class="col-md-2">
             <button id="busquedaIngreso" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-plus"></i>
-                Buscar alv
+                    Buscar
             </button>
         </div>
     </div>
@@ -69,12 +66,11 @@
                                 <th>Cultivo</th>
                                 <th>Rancho</th>
                                 <th>Etapa</th>
-                                
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
                                 <td>181</td>
                                 <td>11-7-2014</td>
                                 <td>Carlos Maytorena</td>
@@ -85,7 +81,7 @@
                                 <td>Etapa</td>
                             </tr>
                             <tr>
-                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
                                 <td>182</td>
                                 <td>11-7-2014</td>
                                 <td>Carlos Maytorena</td>
@@ -96,7 +92,7 @@
                                 <td>Etapa</td>
                             </tr>
                             <tr>
-                                <td><button id="realizarIngreso" class="btn btn-default button-plus"><i class="nav-icon fas fa-plus"></i></button></td>
+                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
                                 <td>183</td>
                                 <td>11-7-2014</td>
                                 <td>Carlos Maytorena</td>
@@ -119,31 +115,20 @@
 
 <script>
     $(document).ready(function () {
-
-       
         $("#datepicker").datepicker();
 
-
-
-  
-
-        $("#realizarIngreso").click(function () {
+            $(".realizarIngreso").on("click", function () {
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("RealizarIngreso", "Ingresos")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
-
                     $("#HtmlBody").html(data);
                 }
             });
         });
-
-
-
     });
 </script>
 
 </body>
-</html>
