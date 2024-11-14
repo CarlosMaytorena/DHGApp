@@ -19,9 +19,14 @@ namespace AgricolaDH_GApp.Controllers
 			return PartialView("~/Views/Egresos/Index.cshtml");
 		}
 		[HttpGet]
-        public IActionResult CrearEgreso()
+        public IActionResult EgresoForm()
         {
-            return PartialView("~/Views/Egresos/CrearEgreso.cshtml");
+            return PartialView("~/Views/Egresos/EgresoForm.cshtml");
+        }
+		[HttpGet]
+        public IActionResult GenerarEgreso()
+        {
+            return PartialView("~/Views/Egresos/Index.cshtml");
         }
 
         public IActionResult Privacy()
