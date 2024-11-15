@@ -286,6 +286,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
+        $("#almacen").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
         $("#usuarios").click(function () {
             sidebarClickColor($(this));
         });
