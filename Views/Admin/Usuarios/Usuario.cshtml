@@ -1,0 +1,221 @@
+﻿@model AgricolaDH_GApp.ViewModels.UsuariosVM
+
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Crear Usuario</h4>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-2">
+            <button id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
+                Cancelar
+            </button>
+        </div>
+        <div class="col-md-2">
+            @if (Model.usuario.IdUsuario != null && Model.usuario.IdUsuario != 0)
+            {
+                <button id="editarUsuario" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Editar Usuario
+                </button>
+            }
+            else
+            {
+                <button id="crearUsuario" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-plus"></i>
+                    Crear Usuario
+                </button>
+            }
+        </div>
+    </div>
+    <form id="dataform">
+        <div class="card card-margin">
+            @Html.HiddenFor(m => m.usuario.IdUsuario)
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Nombre</label>
+                    @Html.EditorFor(m => m.usuario.Nombre, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Segundo Nombre</label>
+                    @Html.EditorFor(m => m.usuario.SegundoNombre, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Apellido Paterno</label>
+                    @Html.EditorFor(m => m.usuario.ApellidoPaterno, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Apellido Materno</label>
+                    @Html.EditorFor(m => m.usuario.ApellidoMaterno, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Username</label>
+                    @Html.EditorFor(m => m.usuario.Username, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Password</label>
+                    @Html.EditorFor(m => m.usuario.Password, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Correo</label>
+                    @Html.EditorFor(m => m.usuario.Correo, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+            </div>
+        </div>
+    </form>
+   
+</div>
+
+<div class="modal fade" id="modal-crear">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Crear Usuario</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea crear al usuario?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="crearUsuarioConfirm" type="button" class="btn btn-primary">Crear</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Editar Usuario</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al usuario?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="editarUsuarioConfirm" type="button" class="btn btn-primary">Editar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#crearUsuario").click(function () {
+
+            if(Validation()){
+                $("#modal-crear").modal("show");
+            }
+
+        });
+
+        $("#crearUsuarioConfirm").click(function () {
+
+            $("#modal-crear").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("InsertUsuario", "Usuarios")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#editarUsuario").click(function () {
+
+            if (Validation()) {
+                $("#modal-editar").modal("show");
+            }
+
+        });
+
+        $("#editarUsuarioConfirm").click(function () {
+            $("#modal-editar").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateUsuario", "Usuarios")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#cancelar").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Usuarios")',
+                data: { },
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        function Validation() {
+            
+            $("#usuario_Nombre").css("border-color", "");
+            $("#usuario_ApellidoPaterno").css("border-color", "");
+            $("#usuario_Username").css("border-color", "");
+            $("#usuario_Password").css("border-color", "");
+            $("#usuario_Correo").css("border-color", "");
+
+            var validation = true
+
+            if ($("#usuario_Nombre").val() == null || $("#usuario_Nombre").val() == "") {
+                $("#usuario_Nombre").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#usuario_ApellidoPaterno").val() == null || $("#usuario_ApellidoPaterno").val() == "") {
+                $("#usuario_ApellidoPaterno").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#usuario_Username").val() == null || $("#usuario_Username").val() == "") {
+                $("#usuario_Username").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#usuario_Password").val() == null || $("#usuario_Password").val() == "") {
+                $("#usuario_Password").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#usuario_Correo").val() == null || $("#usuario_Correo").val() == "") {
+                $("#usuario_Correo").css("border-color", "red");
+                validation = false;
+            }
+
+            return validation;
+
+        }
+
+    });
+</script>

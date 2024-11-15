@@ -1,21 +1,26 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
-	public class RequisicionController : Controller
+    public class RequisicionController : Controller
 	{
 		private readonly ILogger<RequisicionController> _logger;
+		
+		private readonly AppDbContext context;
 
-		public RequisicionController(ILogger<RequisicionController> logger)
+		public RequisicionController(ILogger<RequisicionController> logger, AppDbContext _ctx)
 		{
 			_logger = logger;
+			context = _ctx;
 		}
 
 		[HttpGet]
 		public IActionResult Index()
 		{
+
 			return PartialView("~/Views/Requisicion/Index.cshtml");
 		}
 
