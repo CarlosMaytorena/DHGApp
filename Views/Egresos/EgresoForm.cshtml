@@ -1,50 +1,75 @@
 ﻿
 <div class="text-center">
+    
+        <div class="row top-row-spacer">
+            <div class="col-md-6">
+                <h4 class="page-title">Crear Egreso</h4>
+            </div>
+            <div class="col-md-5">
+            </div>
 
-    <div class="row top-row-spacer">
-        <div class="col-md-6">
-            <h4 class="page-title">Crear Egreso</h4>
+            <div class="col-md-1">
+                <button id="enviarEgreso" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-arrow-right"></i>
+                        Generar
+                </button>
+            </div>
         </div>
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-2">
-            <button id="enviarEgreso" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-right"></i>
-                  Generar
-            </button>
+
+    <div class="card card-margin" style="height:100px">
+        
+        <div class="row card-row-spacer">
+            
+            <div class="col-md-0">
+                <button class="btn btn-default button-plus realizarIngreso" style="margin: 18px 5px 0 0;"><i class="nav-icon fas fa-plus"></i></button>
+            </div>
+            
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Id</label>
+                <input class="form-control" readonly placeholder="Escanea el producto"/>
+            </div>
+            
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                <input class="form-control" readonly/>
+            </div>
+            
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                <input class="form-control" placeholder="Ingresa la cantidad"/>
+            </div>
+            
+            <div class="col-md-2">    
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="fileInput" accept=".jpg,.jpeg">
+                        <label id="fileLabel" class="custom-file-label" for="fileInput" style="text-align: left">Seleccionar</label>
+                    </div>
+                    <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="fileInput" accept=".jpg,.jpeg">
+                        <label id="fileLabel" class="custom-file-label" for="fileInput" style="text-align: left">Seleccionar</label>
+                    </div>
+
+                    <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div class="card card-margin">
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Id</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <input class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input class="form-control" />
-            </div>
-        </div>
-
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Imagen Previa</label>
-                <input type="file" class="form-control" id="prevImageUpload" accept=".jpg,.jpeg" style="margin-top: 5px;" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Imagen Posterior</label>
-                <input type="file" class="form-control" id="prevImageUpload" accept=".jpg,.jpeg" style="margin-top: 5px;" />
-            </div>
-            <div class="col-md-1" style="padding-top:20px; align-items:center">
-                <button class="btn-sm secondary-background-color" style="color: white; border: 0px; font-size: 125%; display: flex"><i class="nav-icon fas fa-plus"></i></button>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col-12">
                 <div">
@@ -68,34 +93,31 @@
                         <table class="table table-head-fixed text-nowrap">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>ID</th>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
                                     <th>Imagen Previa</th>
                                     <th>Imagen Posterior</th>
-                                    <th>Quitar</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
                                     <td>183</td>
                                     <td>Quimico 1</td>
                                     <td>1</td>
                                     <td>previa.jpg</td>
                                     <td>posterior.jpg</td>
-                                    <td>
-                                        <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i>   Quitar</button>
-                                    </td>
                                 </tr>
                                 <tr>
+                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
                                     <td>183</td>
                                     <td>Quimico 1</td>
                                     <td>1</td>
                                     <td>previa.jpg</td>
                                     <td>posterior.jpg</td>
-                                    <td>
-                                        <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i>   Quitar</button>
-                                    </td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -104,10 +126,11 @@
                 </div>
                 <!-- /.card -->
             </div>
-        </div>
+
 
         <div class="row card-row-spacer">
         </div>
+
     </div>
 
 
@@ -118,7 +141,7 @@
 
         $("#enviarEgreso").click(function () {
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: '@Url.Action("Index", "Egresos")',
                 contentType: "application/json; charset=utf-8",
                 data: {},

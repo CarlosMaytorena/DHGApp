@@ -1,0 +1,128 @@
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-5">
+            <h4 class="page-title">Ingreso a Almacen</h4>
+        </div>
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-1">
+            <button id="ingresoAlmacen" class="btn btn-block secondary-background-color" style="color: white">
+                Agregar
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <!-- Entry By Scanning Product -->
+        <div class="row card-row-spacer">
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Orden #</label>
+                <select class="form-control">
+                    <option value="">Selecciona</option>
+                    <option value="1">Orden 1</option>
+                    <option value="2">Orden 2</option>
+                    <option value="3">Orden 3</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">ID</label>
+                <input class="form-control" placeholder="Escanea el producto" readonly />
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                <input class="form-control" placeholder="Escanea el producto" readonly />
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Unidades</label>
+                <input type="number" min="0" max="99999" step="1" class="form-control"/>
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Area</label>
+                <input class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Notas Adicionales</label>
+                <textarea class="form-control" placeholder="Notas adicionales"></textarea>
+            </div>
+        </div>
+
+        <!-- Dynamic Product Section -->
+        <div class="row card-row-spacer">
+            <label style="font-weight: normal; text-align: left; float: left; margin-right: 10px;">Productos a Ordenar</label>
+            <button id="addProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
+            &nbsp;
+            <button id="removeProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
+        </div>
+
+        <div id="productContainer">
+            <!-- Initial Product Row -->
+            <div class="row card-row-spacer product-row">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    <select class="form-control">
+                        <option value="">Seleccione un producto</option>
+                        <option value="1">Producto 1</option>
+                        <option value="2">Producto 2</option>
+                        <option value="3">Producto 3</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
+                    <input type="number" class="form-control" placeholder="Esperada" readonly />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Restante</label>
+                    <input type="number" class="form-control" placeholder="Restante" readonly />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Recibida</label>
+                    <input type="number" class="form-control" placeholder="Recibida" />
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
+                    <input class="form-control" placeholder="Unidad" />
+                </div>
+                <div class="col-md-1">
+                    <label style="font-weight: normal; text-align: left; float: left">Total</label>
+                    <input type="number" class="form-control" placeholder="Total" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row card-row-spacer">
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Add Product Row
+        $("#addProductRow").click(function () {
+            let newRow = $(".product-row:first").clone();
+            newRow.find("input, select").val(""); // Clear values in the new row
+            $("#productContainer").append(newRow);
+        });
+
+        // Remove Product Row
+        $("#removeProductRow").click(function () {
+            if ($(".product-row").length > 1) {
+                $(".product-row:last").remove();
+            }
+        });
+        // Submit Handler
+        $("#ingresoAlmacen").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+    });
+</script>

@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
-	public class EgresosController : Controller
+	public class AlmacenController : Controller
 	{
-		private readonly ILogger<EgresosController> _logger;
+		private readonly ILogger<AlmacenController> _logger;
 
-		public EgresosController(ILogger<EgresosController> logger)
+		public AlmacenController(ILogger<AlmacenController> logger)
 		{
 			_logger = logger;
 		}
@@ -16,17 +16,17 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
-			return PartialView("~/Views/Egresos/Index.cshtml");
+			return PartialView("~/Views/Almacen/Index.cshtml");
 		}
 		[HttpGet]
-        public IActionResult EgresoForm()
+        public IActionResult EntradaFormato()
         {
-            return PartialView("~/Views/Egresos/EgresoForm.cshtml");
+            return PartialView("~/Views/Almacen/EntradaFormato.cshtml");
         }
 		[HttpGet]
-        public IActionResult GenerarEgreso()
+        public IActionResult SalidaFormato()
         {
-            return PartialView("~/Views/Egresos/Index.cshtml");
+            return PartialView("~/Views/Almacen/SalidaFormato.cshtml");
         }
 
         public IActionResult Privacy()
