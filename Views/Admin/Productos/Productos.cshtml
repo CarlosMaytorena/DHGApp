@@ -1,0 +1,201 @@
+﻿@model AgricolaDH_GApp.ViewModels.ProductosVM
+
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Crear Producto</h4>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-2">
+            <button id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
+                Cancelar
+            </button>
+        </div>
+        <div class="col-md-2">
+            @if (Model.producto.IdProducto != null && Model.producto.IdProducto != 0)
+            {
+                <button id="editarProducto" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Editar Producto
+                </button>
+            }
+            else
+            {
+                <button id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-plus"></i>
+                    Crear Producto
+                </button>
+            }
+        </div>
+    </div>
+    <form id="dataform">
+        <div class="card card-margin">
+            @Html.HiddenFor(m => m.producto.IdProducto)
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Nombre del Producto</label>
+                    @Html.EditorFor(m => m.producto.NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
+                    @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
+                    @Html.EditorFor(m => m.producto.Proveedor, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Costo Unitario</label>
+                    @Html.EditorFor(m => m.producto.Costo, new { htmlAttributes = new { @class = "form-control input-focus" }})
+                </div>
+            </div>
+            <div class="row card-row-spacer">            
+            </div>
+        </div>
+    </form>
+   
+</div>
+
+<div class="modal fade" id="modal-crear">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Agregar Producto</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea agregar este producto?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="crearProductoConfirm" type="button" class="btn btn-primary">Crear</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Editar Producto</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al producto?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="editarProductoConfirm" type="button" class="btn btn-primary">Editar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#crearProducto").click(function () {
+
+            if(Validation()){
+                $("#modal-crear").modal("show");
+            }
+
+        });
+
+        $("#crearProductoConfirm").click(function () {
+
+            $("#modal-crear").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("InsertProducto", "Productos")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#editarProducto").click(function () {
+
+            if (Validation()) {
+                $("#modal-editar").modal("show");
+            }
+
+        });
+
+        $("#editarProductoConfirm").click(function () {
+            $("#modal-editar").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateProducto", "Productos")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#cancelar").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Productos")',
+                data: { },
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        function Validation() {
+            
+            $("#producto_NombreProducto").css("border-color", "");
+            $("#producto_Descripcion").css("border-color", "");
+            $("#producto_Proveedor").css("border-color", "");
+            $("producto_Costo").css("border-color", "");
+           
+            var validation = true
+
+            if ($("#producto_NombreProducto").val() == null || $("#producto_NombreProducto").val() == "") {
+                $("#producto_NombreProducto").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Descripcion").val() == null || $("#producto_Descripcion").val() == "") {
+                $("#producto_Descripcion").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Proveedor").val() == null || $("#producto_Proveedor").val() == "") {
+                $("#producto_Proveedor").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Costo").val() == null || $("#producto_Costo").val() == "") {
+                $("#producto_Costo").css("border-color", "red");
+                validation = false;
+            }
+           
+            return validation;
+
+        }
+
+    });
+</script>

@@ -1,0 +1,161 @@
+﻿@model AgricolaDH_GApp.ViewModels.ProductosVM
+
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Productos</h4>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <button id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
+                <i class="nav-icon fas fa-arrow-plus"></i>
+                Agregar Producto
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <input id="IdProductoBorrar" hidden />
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Productos</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Acción</th>
+                                <th>Nombre de Producto</th>
+                                <th>Descripción</th>
+                                <th>Proveedor</th>
+                                <th>Costo Unitario</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in Model.productoList)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@producto.IdProducto" class="borrarProducto" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-trash"></i>
+                                        </a>
+                                        &nbsp;
+                                        &nbsp;
+                                        <a href="#" id="@producto.IdProducto" class="editarProducto" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-pen"></i>
+                                        </a>
+                                    </td>
+                                    <td>@producto.NombreProducto</td>
+                                    <td>@producto.Descripcion</td>
+                                    <td>@producto.Proveedor</td>
+                                    <td>@producto.Costo</td>                          
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+
+
+</div>
+
+<div class="modal fade" id="modal-borrar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Borrar Producto</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-borrar-body">
+                <p style="margin-left: 10px">¿Seguro que desea borrar este producto?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="modal-borrar-btn" type="button" class="btn btn-primary">Borrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#agregarProducto").click(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarProducto", "Productos")',
+                data: {},
+                success: function (data) {
+
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".editarProducto").click(function () {
+
+            var IdProducto = $(this).attr("id");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditarProducto", "Productos")',
+                data: { IdProducto: IdProducto },
+                success: function (data) {
+
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".borrarProducto").click(function () {
+
+            $("#IdProductoBorrar").val($(this).attr("id"));
+            $("#modal-borrar").modal("show");
+
+        });
+
+        $("#modal-borrar-btn").click(function () {
+
+            $("#modal-borrar").modal("hide");
+            var IdProducto = $("#IdProductoBorrar").val();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BorrarProducto", "Productos")',
+                data: { IdProducto: IdProducto },
+                success: function (data) {
+
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+    });
+</script>
+
