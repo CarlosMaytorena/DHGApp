@@ -291,8 +291,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
-        $("#reportes").click(function () {
+        $("#productos").click(function () {
             sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Productos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
         });
 
         function sidebarClickColor(id){
