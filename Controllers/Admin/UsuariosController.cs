@@ -1,7 +1,11 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers.Admin
@@ -11,11 +15,18 @@ namespace AgricolaDH_GApp.Controllers.Admin
         private readonly ILogger<UsuariosController> _logger;
 
         private readonly AppDbContext context;
+        private UsuarioService usuarioService;
+        private ICompositeViewEngine viewEngine;
+        private ViewRenderService renderService;
 
-        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx)
+
+        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx, UsuarioService _usuarioService, ICompositeViewEngine _viewEngine, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
+            usuarioService = _usuarioService;
+            viewEngine = _viewEngine;
+            renderService = _renderService;
         }
 
         [HttpGet]
@@ -23,8 +34,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
 
             UsuariosVM model = new UsuariosVM();
-
-            model.usuarioList = context.Usuarios.ToList();
+            model.usuarioList = usuarioService.SelectUsuarios();
 
             return PartialView("~/Views/Admin/Usuarios/Index.cshtml", model);
         }
@@ -48,43 +58,38 @@ namespace AgricolaDH_GApp.Controllers.Admin
         }
 
         [HttpPost]
-        public IActionResult InsertUsuario(UsuariosVM model)
+        public async Task<IActionResult> InsertUsuario(UsuariosVM model)
         {
-            context.Usuarios.Add(model.usuario);
-            context.SaveChanges();
+            int res = usuarioService.InsertUsuario(model.usuario);
 
             model = new UsuariosVM();
-            model.usuarioList = context.Usuarios.ToList();
+            model.usuarioList = usuarioService.SelectUsuarios();
 
-            return PartialView("~/Views/Admin/Usuarios/Index.cshtml", model);
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
         }
 
         [HttpPost]
-        public IActionResult UpdateUsuario(UsuariosVM model)
+        public async Task<IActionResult> UpdateUsuario(UsuariosVM model)
         {
-            context.Usuarios.Update(model.usuario);
-            context.SaveChanges();
+            int res = usuarioService.UpdateUsuario(model.usuario);
 
             model = new UsuariosVM();
-            model.usuarioList = context.Usuarios.ToList();
+            model.usuarioList = usuarioService.SelectUsuarios();
 
-            return PartialView("~/Views/Admin/Usuarios/Index.cshtml", model);
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
         }
 
+
         [HttpPost]
-        public IActionResult BorrarUsuario(int IdUsuario)
+        public async Task<IActionResult> BorrarUsuario(int IdUsuario)
         {
+
+            int res = usuarioService.DeleteUsuario(IdUsuario);
 
             UsuariosVM model = new UsuariosVM();
-            model.usuario = context.Usuarios.Find(IdUsuario);
+            model.usuarioList = usuarioService.SelectUsuarios();
 
-            context.Usuarios.Remove(model.usuario);
-            context.SaveChanges();
-
-            model = new UsuariosVM();
-            model.usuarioList = context.Usuarios.ToList();
-
-            return PartialView("~/Views/Admin/Usuarios/Index.cshtml", model);
+            return Json(new {res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
         }
 
         public IActionResult Privacy()

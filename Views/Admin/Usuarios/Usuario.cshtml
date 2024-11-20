@@ -138,7 +138,13 @@
                 url: '@Url.Action("InsertUsuario", "Usuarios")',
                 data: dataform.serialize(),
                 success: function (data) {
-                    $("#HtmlBody").html(data);
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
                 }
             });
         });
@@ -161,7 +167,13 @@
                 url: '@Url.Action("UpdateUsuario", "Usuarios")',
                 data: dataform.serialize(),
                 success: function (data) {
-                    $("#HtmlBody").html(data);
+
+                    if(data.res == 0){
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else{
+                        $("#modal-warning").modal("show");
+                    }
                 }
             });
         });

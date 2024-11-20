@@ -206,6 +206,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
  
     <script src="~/jquery-ui/jquery-ui.min.js"></script>
     <script src="~/Scripts/AdminLTE/plugins/datepicker/bootstrap-datepicker.js"></script>
+
+    <div class="modal fade" id="modal-warning">
+        <div class="modal-dialog">
+            <div class="modal-content bg-warning">
+                <div class="modal-header">
+                    <h4 class="modal-title">Error</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-editar-body">
+                    <p style="margin-left: 10px">Hubo un error al realizar la transacción. Favor de contactar al administrador.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>*@
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 </body>
 
 
@@ -283,7 +306,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Usuarios")',
-                contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
                     $("#HtmlBody").html(data);

@@ -133,6 +133,7 @@
                 success: function (data) {
 
                     $("#HtmlBody").html(data);
+
                 }
             });
         });
@@ -155,7 +156,12 @@
                 data: { IdUsuario: IdUsuario },
                 success: function (data) {
 
-                    $("#HtmlBody").html(data);
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
                 }
             });
         });

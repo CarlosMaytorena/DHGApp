@@ -1,4 +1,8 @@
+using AgricolaDH_GApp.Controllers;
 using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Services.Admin;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +13,14 @@ builder.Services.AddControllersWithViews();
 //Register DbContext
 var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+//Services
+builder.Services.AddScoped<UsuarioService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<RazorViewEngine>();
+builder.Services.AddScoped<HttpContextAccessor>();
+builder.Services.AddScoped<ViewRenderService>();
 
 var app = builder.Build();
 
