@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgricolaDH_GApp.Models
 {
@@ -12,6 +14,10 @@ namespace AgricolaDH_GApp.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string Correo { get; set; }
+        public int IdRol { get; set; }
+
+        [NotMapped]
+        public string RolDescripcion { get; set; }
 
     }
 }

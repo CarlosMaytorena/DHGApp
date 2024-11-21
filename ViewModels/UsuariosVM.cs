@@ -8,6 +8,8 @@ namespace AgricolaDH_GApp.ViewModels
         public List<Usuario> usuarioList { get; set; }
         public Usuario usuario { get; set; }
 
+        public List<Rol> rolesList { get; set; }
+
         public UsuariosVM()
         {
             usuarioList = new List<Usuario>();

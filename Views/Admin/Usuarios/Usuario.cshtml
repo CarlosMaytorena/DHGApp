@@ -64,6 +64,10 @@
                     <label style="font-weight: normal; text-align: left; float: left">Correo</label>
                     @Html.EditorFor(m => m.usuario.Correo, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
                 </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Rol</label>
+                    @Html.DropDownListFor(m => m.usuario.IdRol, new SelectList(Model.rolesList, "IdRol", "Descripcion"), "", new { @class = "form-control input-focus notNull" })
+                </div>
             </div>
             <div class="row card-row-spacer">
             </div>
@@ -197,6 +201,7 @@
             $("#usuario_Username").css("border-color", "");
             $("#usuario_Password").css("border-color", "");
             $("#usuario_Correo").css("border-color", "");
+            $("#usuario_IdRol").css("border-color", "");
 
             var validation = true
 
@@ -222,6 +227,11 @@
 
             if ($("#usuario_Correo").val() == null || $("#usuario_Correo").val() == "") {
                 $("#usuario_Correo").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#usuario_IdRol").val() == null || $("#usuario_IdRol").val() == "") {
+                $("#usuario_IdRol").css("border-color", "red");
                 validation = false;
             }
 

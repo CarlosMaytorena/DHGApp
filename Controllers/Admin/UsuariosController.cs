@@ -16,14 +16,17 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
         private readonly AppDbContext context;
         private UsuarioService usuarioService;
+        private RolService rolService;
         private ViewRenderService renderService;
 
 
-        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx, UsuarioService _usuarioService, ViewRenderService _renderService)
+        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx,
+            UsuarioService _usuarioService, RolService _rolService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
             usuarioService = _usuarioService;
+            rolService = _rolService;
             renderService = _renderService;
         }
 
@@ -33,6 +36,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             UsuariosVM model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
+            model.usuarioList = GetRolDescripcion(model.usuarioList);
 
             return PartialView("~/Views/Admin/Usuarios/Index.cshtml", model);
         }
@@ -51,6 +55,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
             UsuariosVM model = new UsuariosVM();
 
             model.usuario = context.Usuarios.Find(IdUsuario);
+            model.rolesList = rolService.SelectRoles();
 
             return PartialView("~/Views/Admin/Usuarios/Usuario.cshtml", model);
         }
@@ -62,6 +67,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
+            model.usuarioList = GetRolDescripcion(model.usuarioList);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
         }
@@ -73,6 +79,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
+            model.usuarioList = GetRolDescripcion(model.usuarioList);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
         }
@@ -86,8 +93,19 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             UsuariosVM model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
+            model.usuarioList = GetRolDescripcion(model.usuarioList);
 
             return Json(new {res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Usuarios/Index.cshtml", model) });
+        }
+
+        public List<Usuario> GetRolDescripcion(List<Usuario> usuarioList)
+        {
+            foreach (var usuario in usuarioList)
+            {
+                usuario.RolDescripcion = rolService.SelectRol(usuario.IdRol).Descripcion;
+            }
+
+            return usuarioList;
         }
 
         public IActionResult Privacy()
