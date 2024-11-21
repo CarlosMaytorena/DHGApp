@@ -313,6 +313,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
+        $("#proveedores").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Proveedores")',
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
         $("#productos").click(function () {
             sidebarClickColor($(this));
             $.ajax({

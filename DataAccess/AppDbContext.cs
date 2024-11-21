@@ -11,13 +11,13 @@ namespace AgricolaDH_GApp.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Usuario>().HasKey(m => new { m.IdUsuario });
-
             modelBuilder.Entity<Producto>().HasKey(m => new { m.IdProducto });
+            modelBuilder.Entity<Proveedor>().HasKey(m => new { m.IdProveedor });
 
         }
         public DbSet<Usuario> Usuarios { get; set; }
-
         public DbSet<Producto> Productos { get; set; }
+        public DbSet<Proveedor> Proveedores { get; set; }
 
 
 

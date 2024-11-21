@@ -1,0 +1,182 @@
+﻿@model AgricolaDH_GApp.ViewModels.ProveedoresVM
+
+<form id="dataform">
+
+    @Html.HiddenFor(m => m.proveedor.IdProveedor)
+    <div class="row card-row-spacer">
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Nombre</label>
+            @Html.EditorFor(m => m.proveedor.Nombre, new { htmlAttributes = new { @class = "form-control input-focus" }})
+        </div>
+        <div class="col-md-5">
+            <label style="font-weight: normal; text-align: left; float: left">Correo</label>
+            @Html.EditorFor(m => m.proveedor.Correo, new { htmlAttributes = new { @class = "form-control input-focus notNull" }})
+        </div>
+        <div class="col-md-2">
+            <button type="button" id="cancelar" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                Cancelar
+            </button>
+        </div>
+        <div class="col-md-2">
+            @if (Model.proveedor.IdProveedor != null && Model.proveedor.IdProveedor != 0)
+            {
+                <button type="button" id="editarProveedor" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Editar Proveedor
+                </button>
+            }
+            else
+            {
+                <button type="button" id="crearProveedor" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                    <i class="nav-icon fas fa-plus"></i>
+                    Crear Proveedor
+                </button>
+            }
+        </div>
+    </div>
+</form>
+
+<div class="row card-row-spacer">
+</div>
+
+<div class="modal fade" id="modal-crear">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Crear Proveedor</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea crear al proveedor?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="crearProveedorConfirm" type="button" class="btn btn-primary">Crear</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Editar Proveedor</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al proveedor?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="editarProveedorConfirm" type="button" class="btn btn-primary">Editar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#crearProveedor").click(function () {
+
+            if (Validation()) {
+                $("#modal-crear").modal("show");
+            }
+
+        });
+
+        $("#crearProveedorConfirm").click(function () {
+
+            $("#modal-crear").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("InsertProveedor", "Proveedores")',
+                data: dataform.serialize(),
+                success: function (data) {
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#editarProveedor").click(function () {
+
+            if (Validation()) {
+                $("#modal-editar").modal("show");
+            }
+
+        });
+
+        $("#editarProveedorConfirm").click(function () {
+            $("#modal-editar").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateProveedor", "Proveedores")',
+                data: dataform.serialize(),
+                success: function (data) {
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#cancelar").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Proveedores")',
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        function Validation() {
+
+            $("#proveedor_Nombre").css("border-color", "");
+            $("#proveedor_Correo").css("border-color", "");
+
+            var validation = true
+
+            if ($("#proveedor_Nombre").val() == null || $("#proveedor_Nombre").val() == "") {
+                $("#proveedor_Nombre").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#proveedor_Correo").val() == null || $("#proveedor_Correo").val() == "") {
+                $("#proveedor_Correo").css("border-color", "red");
+                validation = false;
+            }
+
+            return validation;
+
+        }
+
+    });
+</script>

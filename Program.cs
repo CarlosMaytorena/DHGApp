@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 
 //Services
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<ProveedorService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

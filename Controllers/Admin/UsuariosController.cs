@@ -16,16 +16,14 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
         private readonly AppDbContext context;
         private UsuarioService usuarioService;
-        private ICompositeViewEngine viewEngine;
         private ViewRenderService renderService;
 
 
-        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx, UsuarioService _usuarioService, ICompositeViewEngine _viewEngine, ViewRenderService _renderService)
+        public UsuariosController(ILogger<UsuariosController> logger, AppDbContext _ctx, UsuarioService _usuarioService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
             usuarioService = _usuarioService;
-            viewEngine = _viewEngine;
             renderService = _renderService;
         }
 
