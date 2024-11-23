@@ -1,0 +1,174 @@
+﻿@model AgricolaDH_GApp.ViewModels.AreasVM
+
+<form id="dataform">
+
+    @Html.HiddenFor(m => m.area.IdArea)
+    <div class="row card-row-spacer">
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+            @Html.EditorFor(m => m.area.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" }})
+        </div>
+        <div class="col-md-5">
+        </div>
+        <div class="col-md-2">
+            <button type="button" id="cancelar" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                Cancelar
+            </button>
+        </div>
+        <div class="col-md-2">
+            @if (Model.area.IdArea != null && Model.area.IdArea != 0)
+            {
+                <button type="button" id="editarArea" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Editar Área
+                </button>
+            }
+            else
+            {
+                <button type="button" id="crearArea" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                    <i class="nav-icon fas fa-plus"></i>
+                    Crear Área
+                </button>
+            }
+        </div>
+    </div>
+</form>
+
+<div class="row card-row-spacer">
+</div>
+
+<div class="modal fade" id="modal-crear">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Crear Área</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea crear el área?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="crearAreaConfirm" type="button" class="btn btn-primary">Crear</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-editar">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Editar Área</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al área?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="editarAreaConfirm" type="button" class="btn btn-primary">Editar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#crearArea").click(function () {
+
+            if (Validation()) {
+                $("#modal-crear").modal("show");
+            }
+
+        });
+
+        $("#crearAreaConfirm").click(function () {
+
+            $("#modal-crear").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("InsertArea", "Areas")',
+                data: dataform.serialize(),
+                success: function (data) {
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#editarArea").click(function () {
+
+            if (Validation()) {
+                $("#modal-editar").modal("show");
+            }
+
+        });
+
+        $("#editarAreaConfirm").click(function () {
+            $("#modal-editar").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateArea", "Areas")',
+                data: dataform.serialize(),
+                success: function (data) {
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#cancelar").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Areas")',
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        function Validation() {
+
+            $("#area_Descripcion").css("border-color", "");
+
+            var validation = true
+
+            if ($("#area_Descripcion").val() == null || $("#area_Descripcion").val() == "") {
+                $("#area_Descripcion").css("border-color", "red");
+                validation = false;
+            }
+
+            return validation;
+
+        }
+
+    });
+</script>

@@ -13,11 +13,15 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Usuario>().HasKey(m => new { m.IdUsuario });
             modelBuilder.Entity<Producto>().HasKey(m => new { m.IdProducto });
             modelBuilder.Entity<Proveedor>().HasKey(m => new { m.IdProveedor });
+            modelBuilder.Entity<Area>().HasKey(m => new { m.IdArea });
             modelBuilder.Entity<Rol>().HasKey(m => new { m.IdRol });
 
         }
+
+        //Catalogos
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Producto> Productos { get; set; }
+        public DbSet<Area> Areas { get; set; }
         public DbSet<Proveedor> Proveedores { get; set; }
 
         public DbSet<Rol> Roles { get; set; }

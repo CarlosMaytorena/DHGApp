@@ -1,5 +1,6 @@
 using AgricolaDH_GApp.Controllers;
 using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 //Services
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProveedorService>();
+builder.Services.AddScoped<AreaService>();
 builder.Services.AddScoped<RolService>();
 
 builder.Services.AddHttpContextAccessor();
