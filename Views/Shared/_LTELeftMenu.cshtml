@@ -76,6 +76,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="#" id="cultivos" class="nav-link" style="color: #2E2E2E">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Cultivos</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="#" id="proveedores" class="nav-link" style="color: #2E2E2E">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Proveedores</p>
@@ -95,60 +101,5 @@
     </div>
     <!-- /.sidebar -->
 </aside>
-
-@*<script>
-    $(document).ready(function () {
-
-        $("#dashboard").click(function () {
-            $(this).addclass("active")
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Dashboard")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }
-            });
-        });
-
-        $("#requisicion").click(function () {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Requisicion")',
-                contentType: "application/json; charset=utf-8",
-                data: { },
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }                
-            });
-        });
-
-        $("#ingresos").click(function () {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Ingresos")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }
-            });
-        });
-
-        $("#egresos").click(function () {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Egresos")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }
-            });
-        });
-
-    });
-</script>*@
 
 
