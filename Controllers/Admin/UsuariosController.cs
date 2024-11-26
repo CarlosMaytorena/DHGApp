@@ -45,6 +45,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         public IActionResult CrearUsuario()
         {
             UsuariosVM model = new UsuariosVM();
+            model.rolesList = rolService.SelectRoles();
 
             return PartialView("~/Views/Admin/Usuarios/Usuario.cshtml", model);
         }
