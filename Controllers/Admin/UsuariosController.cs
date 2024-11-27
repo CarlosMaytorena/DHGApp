@@ -102,7 +102,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             foreach (var usuario in usuarioList)
             {
-                usuario.RolDescripcion = rolService.SelectRol(usuario.IdRol).Descripcion;
+                usuario.IdRol = rolService.SelectRol(usuario.IdRol).Descripcion;
             }
 
             return usuarioList;

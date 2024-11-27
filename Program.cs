@@ -20,6 +20,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProveedorService>();
 builder.Services.AddScoped<AreaService>();
 builder.Services.AddScoped<RolService>();
+builder.Services.AddScoped<ProductoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

@@ -1,7 +1,11 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers.Admin
@@ -11,11 +15,16 @@ namespace AgricolaDH_GApp.Controllers.Admin
         private readonly ILogger<ProductosController> _logger;
 
         private readonly AppDbContext context;
+        private ProductoService productoService;
+        private ViewRenderService renderService;
 
-        public ProductosController(ILogger<ProductosController> logger, AppDbContext _ctx)
+        public ProductosController(ILogger<ProductosController> logger, AppDbContext _ctx,
+            ProductoService _productoService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
+            productoService = _productoService;
+            renderService = _renderService;
         }
 
         [HttpGet]
@@ -24,13 +33,13 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             ProductosVM model = new ProductosVM();
 
-            model.productoList = context.Productos.ToList();
+            model.productoList = productoService.SelectProductos();
 
             return PartialView("~/Views/Admin/Productos/Index.cshtml", model);
         }
 
         [HttpPost]
-        public IActionResult CrearProducto()
+        public IActionResult AgregarProducto()
         {
             ProductosVM model = new ProductosVM();
 
@@ -48,43 +57,39 @@ namespace AgricolaDH_GApp.Controllers.Admin
         }
 
         [HttpPost]
-        public IActionResult InsertProducto(ProductosVM model)
+        public async Task<IActionResult> InsertProducto(ProductosVM model)
         {
-            context.Productos.Add(model.producto);
-            context.SaveChanges();
+            int res = productoService.InsertProducto(model.producto);
 
             model = new ProductosVM();
-            model.productoList = context.Productos.ToList();
+            model.productoList = productoService.SelectProductos();
 
-            return PartialView("~/Views/Admin/Productos/Index.cshtml", model);
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }
 
         [HttpPost]
-        public IActionResult UpdateProducto(ProductosVM model)
+        public async Task<IActionResult> UpdateProducto(ProductosVM model)
         {
-            context.Productos.Update(model.producto);
-            context.SaveChanges();
+            int res = productoService.UpdateProducto(model.producto);
+
 
             model = new ProductosVM();
-            model.productoList = context.Productos.ToList();
+            model.productoList = productoService.SelectProductos();
 
-            return PartialView("~/Views/Admin/Productos/Index.cshtml", model);
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
+
         }
 
         [HttpPost]
-        public IActionResult BorrarProducto(int IdProducto)
+        public async Task<IActionResult> BorrarProducto(int IdProducto)
         {
+
+            int res = productoService.DeleteProducto(IdProducto);
 
             ProductosVM model = new ProductosVM();
-            model.producto = context.Productos.Find(IdProducto);
+            model.productoList = productoService.SelectProductos();
 
-            context.Productos.Remove(model.producto);
-            context.SaveChanges();
-
-            model = new ProductosVM();
-            model.productoList = context.Productos.ToList();
-
-            return PartialView("~/Views/Admin/Productos/Index.cshtml", model);
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }
 
         public IActionResult Privacy()
