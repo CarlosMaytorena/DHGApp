@@ -13,6 +13,23 @@ namespace AgricolaDH_GApp.Services.Admin
         {
             context = _ctx;
         }
+        public Producto SelectProducto(int IdProducto)
+        {
+            Producto producto = new Producto(); 
+
+            try
+            {
+                producto = context.Productos.Find(IdProducto);
+                
+            }
+            catch
+            {
+
+
+            }
+
+            return producto;
+        }
 
         public List<Producto> SelectProductos()
         {

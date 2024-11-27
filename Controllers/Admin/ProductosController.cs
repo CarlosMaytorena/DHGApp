@@ -43,7 +43,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             ProductosVM model = new ProductosVM();
 
-            return PartialView("~/Views/Admin/Productos/Producto.cshtml", model);
+            return PartialView("~/Views/Admin/Productos/Productos.cshtml", model);
         }
 
         [HttpPost]
@@ -51,7 +51,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             ProductosVM model = new ProductosVM();
 
-            model.producto = context.Productos.Find(IdProducto);
+            model.producto = productoService.SelectProducto(IdProducto);
 
             return PartialView("~/Views/Admin/Productos/Productos.cshtml", model);
         }
