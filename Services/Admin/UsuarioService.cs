@@ -30,6 +30,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return usuarioList;
         }
 
+        public Usuario SelectUsuario(int IdUsuario)
+        {
+            Usuario usuario;
+
+            try
+            {
+                usuario = context.Usuarios.Find(IdUsuario);
+            }
+            catch
+            {
+                usuario = new Usuario();
+            }
+
+            return usuario;
+        }
+
         public int InsertUsuario(Usuario usuario)
         {
             int res = 0;

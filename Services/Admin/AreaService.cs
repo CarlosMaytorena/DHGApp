@@ -30,6 +30,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return areaList;
         }
 
+        public Area SelectArea(int IdArea)
+        {
+            Area area;
+
+            try
+            {
+                area = context.Areas.Find(IdArea);
+            }
+            catch
+            {
+                area = new Area();
+            }
+
+            return area;
+        }
+
         public int InsertArea(Area area)
         {
             int res = 0;

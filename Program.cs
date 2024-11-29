@@ -22,6 +22,7 @@ builder.Services.AddScoped<AreaService>();
 builder.Services.AddScoped<RolService>();
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<CultivoService>();
+builder.Services.AddScoped<RanchoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

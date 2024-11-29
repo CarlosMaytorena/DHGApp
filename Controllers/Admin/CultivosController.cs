@@ -50,7 +50,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             CultivosVM model = new CultivosVM();
 
-            model.cultivo = context.Cultivos.Find(IdCultivo);
+            model.cultivo = cultivoService.SelectCultivo(IdCultivo);
 
             return PartialView("~/Views/Admin/Cultivos/Cultivo.cshtml", model);
         }

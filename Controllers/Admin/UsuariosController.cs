@@ -55,7 +55,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             UsuariosVM model = new UsuariosVM();
 
-            model.usuario = context.Usuarios.Find(IdUsuario);
+            model.usuario = usuarioService.SelectUsuario(IdUsuario);
             model.rolesList = rolService.SelectRoles();
 
             return PartialView("~/Views/Admin/Usuarios/Usuario.cshtml", model);
