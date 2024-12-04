@@ -1,54 +1,43 @@
 ﻿@model AgricolaDH_GApp.ViewModels.ProductosVM
 
-<div class="text-center">
 
-    <div class="row top-row-spacer">
-        <div class="col-md-6">
-            <h4 class="page-title">Crear Producto</h4>
+<form id="dataform">
+    @Html.HiddenFor(m => m.producto.IdProducto)
+    <div class="row align-items-end top-row-spacer">
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Nombre de Producto</label>
+            @Html.EditorFor(m => m.producto.NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" } })
+        </div>
+        <div class="col-md-5">
+            <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
+            @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus notNull" } })
         </div>
         <div class="col-md-2">
-        </div>
-        <div class="col-md-2">
-            <button id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
+            <button type="button" id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
                 Cancelar
             </button>
         </div>
         <div class="col-md-2">
             @if (Model.producto.IdProducto != null && Model.producto.IdProducto != 0)
             {
-                <button id="editarProducto" class="btn btn-block secondary-background-color" style="color: white">
+                <button type="button" id="editarProducto" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-pen"></i>
                     Editar Producto
                 </button>
             }
             else
             {
-                <button id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
+                <button type="button" id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-plus"></i>
-                    Crear Producto
+                    Agregar Producto
                 </button>
             }
         </div>
     </div>
-    <form id="dataform">
-        <div class="card card-margin">
-            @Html.HiddenFor(m => m.producto.IdProducto)
-            <div class="row card-row-spacer">
-                <div class="col-md-3">
-                    <label style="font-weight: normal; text-align: left; float: left">Nombre del Producto</label>
-                    @Html.EditorFor(m => m.producto.NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" }})
-                </div>
-                <div class="col-md-3">
-                    <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
-                    @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" }})
-                </div>               
-              
-            </div>
-            <div class="row card-row-spacer">            
-            </div>
-        </div>
-    </form>
-   
+</form>
+
+
+<div class="row card-row-spacer">
 </div>
 
 <div class="modal fade" id="modal-crear">
@@ -117,7 +106,12 @@
                 url: '@Url.Action("InsertProducto", "Productos")',
                 data: dataform.serialize(),
                 success: function (data) {
-                    $("#HtmlBody").html(data);
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
                 }
             });
         });
@@ -140,7 +134,13 @@
                 url: '@Url.Action("UpdateProducto", "Productos")',
                 data: dataform.serialize(),
                 success: function (data) {
-                    $("#HtmlBody").html(data);
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                    
                 }
             });
         });
