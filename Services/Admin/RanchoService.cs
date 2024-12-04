@@ -5,54 +5,54 @@ using AgricolaDH_GApp.ViewModels;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
-    public class ProveedorService
+    public class RanchoService
     {
         private readonly AppDbContext context;
 
-        public ProveedorService(AppDbContext _ctx)
+        public RanchoService(AppDbContext _ctx)
         {
             context = _ctx;
         }
 
-        public List<Proveedor> SelectProveedores()
+        public List<Rancho> SelectRanchos()
         {
-            List<Proveedor> proveedorList;
+            List<Rancho> ranchoList;
 
             try
             {
-                proveedorList = context.Proveedores.ToList();
+                ranchoList = context.Ranchos.ToList();
             }
             catch
             {
-                proveedorList = new List<Proveedor>();
+                ranchoList = new List<Rancho>();
             }
 
-            return proveedorList;
+            return ranchoList;
         }
 
-        public Proveedor SelectProveedor(int IdProveedor)
+        public Rancho SelectRancho(int IdRancho)
         {
-            Proveedor proveedor;
+            Rancho rancho;
 
             try
             {
-                proveedor = context.Proveedores.Find(IdProveedor);
+                rancho = context.Ranchos.Find(IdRancho);
             }
             catch
             {
-                proveedor = new Proveedor();
+                rancho = new Rancho();
             }
 
-            return proveedor;
+            return rancho;
         }
 
-        public int InsertProveedor(Proveedor proveedor)
+        public int InsertRancho(Rancho rancho)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Add(proveedor);
+                context.Ranchos.Add(rancho);
                 context.SaveChanges();
             }
             catch(Exception ex)
@@ -64,13 +64,13 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
-        public int UpdateProveedor(Proveedor proveedor)
+        public int UpdateRancho(Rancho rancho)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Update(proveedor);
+                context.Ranchos.Update(rancho);
                 context.SaveChanges();
             }
             catch(Exception ex) 
@@ -81,15 +81,15 @@ namespace AgricolaDH_GApp.Services.Admin
             return res;
         }
 
-        public int DeleteProveedor(int IdProveedor)
+        public int DeleteRancho(int IdRancho)
         {
             int res = 0;
 
             try
             {
-                Proveedor proveedor = context.Proveedores.Find(IdProveedor);
+                Rancho rancho = context.Ranchos.Find(IdRancho);
 
-                context.Proveedores.Remove(proveedor);
+                context.Ranchos.Remove(rancho);
                 context.SaveChanges();
             }
             catch (Exception ex)

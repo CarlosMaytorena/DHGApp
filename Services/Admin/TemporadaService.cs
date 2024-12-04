@@ -5,54 +5,54 @@ using AgricolaDH_GApp.ViewModels;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
-    public class ProveedorService
+    public class TemporadaService
     {
         private readonly AppDbContext context;
 
-        public ProveedorService(AppDbContext _ctx)
+        public TemporadaService(AppDbContext _ctx)
         {
             context = _ctx;
         }
 
-        public List<Proveedor> SelectProveedores()
+        public List<Temporada> SelectTemporadas()
         {
-            List<Proveedor> proveedorList;
+            List<Temporada> temporadaList;
 
             try
             {
-                proveedorList = context.Proveedores.ToList();
+                temporadaList = context.Temporadas.ToList();
             }
             catch
             {
-                proveedorList = new List<Proveedor>();
+                temporadaList = new List<Temporada>();
             }
 
-            return proveedorList;
+            return temporadaList;
         }
 
-        public Proveedor SelectProveedor(int IdProveedor)
+        public Temporada SelectTemporada(int IdTemporada)
         {
-            Proveedor proveedor;
+            Temporada temporada;
 
             try
             {
-                proveedor = context.Proveedores.Find(IdProveedor);
+                temporada = context.Temporadas.Find(IdTemporada);
             }
             catch
             {
-                proveedor = new Proveedor();
+                temporada = new Temporada();
             }
 
-            return proveedor;
+            return temporada;
         }
 
-        public int InsertProveedor(Proveedor proveedor)
+        public int InsertTemporada(Temporada temporada)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Add(proveedor);
+                context.Temporadas.Add(temporada);
                 context.SaveChanges();
             }
             catch(Exception ex)
@@ -64,13 +64,13 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
-        public int UpdateProveedor(Proveedor proveedor)
+        public int UpdateTemporada(Temporada temporada)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Update(proveedor);
+                context.Temporadas.Update(temporada);
                 context.SaveChanges();
             }
             catch(Exception ex) 
@@ -81,15 +81,15 @@ namespace AgricolaDH_GApp.Services.Admin
             return res;
         }
 
-        public int DeleteProveedor(int IdProveedor)
+        public int DeleteTemporada(int IdTemporada)
         {
             int res = 0;
 
             try
             {
-                Proveedor proveedor = context.Proveedores.Find(IdProveedor);
+                Temporada temporada = context.Temporadas.Find(IdTemporada);
 
-                context.Proveedores.Remove(proveedor);
+                context.Temporadas.Remove(temporada);
                 context.SaveChanges();
             }
             catch (Exception ex)

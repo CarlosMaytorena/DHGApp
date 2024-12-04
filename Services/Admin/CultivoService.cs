@@ -30,6 +30,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return cultivoList;
         }
 
+        public Cultivo SelectCultivo(int IdCultivo)
+        {
+            Cultivo cultivo;
+
+            try
+            {
+                cultivo = context.Cultivos.Find(IdCultivo);
+            }
+            catch
+            {
+                cultivo = new Cultivo();
+            }
+
+            return cultivo;
+        }
+
         public int InsertCultivo(Cultivo cultivo)
         {
             int res = 0;

@@ -5,54 +5,54 @@ using AgricolaDH_GApp.ViewModels;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
-    public class ProveedorService
+    public class EtapaService
     {
         private readonly AppDbContext context;
 
-        public ProveedorService(AppDbContext _ctx)
+        public EtapaService(AppDbContext _ctx)
         {
             context = _ctx;
         }
 
-        public List<Proveedor> SelectProveedores()
+        public List<Etapa> SelectEtapas()
         {
-            List<Proveedor> proveedorList;
+            List<Etapa> etapaList;
 
             try
             {
-                proveedorList = context.Proveedores.ToList();
+                etapaList = context.Etapas.ToList();
             }
             catch
             {
-                proveedorList = new List<Proveedor>();
+                etapaList = new List<Etapa>();
             }
 
-            return proveedorList;
+            return etapaList;
         }
 
-        public Proveedor SelectProveedor(int IdProveedor)
+        public Etapa SelectEtapa(int IdEtapa)
         {
-            Proveedor proveedor;
+            Etapa etapa;
 
             try
             {
-                proveedor = context.Proveedores.Find(IdProveedor);
+                etapa = context.Etapas.Find(IdEtapa);
             }
             catch
             {
-                proveedor = new Proveedor();
+                etapa = new Etapa();
             }
 
-            return proveedor;
+            return etapa;
         }
 
-        public int InsertProveedor(Proveedor proveedor)
+        public int InsertEtapa(Etapa etapa)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Add(proveedor);
+                context.Etapas.Add(etapa);
                 context.SaveChanges();
             }
             catch(Exception ex)
@@ -64,13 +64,13 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
-        public int UpdateProveedor(Proveedor proveedor)
+        public int UpdateEtapa(Etapa etapa)
         {
             int res = 0;
 
             try
             {
-                context.Proveedores.Update(proveedor);
+                context.Etapas.Update(etapa);
                 context.SaveChanges();
             }
             catch(Exception ex) 
@@ -81,15 +81,15 @@ namespace AgricolaDH_GApp.Services.Admin
             return res;
         }
 
-        public int DeleteProveedor(int IdProveedor)
+        public int DeleteEtapa(int IdEtapa)
         {
             int res = 0;
 
             try
             {
-                Proveedor proveedor = context.Proveedores.Find(IdProveedor);
+                Etapa etapa = context.Etapas.Find(IdEtapa);
 
-                context.Proveedores.Remove(proveedor);
+                context.Etapas.Remove(etapa);
                 context.SaveChanges();
             }
             catch (Exception ex)
