@@ -4,8 +4,7 @@
         <div class="col-md-5">
             <h4 class="page-title">Ingresar</h4>
         </div>
-        <div class="col-md-3">
-        </div>
+        <div class="col-md-3"></div>
         <div class="col-md-2">
             <button id="realizarIngreso" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-right"></i>
@@ -17,8 +16,7 @@
                 <i class="nav-icon fas fa-print"></i>
                 Imprimir Etiquetas
             </button>
-    </div>
-
+        </div>
     </div>
 
     <div class="card card-margin">
@@ -92,44 +90,8 @@
                 <textarea class="form-control" placeholder="Notas adicionales"></textarea>
             </div>
         </div>
-
     </div>
-
 </div>
 
-<script>
-    $(document).ready(function () {
-        // Add Product Row
-        $("#addProductRow").click(function () {
-            let newRow = $(".product-row:first").clone();
-            newRow.find("input, select").val(""); // Clear values in the new row
-            $("#productContainer").append(newRow);
-        });
-
-        // Remove Product Row
-        $("#removeProductRow").click(function () {
-            if ($(".product-row").length > 1) {
-                $(".product-row:last").remove();
-            }
-        });
-
-        // Print Labels Handler
-        $("#imprimirEtiquetas").click(function () {
-            // Code for printing labels can be added here
-            alert("Función para imprimir etiquetas en desarrollo.");
-        });
-
-        // Submit Handler
-        $("#realizarIngreso").click(function () {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Ingresos")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }
-            });
-        });
-    });
-</script>
+<!-- Importing the main.js file -->
+<script type="module" src="/js/IngresoMain.js"></script>
