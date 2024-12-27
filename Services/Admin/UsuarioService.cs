@@ -30,6 +30,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return usuarioList;
         }
 
+        public List<Usuario> SelectUsuariosByIdRol(int IdRol)
+        {
+            List<Usuario> usuarioList;
+
+            try
+            {
+                usuarioList = context.Usuarios.Where(m => m.IdRol == IdRol).ToList();
+            }
+            catch
+            {
+                usuarioList = new List<Usuario>();
+            }
+
+            return usuarioList;
+        }
+
         public Usuario SelectUsuario(int IdUsuario)
         {
             Usuario usuario;

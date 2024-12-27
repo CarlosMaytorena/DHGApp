@@ -1,4 +1,5 @@
-﻿
+﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -19,39 +20,39 @@
         <div class="row card-row-spacer">
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                <input class="form-control input-focus" />
+                @Html.EditorFor(m => m.requisicion.Fecha, new { htmlAttributes = new { @class = "form-control input-focus" } })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus" })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus" })
             </div>
         </div>
         <div class="row card-row-spacer">
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus" })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus" })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus" })
             </div>
         </div>
         <div class="row card-row-spacer">
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus" })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                <input class="form-control input-focus" />
+                @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus" })
             </div>
         </div>
         <div class="row card-row-spacer">
@@ -66,65 +67,20 @@
             <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
 
         </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
+
+        @for (int i = 0; i < Model.productosOrdenar.Count; i++)
+        {
+            <div class="row card-row-spacer">
+                <div class="col-md-10">
+                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreProducto"), " ", new { @class = "form-control input-focus" })
+                </div>
+                <div class="col-md-2">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                    @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
             </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-        </div>
+        }
     </div>
 
 
