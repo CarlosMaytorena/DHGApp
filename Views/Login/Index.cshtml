@@ -1,0 +1,62 @@
+﻿
+<div class="login-container">
+    <div class="login-container-square">
+
+        <div class="login-image-container">
+            <img src="~/images/DHG.jpeg" alt="Alternate Text" />
+        </div>
+
+        <div class="login-fields-container">
+            <div class="login-page-title">
+                DH&G Agriculture
+            </div>
+            <div class="login-page-inputs">
+                <span>
+                    <input name="name" value="" placeholder="User" class="text-input" />
+                </span>
+                <span>
+                    <input name="name" value="" placeholder="Password" class="text-input" />
+                </span>
+            </div>
+
+            <div class="login-page-rememberme">
+                <span class="login-page-rememberme-text">
+                    <input type="checkbox" />
+                    <span>Remember Me</span>
+                </span>
+                <span class="login-page-forgotpassword">
+                    Forgot password?
+                </span>
+            </div>
+
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 2vh; padding: 0px 40px;">
+                <input type="button" value="Login" class="login-page-button" />
+            </div>
+
+            <div class="login-fields-footer">
+                Developed by PolarTech ©
+            </div>
+        </div>
+    </div>
+    <p></p>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.ajaxSetup({ cache: false });
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("Index", "Login")',
+            contentType: "application/json; charset=utf-8",
+            data: {},
+            success: function (data) {
+                $("#HtmlBody").html(data);
+            }
+        });
+    })
+
+</script>
+

@@ -15,6 +15,7 @@ namespace AgricolaDH_GApp.Controllers
 
 		public IActionResult Index()
 		{
+			//CAMBIO
 			return View("~/Views/Dashboard/Index.cshtml");
 		}
 
