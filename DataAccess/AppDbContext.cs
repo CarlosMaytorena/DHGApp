@@ -22,10 +22,12 @@ namespace AgricolaDH_GApp.DataAccess
 
             modelBuilder.Entity<Requisicion>().HasKey(m => new { m.IdRequisicion});
             modelBuilder.Entity<ProductoOrdenar>().HasKey(m => new { m.IdProductoOrdenar});
+            modelBuilder.Entity<RequisicionTable>().HasKey(m => new { m.IdRequisicion});
 
         }
 
         public DbSet<Requisicion> Requisiciones { get; set; }
+        public DbSet<RequisicionTable> RequisicionesTable { get; set; }
         public DbSet<ProductoOrdenar> ProductosOrdenar { get; set; }
 
         //Catalogos

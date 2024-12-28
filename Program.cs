@@ -25,6 +25,7 @@ builder.Services.AddScoped<CultivoService>();
 builder.Services.AddScoped<RanchoService>();
 builder.Services.AddScoped<EtapaService>();
 builder.Services.AddScoped<TemporadaService>();
+builder.Services.AddScoped<RequisicionService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

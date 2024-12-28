@@ -5,6 +5,7 @@ namespace AgricolaDH_GApp.ViewModels
 {
     public class RequisicionesVM
     {
+        public List<RequisicionTable> requisicionList { get; set; }
         public Requisicion requisicion { get; set; }
         public List<ProductoOrdenar> productosOrdenar { get; set; }
 
