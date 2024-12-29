@@ -86,7 +86,7 @@
                 url: '@Url.Action("SubirFactura", "SubirFactura")',
                 data: { IdOrdenDeCompra: IdOrdenDeCompra },
                 success: function (data) {
-
+                    console.log(data)
                     $("#HtmlBody").html(data);
                 }
             });

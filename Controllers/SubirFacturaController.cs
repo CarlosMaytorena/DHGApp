@@ -51,9 +51,9 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult SubirFactura(int IdOrdenDeCompra)
         {
-            RequisicionesVM model = new RequisicionesVM();
+            SubirFacturaVM model = new SubirFacturaVM();
 
-			model.requisicion = ordenDeCompraService.SelectRequisicion(IdOrdenDeCompra);
+			model.ordenDeCompra = ordenDeCompraService.SelectRequisicion(IdOrdenDeCompra);
             model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenar(IdOrdenDeCompra);
 
             RolEnumerators rolEnumerators = new RolEnumerators();
