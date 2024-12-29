@@ -3,10 +3,10 @@ using AgricolaDH_GApp.Models;
 
 namespace AgricolaDH_GApp.ViewModels
 {
-    public class RequisicionesVM
+    public class SubirFacturaVM
     {
-        public List<OrdenDeCompraTable> requisicionList { get; set; }
-        public OrdenDeCompra requisicion { get; set; }
+        public List<OrdenDeCompraTable> subirFacturaList { get; set; }
+        public OrdenDeCompra ordenDeCompra { get; set; }
         public List<ProductoOrdenar> productosOrdenar { get; set; }
 
         //Dropdowns
@@ -19,9 +19,9 @@ namespace AgricolaDH_GApp.ViewModels
         public List<Temporada> temporadaList { get; set; }
         public List<Producto> productoList { get; set; }
 
-        public RequisicionesVM()
+        public SubirFacturaVM()
         {
-            requisicion = new OrdenDeCompra();
+            ordenDeCompra = new OrdenDeCompra();
 
             //Dropdowns
             solicitanteList = new List<Usuario>();

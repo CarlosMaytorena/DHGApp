@@ -20,14 +20,14 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Etapa>().HasKey(m => new { m.IdEtapa });
             modelBuilder.Entity<Temporada>().HasKey(m => new { m.IdTemporada });
 
-            modelBuilder.Entity<Requisicion>().HasKey(m => new { m.IdRequisicion});
+            modelBuilder.Entity<OrdenDeCompra>().HasKey(m => new { m.IdOrdenDeCompra});
             modelBuilder.Entity<ProductoOrdenar>().HasKey(m => new { m.IdProductoOrdenar});
-            modelBuilder.Entity<RequisicionTable>().HasKey(m => new { m.IdRequisicion});
+            modelBuilder.Entity<OrdenDeCompraTable>().HasKey(m => new { m.IdOrdenDeCompra});
 
         }
 
-        public DbSet<Requisicion> Requisiciones { get; set; }
-        public DbSet<RequisicionTable> RequisicionesTable { get; set; }
+        public DbSet<OrdenDeCompra> OrdenesDeCompra { get; set; }
+        public DbSet<OrdenDeCompraTable> RequisicionesTable { get; set; }
         public DbSet<ProductoOrdenar> ProductosOrdenar { get; set; }
 
         //Catalogos

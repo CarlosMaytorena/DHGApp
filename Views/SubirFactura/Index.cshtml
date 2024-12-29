@@ -1,18 +1,10 @@
-﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="text-center">
 
     <div class="row top-row-spacer">
         <div class="col-md-6">
-            <h4 class="page-title">Requisición</h4>
-        </div>
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-2">
-            <button id="crearRequisicion" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-plus"></i>
-                Crear Requisición
-            </button>
+            <h4 class="page-title">Subir Factura</h4>
         </div>
     </div>
 
@@ -20,7 +12,7 @@
         <div class="col-12">
             <div class="card card-margin">
                 <div class="card-header">
-                    <h3 class="card-title">Requisiciones Enviadas</h3>
+                    <h3 class="card-title">Subir Factura</h3>
 
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
@@ -52,23 +44,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for(int i=0; i < Model.requisicionList.Count; i++)
+                            @for(int i=0; i < Model.subirFacturaList.Count; i++)
                             {
                                 <tr>
                                     <td>
-                                        <a href="#" id="@Model.requisicionList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
+                                        <a href="#" id="@Model.subirFacturaList[i].IdOrdenDeCompra" class="subirFactura" style="color: #2E2E2E">
                                             <i class="nav-icon fas fa-pen"></i>
                                         </a>
                                     </td>
-                                    <td>@Model.requisicionList[i].IdOrdenDeCompra</td>
-                                    <td>@Model.requisicionList[i].Fecha.ToShortDateString()</td>
-                                    <td>@Model.requisicionList[i].Solicitante</td>
-                                    <td>@Model.requisicionList[i].Proveedor</td>
-                                    <td>@Model.requisicionList[i].Area</td>
-                                    <td>@Model.requisicionList[i].Cultivo</td>
-                                    <td>@Model.requisicionList[i].Rancho</td>
-                                    <td>@Model.requisicionList[i].Etapa</td>
-                                    <td>@Model.requisicionList[i].Temporada</td>
+                                    <td>@Model.subirFacturaList[i].IdOrdenDeCompra</td>
+                                    <td>@Model.subirFacturaList[i].Fecha.ToShortDateString()</td>
+                                    <td>@Model.subirFacturaList[i].Solicitante</td>
+                                    <td>@Model.subirFacturaList[i].Proveedor</td>
+                                    <td>@Model.subirFacturaList[i].Area</td>
+                                    <td>@Model.subirFacturaList[i].Cultivo</td>
+                                    <td>@Model.subirFacturaList[i].Rancho</td>
+                                    <td>@Model.subirFacturaList[i].Etapa</td>
+                                    <td>@Model.subirFacturaList[i].Temporada</td>
                                 </tr>
                             }                           
                         </tbody>
@@ -85,26 +77,13 @@
 <script>
     $(document).ready(function () {
 
-        $("#crearRequisicion").click(function () {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("CrearRequisicion", "Requisicion")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
-                success: function (data) {
-
-                    $("#HtmlBody").html(data);
-                }
-            });
-        });
-
-        $(".editarRequisicion").click(function () {
+        $(".subirFactura").click(function () {
 
             var IdOrdenDeCompra = $(this).attr("id");
 
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("EditarRequisicion", "Requisicion")',
+                url: '@Url.Action("SubirFactura", "SubirFactura")',
                 data: { IdOrdenDeCompra: IdOrdenDeCompra },
                 success: function (data) {
 

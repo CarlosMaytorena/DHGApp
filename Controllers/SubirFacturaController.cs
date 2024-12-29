@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
-    public class RequisicionController : Controller
+    public class SubirFacturaController : Controller
 	{
 		private readonly ILogger<RequisicionController> _logger;
 		
@@ -21,9 +21,9 @@ namespace AgricolaDH_GApp.Controllers
 		private EtapaService etapaService;
 		private TemporadaService temporadaService;
 		private ProductoService productoService;
-		private OrdenDeCompraService requisicionService;
+		private OrdenDeCompraService ordenDeCompraService;
 
-        public RequisicionController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _requisicionService)
+        public SubirFacturaController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _ordenDeCompraService)
 		{
 			_logger = logger;
 			context = _ctx;
@@ -36,50 +36,25 @@ namespace AgricolaDH_GApp.Controllers
 			etapaService = _etapaService;
 			temporadaService = _temporadaService;
 			productoService = _productoService;
-			requisicionService = _requisicionService;
+            ordenDeCompraService = _ordenDeCompraService;
 		}
 
 		[HttpGet]
 		public IActionResult Index()
 		{
-			RequisicionesVM model = new RequisicionesVM();
-			model.requisicionList = requisicionService.SelectRequisiciones();
+			SubirFacturaVM model = new SubirFacturaVM();
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTable(2);
 
-			return PartialView("~/Views/Requisicion/Index.cshtml", model);
+			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
 
         [HttpPost]
-        public IActionResult CrearRequisicion()
+        public IActionResult SubirFactura(int IdOrdenDeCompra)
         {
             RequisicionesVM model = new RequisicionesVM();
 
-			RolEnumerators rolEnumerators = new RolEnumerators();
-
-			model.requisicion.Fecha = DateTime.Now;
-
-			model.productosOrdenar = new List<ProductoOrdenar>() { 
-				new ProductoOrdenar()
-			};
-
-			model.solicitanteList = usuarioService.SelectUsuariosByIdRol(rolEnumerators.Ingeniero);
-			model.proveedorList = proveedorService.SelectProveedores();
-			model.areaList = areaService.SelectAreas();
-			model.cultivoList = cultivoService.SelectCultivos();
-			model.ranchoList = ranchoService.SelectRanchos();
-			model.etapaList = etapaService.SelectEtapas();
-			model.temporadaList = temporadaService.SelectTemporadas();
-			model.productoList = productoService.SelectProductos();
-
-            return PartialView("~/Views/Requisicion/RequisicionForm.cshtml", model);
-        }
-
-        [HttpPost]
-        public IActionResult EditarRequisicion(int IdOrdenDeCompra)
-        {
-            RequisicionesVM model = new RequisicionesVM();
-
-			model.requisicion = requisicionService.SelectRequisicion(IdOrdenDeCompra);
-            model.productosOrdenar = requisicionService.SelectProductosOrdenar(IdOrdenDeCompra);
+			model.requisicion = ordenDeCompraService.SelectRequisicion(IdOrdenDeCompra);
+            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenar(IdOrdenDeCompra);
 
             RolEnumerators rolEnumerators = new RolEnumerators();
 
@@ -92,7 +67,7 @@ namespace AgricolaDH_GApp.Controllers
             model.temporadaList = temporadaService.SelectTemporadas();
             model.productoList = productoService.SelectProductos();
 
-            return PartialView("~/Views/Requisicion/RequisicionForm.cshtml", model);
+            return PartialView("~/Views/SubirFactura/SubirFacturaForm.cshtml", model);
         }
 
         [HttpPost]
@@ -117,7 +92,7 @@ namespace AgricolaDH_GApp.Controllers
         public async Task<IActionResult> InsertRequisicion(RequisicionesVM model)
         {
 			model.requisicion.IdOrdenDeCompraStatus = 1; //Status Enviado
-			int IdOrdenDeCompra = requisicionService.InsertRequisicion(model.requisicion);
+			int IdOrdenDeCompra = ordenDeCompraService.InsertRequisicion(model.requisicion);
 			int res = 0;
 
 			if (IdOrdenDeCompra > 0) 
@@ -125,7 +100,7 @@ namespace AgricolaDH_GApp.Controllers
                 foreach (var productoOrdenar in model.productosOrdenar)
                 {
                     productoOrdenar.IdOrdenDeCompra = IdOrdenDeCompra;
-                    res = requisicionService.InsertProductoOrdenar(productoOrdenar);
+                    res = ordenDeCompraService.InsertProductoOrdenar(productoOrdenar);
                 }
             }
 			else
@@ -134,7 +109,7 @@ namespace AgricolaDH_GApp.Controllers
 			}
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectRequisiciones();
+            model.requisicionList = ordenDeCompraService.SelectRequisiciones();
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
@@ -145,13 +120,13 @@ namespace AgricolaDH_GApp.Controllers
         {
             model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
             int res = 0;
-            res = requisicionService.UpdateRequisicion(model.requisicion);
+            res = ordenDeCompraService.UpdateRequisicion(model.requisicion);
 
             if (res == 0)
             {
                 foreach (var productoOrdenar in model.productosOrdenar)
                 {
-                    res = requisicionService.UpdateProductoOrdenar(productoOrdenar);
+                    res = ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
                 }
             }
             else
@@ -160,7 +135,7 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectRequisiciones();
+            model.requisicionList = ordenDeCompraService.SelectRequisiciones();
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 

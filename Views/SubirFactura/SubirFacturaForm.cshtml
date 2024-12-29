@@ -1,11 +1,11 @@
-﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <form id="dataform">
     @{
         bool edit = false;
         string title = "Crear Requisición";
 
-        if (Model.requisicion.IdOrdenDeCompra > 0)
+        if (Model.ordenDeCompra.IdOrdenDeCompra > 0)
         {
             edit = true;
             title = "Editar Requisición";
@@ -50,47 +50,47 @@
         </div>
 
         <div class="card card-margin">
-            @Html.HiddenFor(m => m.requisicion.IdOrdenDeCompra)
+            @Html.HiddenFor(m => m.ordenDeCompra.IdOrdenDeCompra)
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                    @Html.EditorFor(m => m.requisicion.Fecha, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Fecha, new { htmlAttributes = new { @class = "form-control input-focus" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.ordenDeCompra.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
             </div>
             <div id="productosOrdenarContent">
-                @Html.Partial("~/Views/Requisicion/ProductosOrdenar.cshtml", Model)
+                @Html.Partial("~/Views/SubirFactura/ProductosOrdenar.cshtml", Model)
             </div>            
         </div>
     </div>

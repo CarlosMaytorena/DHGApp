@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AgricolaDH_GApp.Models
 {
-    public class Requisicion
+    public class OrdenDeCompra
     {
-        public int IdRequisicion { get; set; }
+        public int IdOrdenDeCompra { get; set; }
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
@@ -16,12 +16,12 @@ namespace AgricolaDH_GApp.Models
         public int IdRancho { get; set; }
         public int IdEtapa { get; set; }
         public int IdTemporada { get; set; }
-
+        public int IdOrdenDeCompraStatus { get; set; }
     }
 
-    public class RequisicionTable
+    public class OrdenDeCompraTable
     {
-        public int IdRequisicion { get; set; }
+        public int IdOrdenDeCompra { get; set; }
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }

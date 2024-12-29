@@ -1,4 +1,4 @@
-﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="row card-row-spacer">
     <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
@@ -28,7 +28,6 @@
 {
     <div class="row card-row-spacer">
         @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
-        @Html.HiddenFor(m => m.productosOrdenar[i].IdOrdenDeCompra)
         <div class="col-md-10">
             @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreProducto"), " ", new { @class = "form-control input-focus requisicion" })
         </div>
