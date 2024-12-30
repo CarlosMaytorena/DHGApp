@@ -6,8 +6,8 @@ namespace AgricolaDH_GApp.ViewModels
     public class SubirFacturaVM
     {
         public List<OrdenDeCompraTable> subirFacturaList { get; set; }
-        public OrdenDeCompra ordenDeCompra { get; set; }
-        public List<ProductoOrdenar> productosOrdenar { get; set; }
+        public OrdenDeCompraTable ordenDeCompra { get; set; }
+        public List<ProductoOrdenarSelected> productosOrdenar { get; set; }
 
         //Dropdowns
         public List<Usuario> solicitanteList { get; set; }
@@ -21,7 +21,7 @@ namespace AgricolaDH_GApp.ViewModels
 
         public SubirFacturaVM()
         {
-            ordenDeCompra = new OrdenDeCompra();
+            ordenDeCompra = new OrdenDeCompraTable();
 
             //Dropdowns
             solicitanteList = new List<Usuario>();

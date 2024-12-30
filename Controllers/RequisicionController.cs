@@ -43,7 +43,7 @@ namespace AgricolaDH_GApp.Controllers
 		public IActionResult Index()
 		{
 			RequisicionesVM model = new RequisicionesVM();
-			model.requisicionList = requisicionService.SelectRequisiciones();
+			model.requisicionList = requisicionService.SelectOrdenDeCompraTable(1);
 
 			return PartialView("~/Views/Requisicion/Index.cshtml", model);
 		}
@@ -55,7 +55,7 @@ namespace AgricolaDH_GApp.Controllers
 
 			RolEnumerators rolEnumerators = new RolEnumerators();
 
-			model.requisicion.Fecha = DateTime.Now;
+			model.requisicion.FechaRequisicion = DateTime.Now;
 
 			model.productosOrdenar = new List<ProductoOrdenar>() { 
 				new ProductoOrdenar()
@@ -143,6 +143,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AcceptRejectRequisicion(RequisicionesVM model, int IdOrdenDeCompraStatus)
         {
+            model.requisicion.FechaOrdenDeCompra = DateTime.Now;
             model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
             int res = 0;
             res = requisicionService.UpdateRequisicion(model.requisicion);

@@ -33,7 +33,7 @@
                             <tr>
                                 <th style="width:30px">Acción</th>
                                 <th>ID</th>
-                                <th>Fecha</th>
+                                <th>Fecha de Orden de Compra</th>
                                 <th>Solicitante</th>
                                 <th>Status</th>
                                 <th>Área</th>
@@ -46,6 +46,11 @@
                         <tbody>
                             @for(int i=0; i < Model.subirFacturaList.Count; i++)
                             {
+                                string fechaOrdenDeCompra = "";
+                                if(Model.subirFacturaList[i].FechaOrdenDeCompra != null){
+                                    fechaOrdenDeCompra = Convert.ToDateTime(Model.subirFacturaList[i].FechaOrdenDeCompra).ToShortDateString();
+                                }
+                               
                                 <tr>
                                     <td>
                                         <a href="#" id="@Model.subirFacturaList[i].IdOrdenDeCompra" class="subirFactura" style="color: #2E2E2E">
@@ -53,7 +58,7 @@
                                         </a>
                                     </td>
                                     <td>@Model.subirFacturaList[i].IdOrdenDeCompra</td>
-                                    <td>@Model.subirFacturaList[i].Fecha.ToShortDateString()</td>
+                                    <td>@fechaOrdenDeCompra</td>
                                     <td>@Model.subirFacturaList[i].Solicitante</td>
                                     <td>@Model.subirFacturaList[i].Proveedor</td>
                                     <td>@Model.subirFacturaList[i].Area</td>

@@ -53,19 +53,8 @@ namespace AgricolaDH_GApp.Controllers
         {
             SubirFacturaVM model = new SubirFacturaVM();
 
-			model.ordenDeCompra = ordenDeCompraService.SelectRequisicion(IdOrdenDeCompra);
-            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenar(IdOrdenDeCompra);
-
-            RolEnumerators rolEnumerators = new RolEnumerators();
-
-            model.solicitanteList = usuarioService.SelectUsuariosByIdRol(rolEnumerators.Ingeniero);
-            model.proveedorList = proveedorService.SelectProveedores();
-            model.areaList = areaService.SelectAreas();
-            model.cultivoList = cultivoService.SelectCultivos();
-            model.ranchoList = ranchoService.SelectRanchos();
-            model.etapaList = etapaService.SelectEtapas();
-            model.temporadaList = temporadaService.SelectTemporadas();
-            model.productoList = productoService.SelectProductos();
+			model.ordenDeCompra = ordenDeCompraService.SelectOrdenDeCompra(IdOrdenDeCompra);
+            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenarSelected(IdOrdenDeCompra);
 
             return PartialView("~/Views/SubirFactura/SubirFacturaForm.cshtml", model);
         }

@@ -15,37 +15,17 @@
 
         <div class="row top-row-spacer">
             <div class="col-md-6">
-                <h4 class="page-title">@title</h4>
+                <h4 class="page-title">Subir Factura a Orden de Compra</h4>
             </div>
 
-@*             @if(!edit)
-            {
-                <div class="col-md-4">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" id="enviarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
-                        <i class="nav-icon fas fa-arrow-right"></i>
-                        Enviar
-                    </button>
-                </div>
-            }
-            else
-            {
-                <div class="col-md-2">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" id="aceptarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
-                        <i class="nav-icon fas fa-check"></i>
-                        Aceptar
-                    </button>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" id="negarRequisicion" class="btn btn-block btn-danger" style="color: white">
-                        <i class="nav-icon fas fa-trash"></i>
-                        Negar
-                    </button>
-                </div>
-            } *@
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="subirFactura" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-upload"></i>
+                    Subir Factura
+                </button>
+            </div>
 
         </div>
 
@@ -53,40 +33,44 @@
             @Html.HiddenFor(m => m.ordenDeCompra.IdOrdenDeCompra)
             <div class="row card-row-spacer">
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Fecha, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                    <label style="font-weight: normal; text-align: left; float: left">Fecha de Requisición</label>
+                    @Html.EditorFor(m => m.ordenDeCompra.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Fecha de Orden de Compra</label>
+                    @Html.EditorFor(m => m.ordenDeCompra.FechaOrdenDeCompra, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.EditorFor(m => m.ordenDeCompra.Solicitante, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
+                    @Html.EditorFor(m => m.ordenDeCompra.Proveedor, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                </div>
+                <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.EditorFor(m => m.ordenDeCompra.Area, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.EditorFor(m => m.ordenDeCompra.Cultivo, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
+                    @Html.EditorFor(m => m.ordenDeCompra.Rancho, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                </div>
+                <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.EditorFor(m => m.ordenDeCompra.Etapa, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                    @Html.DropDownListFor(m => m.ordenDeCompra.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.EditorFor(m => m.ordenDeCompra.Temporada, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
                 </div>
             </div>
             <div id="productosOrdenarContent">
@@ -157,7 +141,7 @@
 
             var validation = true
 
-            $('.requisicion').each(function() {
+            $('.subirFactura').each(function() {
 
                 $("#" + this.id).css("border-color", "");
 

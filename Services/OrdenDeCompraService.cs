@@ -23,7 +23,7 @@ namespace AgricolaDH_GApp.Services.Admin
             try
             {
 
-                requisicionList = context.RequisicionesTable.FromSqlRaw("exec SP_SelectRequisiciones").ToList();
+                requisicionList = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectRequisiciones").ToList();
 
             }
             catch
@@ -41,7 +41,7 @@ namespace AgricolaDH_GApp.Services.Admin
             try
             {
 
-                ordenDeCompraList = context.RequisicionesTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTable @IdOrdenDeCompraStatus",
+                ordenDeCompraList = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTable @IdOrdenDeCompraStatus",
                     new SqlParameter("@IdOrdenDeCompraStatus", IdOrdenDeCompraStatus)).ToList();
 
             }
@@ -51,6 +51,25 @@ namespace AgricolaDH_GApp.Services.Admin
             }
 
             return ordenDeCompraList;
+        }
+
+        public OrdenDeCompraTable SelectOrdenDeCompra(int IdOrdenDeCompra)
+        {
+            OrdenDeCompraTable ordenDeCompra;
+
+            try
+            {
+
+                ordenDeCompra = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTableById @IdOrdenDeCompra",
+                    new SqlParameter("@IdOrdenDeCompra", IdOrdenDeCompra)).ToList().FirstOrDefault();
+
+            }
+            catch
+            {
+                ordenDeCompra = new OrdenDeCompraTable();
+            }
+
+            return ordenDeCompra;
         }
 
         public List<ProductoOrdenar> SelectProductosOrdenar(int IdOrdenDeCompra)
@@ -64,6 +83,23 @@ namespace AgricolaDH_GApp.Services.Admin
             catch
             {
                 productosOrdenar = new List<ProductoOrdenar>();
+            }
+
+            return productosOrdenar;
+        }
+
+        public List<ProductoOrdenarSelected> SelectProductosOrdenarSelected(int IdOrdenDeCompra)
+        {
+            List<ProductoOrdenarSelected> productosOrdenar;
+
+            try
+            {
+                productosOrdenar = context.ProductoOrdenarSelected.FromSqlRaw("exec SP_SelectProductoOrdenarByIdOrdenDeCompra @IdOrdenDeCompra",
+                    new SqlParameter("@IdOrdenDeCompra", IdOrdenDeCompra)).ToList();
+            }
+            catch
+            {
+                productosOrdenar = new List<ProductoOrdenarSelected>();
             }
 
             return productosOrdenar;

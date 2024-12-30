@@ -22,13 +22,15 @@ namespace AgricolaDH_GApp.DataAccess
 
             modelBuilder.Entity<OrdenDeCompra>().HasKey(m => new { m.IdOrdenDeCompra});
             modelBuilder.Entity<ProductoOrdenar>().HasKey(m => new { m.IdProductoOrdenar});
+            modelBuilder.Entity<ProductoOrdenarSelected>().HasKey(m => new { m.IdProductoOrdenar});
             modelBuilder.Entity<OrdenDeCompraTable>().HasKey(m => new { m.IdOrdenDeCompra});
 
         }
 
         public DbSet<OrdenDeCompra> OrdenesDeCompra { get; set; }
-        public DbSet<OrdenDeCompraTable> RequisicionesTable { get; set; }
+        public DbSet<OrdenDeCompraTable> OrdenDeCompraTable { get; set; }
         public DbSet<ProductoOrdenar> ProductosOrdenar { get; set; }
+        public DbSet<ProductoOrdenarSelected> ProductoOrdenarSelected { get; set; }
 
         //Catalogos
         public DbSet<Usuario> Usuarios { get; set; }
