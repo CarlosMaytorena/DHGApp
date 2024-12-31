@@ -33,7 +33,7 @@
             @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreProducto"), " ", new { @class = "form-control input-focus requisicion" })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus requisicion" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus requisicion inputValidation", @min = 0 } })
         </div>
     </div>
 }
@@ -70,6 +70,23 @@
                 }
             });
         });
+
+        $(".inputValidation").change(function () {
+            
+            var id = $(this).attr("id");
+
+            $("#" + id).val(inputValidation($("#" + id).val()));
+
+        });
+
+        function inputValidation(input){
+
+            if(input > 0){
+                return input;
+            }
+
+            return 0;
+        }
 
     });
 </script>

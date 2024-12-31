@@ -77,6 +77,16 @@
                 @Html.Partial("~/Views/SubirFactura/ProductosOrdenar.cshtml", Model)
             </div>            
         </div>
+        <div class="row bottom-row-spacer">
+            <div class="col-md-10">
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="cancelarSubirFactura" class="btn btn-block btn-danger" style="color: white">
+                    <i class="nav-icon fas fa-ban"></i>
+                    Cancelar
+                </button>
+            </div>
+        </div>
     </div>
 </form>
 
@@ -134,6 +144,20 @@
                     }
                 });
             }
+
+        });
+
+        $("#cancelarSubirFactura").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "SubirFactura")',
+                contentType: "application/json; charset=utf-8",
+                data: { },
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
 
         });
 

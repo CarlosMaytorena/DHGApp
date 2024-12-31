@@ -36,6 +36,12 @@ body {
     padding-right: 10px;
 }
 
+.bottom-row-spacer {
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .card-margin {
     margin-left: 10px;
     margin-right: 10px;
