@@ -22,6 +22,7 @@ namespace AgricolaDH_GApp.Controllers
 		private TemporadaService temporadaService;
 		private ProductoService productoService;
 		private OrdenDeCompraService ordenDeCompraService;
+        private OrdenDeCompraStatusEnumerators OrdenDeCompraEnumerator = new OrdenDeCompraStatusEnumerators();
 
         public SubirFacturaController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _ordenDeCompraService)
 		{
@@ -43,7 +44,7 @@ namespace AgricolaDH_GApp.Controllers
 		public IActionResult Index()
 		{
 			SubirFacturaVM model = new SubirFacturaVM();
-			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTable(2);
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTable(OrdenDeCompraEnumerator.Aceptado);
 
 			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
