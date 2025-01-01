@@ -1,4 +1,4 @@
-
+@model AgricolaDH_GApp.ViewModels.AlmacenVM
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -44,54 +44,21 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>Id Almacen</th>
+                                <th>Id Producto</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>                                
-                                <th>Status</th>
-                                <th>Área</th>
-                                <th>Cultivo</th>
-                                <th>Rancho</th>
-                                <th>Etapa</th>
-                                <th>Ultima Orden</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
+                            @foreach (var almacen in Model.almacenList)
+                            {
+                                <tr>
+                                    <td>@almacen.IdAlmacen</td>
+                                    <td>@almacen.IdProducto</td>
+                                    <td>@almacen.Cantidad</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

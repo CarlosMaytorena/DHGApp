@@ -13,6 +13,7 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Usuario>().HasKey(m => new { m.IdUsuario });
             modelBuilder.Entity<Producto>().HasKey(m => new { m.IdProducto });
             modelBuilder.Entity<Proveedor>().HasKey(m => new { m.IdProveedor });
+            modelBuilder.Entity<Almacen>().HasKey(m => new { m.IdAlmacen });
             modelBuilder.Entity<Area>().HasKey(m => new { m.IdArea });
             modelBuilder.Entity<Rol>().HasKey(m => new { m.IdRol });
             modelBuilder.Entity<Cultivo>().HasKey(m => new { m.IdCultivo });
@@ -43,6 +44,6 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<Temporada> Temporadas { get; set; }
 
         public DbSet<Rol> Roles { get; set; }
-
+        public DbSet<Almacen> Almacen { get; set; }
     }
 }
