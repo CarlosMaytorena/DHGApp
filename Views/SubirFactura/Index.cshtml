@@ -1,0 +1,102 @@
+﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-6">
+            <h4 class="page-title">Subir Factura</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Subir Factura</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th style="width:30px">Acción</th>
+                                <th>ID</th>
+                                <th>Fecha de Orden de Compra</th>
+                                <th>Solicitante</th>
+                                <th>Status</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                <th>Temporada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(int i=0; i < Model.subirFacturaList.Count; i++)
+                            {
+                                string fechaOrdenDeCompra = "";
+                                if(Model.subirFacturaList[i].FechaOrdenDeCompra != null){
+                                    fechaOrdenDeCompra = Convert.ToDateTime(Model.subirFacturaList[i].FechaOrdenDeCompra).ToShortDateString();
+                                }
+                               
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@Model.subirFacturaList[i].IdOrdenDeCompra" class="subirFactura" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-pen"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Model.subirFacturaList[i].IdOrdenDeCompra</td>
+                                    <td>@fechaOrdenDeCompra</td>
+                                    <td>@Model.subirFacturaList[i].Solicitante</td>
+                                    <td>@Model.subirFacturaList[i].Proveedor</td>
+                                    <td>@Model.subirFacturaList[i].Area</td>
+                                    <td>@Model.subirFacturaList[i].Cultivo</td>
+                                    <td>@Model.subirFacturaList[i].Rancho</td>
+                                    <td>@Model.subirFacturaList[i].Etapa</td>
+                                    <td>@Model.subirFacturaList[i].Temporada</td>
+                                </tr>
+                            }                           
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(".subirFactura").click(function () {
+
+            var IdOrdenDeCompra = $(this).attr("id");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SubirFactura", "SubirFactura")',
+                data: { IdOrdenDeCompra: IdOrdenDeCompra },
+                success: function (data) {
+                    console.log(data)
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+    });
+</script>
+

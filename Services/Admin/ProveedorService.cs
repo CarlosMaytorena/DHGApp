@@ -30,6 +30,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return proveedorList;
         }
 
+        public Proveedor SelectProveedor(int IdProveedor)
+        {
+            Proveedor proveedor;
+
+            try
+            {
+                proveedor = context.Proveedores.Find(IdProveedor);
+            }
+            catch
+            {
+                proveedor = new Proveedor();
+            }
+
+            return proveedor;
+        }
+
         public int InsertProveedor(Proveedor proveedor)
         {
             int res = 0;

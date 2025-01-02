@@ -50,7 +50,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             AreasVM model = new AreasVM();
 
-            model.area = context.Areas.Find(IdArea);
+            model.area = areaService.SelectArea(IdArea);
 
             return PartialView("~/Views/Admin/Areas/Area.cshtml", model);
         }

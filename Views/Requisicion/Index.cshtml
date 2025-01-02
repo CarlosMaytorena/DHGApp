@@ -1,4 +1,5 @@
-﻿
+﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -38,6 +39,7 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
+                                <th style="width:30px">Acción</th>
                                 <th>ID</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
@@ -50,127 +52,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Enviado</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Enviado</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Enviado</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Enviado</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>                            
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Requisiciones Aceptadas</h3>
-
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha</th>
-                                <th>Solicitante</th>
-                                <th>Status</th>
-                                <th>Área</th>
-                                <th>Cultivo</th>
-                                <th>Rancho</th>
-                                <th>Etapa</th>
-                                <th>Temporada</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                                <td>Temporada</td>
-                            </tr>                            
+                            @for(int i=0; i < Model.requisicionList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@Model.requisicionList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-pen"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Model.requisicionList[i].IdOrdenDeCompra</td>
+                                    <td>@Model.requisicionList[i].FechaRequisicion.ToShortDateString()</td>
+                                    <td>@Model.requisicionList[i].Solicitante</td>
+                                    <td>@Model.requisicionList[i].Proveedor</td>
+                                    <td>@Model.requisicionList[i].Area</td>
+                                    <td>@Model.requisicionList[i].Cultivo</td>
+                                    <td>@Model.requisicionList[i].Rancho</td>
+                                    <td>@Model.requisicionList[i].Etapa</td>
+                                    <td>@Model.requisicionList[i].Temporada</td>
+                                </tr>
+                            }                           
                         </tbody>
                     </table>
                 </div>
@@ -191,6 +91,21 @@
                 url: '@Url.Action("CrearRequisicion", "Requisicion")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
+                success: function (data) {
+
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".editarRequisicion").click(function () {
+
+            var IdOrdenDeCompra = $(this).attr("id");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditarRequisicion", "Requisicion")',
+                data: { IdOrdenDeCompra: IdOrdenDeCompra },
                 success: function (data) {
 
                     $("#HtmlBody").html(data);

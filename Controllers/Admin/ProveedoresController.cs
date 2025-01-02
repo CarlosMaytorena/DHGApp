@@ -50,7 +50,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             ProveedoresVM model = new ProveedoresVM();
 
-            model.proveedor = context.Proveedores.Find(IdProveedor);
+            model.proveedor = proveedorService.SelectProveedor(IdProveedor);
 
             return PartialView("~/Views/Admin/Proveedores/Proveedor.cshtml", model);
         }

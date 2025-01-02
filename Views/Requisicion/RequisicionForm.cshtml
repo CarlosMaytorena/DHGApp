@@ -1,149 +1,203 @@
-﻿
-<div class="text-center">
+﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
 
-    <div class="row top-row-spacer">
-        <div class="col-md-6">
-            <h4 class="page-title">Crear Requisición</h4>
+<form id="dataform">
+    @{
+        bool edit = false;
+        string title = "Crear Requisición";
+
+        if (Model.requisicion.IdOrdenDeCompra > 0)
+        {
+            edit = true;
+            title = "Editar Requisición";
+        }
+    }
+    <div class="text-center">
+
+        <div class="row top-row-spacer">
+            <div class="col-md-6">
+                <h4 class="page-title">@title</h4>
+            </div>
+
+            @if(!edit)
+            {
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="enviarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
+                        <i class="nav-icon fas fa-arrow-right"></i>
+                        Enviar
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="aceptarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
+                        <i class="nav-icon fas fa-check"></i>
+                        Aceptar
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="negarRequisicion" class="btn btn-block btn-danger" style="color: white">
+                        <i class="nav-icon fas fa-times"></i>
+                        Negar
+                    </button>
+                </div>
+            }
+
         </div>
-        <div class="col-md-4">
+
+        <div class="card card-margin">
+            @Html.HiddenFor(m => m.requisicion.IdOrdenDeCompra)
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Fecha de Requisición</label>
+                    @Html.EditorFor(m => m.requisicion.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Área</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div>
+            </div>
+            <div id="productosOrdenarContent">
+                @Html.Partial("~/Views/Requisicion/ProductosOrdenar.cshtml", Model)
+            </div>            
         </div>
-        <div class="col-md-2">
-            <button id="enviarRequisicion" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-right"></i>
-                Enviar
-            </button>
+
+        <div class="row bottom-row-spacer">
+            <div class="col-md-10">
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="cancelarRequisicion" class="btn btn-block btn-danger" style="color: white">
+                    <i class="nav-icon fas fa-ban"></i>
+                    Cancelar
+                </button>
+            </div>
         </div>
+
     </div>
+</form>
 
-    <div class="card card-margin">
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                <input class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                <input class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                <input class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
-            &nbsp;
-            &nbsp;
-            &nbsp;
-            &nbsp;
-            <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
-            &nbsp;
-            &nbsp;
-            <button class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
-
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-8">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <select class="form-control input-focus">
-                    <option></option>
-                    <option value="1">Producto 1</option>
-                    <option value="2">Producto 2</option>
-                    <option value="3">Producto 3</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                <input class="form-control input-focus" />
-            </div>
-            <div class="col-md-2">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" class="form-control input-focus" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-        </div>
-    </div>
-
-
-
-</div>
 <script>
     $(document).ready(function () {
 
         $("#enviarRequisicion").click(function () {
+
+            var dataform = $("#dataform");
+
+            if(Validation())
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("InsertRequisicion", "Requisicion")',
+                    data: dataform.serialize(),
+                    success: function (data) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                });
+            }
+
+        });
+
+        $("#aceptarRequisicion").click(function () {
+
+            var dataform = $("#dataform");
+
+            if(Validation())
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
+                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=2",
+                    success: function (data) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                });
+            }
+
+        });
+
+        $("#negarRequisicion").click(function () {
+
+            var dataform = $("#dataform");
+
+            if(Validation())
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
+                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=3",
+                    success: function (data) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                });
+            }
+
+        });
+
+        $("#cancelarRequisicion").click(function () {
+
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Requisicion")',
                 contentType: "application/json; charset=utf-8",
-                data: {},
+                data: { },
                 success: function (data) {
                     $("#HtmlBody").html(data);
                 }
             });
+
         });
+
+        function Validation() {
+
+            var validation = true
+
+            $('.requisicion').each(function() {
+
+                $("#" + this.id).css("border-color", "");
+
+                if($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0"){
+                    $("#" + this.id).css("border-color", "red");
+                    validation = false;
+                }
+            });
+
+            return validation;
+
+        }
+
+
 
     });
 </script>

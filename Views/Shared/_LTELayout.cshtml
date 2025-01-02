@@ -262,6 +262,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
+        $("#subirFactura").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "SubirFactura")',
+                contentType: "application/json; charset=utf-8",
+                data: { },
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
         $("#ingresos").click(function () {
             sidebarClickColor($(this));
             $.ajax({
@@ -342,6 +355,58 @@ scratch. This page gets rid of all links and provides the needed markup only.
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Productos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#cultivos").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Cultivos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#ranchos").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Ranchos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#etapas").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Etapas")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $("#temporadas").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Temporadas")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {

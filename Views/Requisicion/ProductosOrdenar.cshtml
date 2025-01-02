@@ -1,0 +1,92 @@
+﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+
+<div class="row card-row-spacer">
+    <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <button type="button" id="agregarProductoOrdenar" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
+    &nbsp;
+    &nbsp;
+    @if (Model.productosOrdenar.Count > 1)
+    {
+        <button type="button" id="eliminarProductoOrdenar" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
+    }
+</div>
+
+<div class="row card-row-spacer">
+    <div class="col-md-10">
+        <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+    </div>
+    <div class="col-md-2">
+        <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+    </div>
+</div>
+
+@for (int i = 0; i < Model.productosOrdenar.Count; i++)
+{
+    <div class="row card-row-spacer">
+        @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
+        @Html.HiddenFor(m => m.productosOrdenar[i].IdOrdenDeCompra)
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreProducto"), " ", new { @class = "form-control input-focus requisicion" })
+        </div>
+        <div class="col-md-2">
+            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus requisicion inputValidation", @min = 0 } })
+        </div>
+    </div>
+}
+<div class="row card-row-spacer">
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#agregarProductoOrdenar").click(function () {
+            
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarProductoOrdenar", "Requisicion")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#productosOrdenarContent").html(data);
+                }
+            });
+        });
+
+        $("#eliminarProductoOrdenar").click(function () {
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EliminarProductoOrdenar", "Requisicion")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#productosOrdenarContent").html(data);
+                }
+            });
+        });
+
+        $(".inputValidation").change(function () {
+            
+            var id = $(this).attr("id");
+
+            $("#" + id).val(inputValidation($("#" + id).val()));
+
+        });
+
+        function inputValidation(input){
+
+            if(input > 0){
+                return input;
+            }
+
+            return 0;
+        }
+
+    });
+</script>
