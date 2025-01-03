@@ -106,11 +106,11 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AcceptRejectRequisicion(RequisicionesVM model, int IdOrdenDeCompraStatus)
+        public async Task<IActionResult> AcceptSubirFactura(RequisicionesVM model)
         {
-            model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
+            model.requisicion.IdOrdenDeCompraStatus = OrdenDeCompraEnumerator.PorIngresar; //Status Change
             int res = 0;
-            res = ordenDeCompraService.UpdateRequisicion(model.requisicion);
+            res = ordenDeCompraService.UpdateOrdenDeCompra(model.requisicion);
 
             if (res == 0)
             {

@@ -159,13 +159,13 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
-        public int UpdateRequisicion(OrdenDeCompra requisicion)
+        public int UpdateOrdenDeCompra(OrdenDeCompra ordenDeCompra)
         {
             int res = 0;
 
             try
             {
-                context.OrdenesDeCompra.Update(requisicion);
+                context.OrdenesDeCompra.Update(ordenDeCompra);
                 context.SaveChanges();
             }
             catch(Exception ex) 

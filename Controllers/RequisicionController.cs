@@ -149,7 +149,7 @@ namespace AgricolaDH_GApp.Controllers
             model.requisicion.FechaOrdenDeCompra = DateTime.Now;
             model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
             int res = 0;
-            res = requisicionService.UpdateRequisicion(model.requisicion);
+            res = requisicionService.UpdateOrdenDeCompra(model.requisicion);
 
             if (res == 0)
             {
