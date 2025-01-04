@@ -5,11 +5,12 @@
 </div>
 
 <div class="row row-spacer">
-    <form action="/action_page.php">
-        <label for="myfile">Seleccionar factura de proveedor:</label>
-        &nbsp;
-        <input type="file" id="myfile" name="myfile" accept=".xml"><br><br>
-    </form>
+    
+    <label for="myfile">Seleccionar factura de proveedor:</label>
+    &nbsp;
+    <input type="file" id="myfile" name="myfile" accept=".xml"><br><br>
+    <input type="button" name="submit" id="submit" value="Cargar Archivo" class="btn btn-primary btn-sm upload" />
+
 </div>
 
 <div class="row card-row-spacer">
@@ -38,10 +39,10 @@
             @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Unidad, new { htmlAttributes = new { @class = "form-control input-focus subirFactura productoOrdenarUnidad" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Unidad, new { htmlAttributes = new { @class = "form-control input-focus subirFactura productoOrdenarUnidad", @disabled = "disabled" } })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Total, new { htmlAttributes = new { @class = "form-control input-focus subirFactura" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Total, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
         </div>
     </div>
 }
@@ -80,6 +81,31 @@
                 }
             });
         });
+
+        $(".upload").click(function () {
+
+            var IdOrdenDeCompra = $("#ordenDeCompra_IdOrdenDeCompra").val();
+            var selectFile = ($("#myfile"))[0].files[0];
+            var dataString = new FormData();
+
+            if(selectFile != null){
+                dataString.append("IdOrdenDeCompra", IdOrdenDeCompra);
+                dataString.append("file", selectFile);
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UploadFile", "SubirFactura")',
+                    data: dataString,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $("#productosOrdenarContent").html(data.url);
+                    }
+                });
+            }
+
+
+        })
 
     });
 </script>

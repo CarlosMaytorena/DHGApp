@@ -1,16 +1,6 @@
 ﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <form id="dataform">
-    @{
-        bool edit = false;
-        string title = "Crear Requisición";
-
-        if (Model.ordenDeCompra.IdOrdenDeCompra > 0)
-        {
-            edit = true;
-            title = "Editar Requisición";
-        }
-    }
     <div class="text-center">
 
         <div class="row top-row-spacer">
