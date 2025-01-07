@@ -108,60 +108,149 @@
     </div>
 </form>
 
+<div class="modal fade" id="modal-requisicionConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enviar Requisición</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea enviar la requisición?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="requisicionConfirm" type="button" class="btn btn-primary">Enviar Requisición</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-aceptarRequisicionConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Aceptar Requisición</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea aceptar la requisición?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="aceptarRequisicionConfirm" type="button" class="btn btn-primary">Aceptar Requisición</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-negarRequisicionConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Negar Requisición</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea negar la requisición?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="negarRequisicionConfirm" type="button" class="btn btn-danger">Negar Requisición</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <script>
     $(document).ready(function () {
 
         $("#enviarRequisicion").click(function () {
 
-            var dataform = $("#dataform");
-
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("InsertRequisicion", "Requisicion")',
-                    data: dataform.serialize(),
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
+            if(Validation()){
+                $("#modal-requisicionConfirm").modal("show");
             }
 
         });
 
         $("#aceptarRequisicion").click(function () {
 
-            var dataform = $("#dataform");
-
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
-                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=2",
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
+            if(Validation()){
+                $("#modal-aceptarRequisicionConfirm").modal("show");
             }
 
         });
 
         $("#negarRequisicion").click(function () {
 
+            if(Validation()){
+                $("#modal-negarRequisicionConfirm").modal("show");
+            }
+
+        });
+
+        $("#requisicionConfirm").click(function () {
+
+            $("#modal-requisicionConfirm").modal("hide");
+
             var dataform = $("#dataform");
 
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
-                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=3",
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
-            }
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("InsertRequisicion", "Requisicion")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                }
+            });
+            
+
+        });
+
+        $("#aceptarRequisicionConfirm").click(function () {
+            
+            $("#modal-aceptarRequisicionConfirm").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
+                data: dataform.serialize() + "&IdOrdenDeCompraStatus=2",
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                }
+            });
+
+        });
+
+        $("#negarRequisicionConfirm").click(function () {
+
+            $("#modal-negarRequisicionConfirm").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
+                data: dataform.serialize() + "&IdOrdenDeCompraStatus=3",
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                }
+            });
+            
 
         });
 

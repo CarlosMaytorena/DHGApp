@@ -46,7 +46,7 @@ namespace AgricolaDH_GApp.Controllers
 		{
 			RequisicionesVM model = new RequisicionesVM();
 
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTable(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
 
 			return PartialView("~/Views/Requisicion/Index.cshtml", model);
 		}
@@ -137,7 +137,7 @@ namespace AgricolaDH_GApp.Controllers
 			}
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTable(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
@@ -155,7 +155,18 @@ namespace AgricolaDH_GApp.Controllers
             {
                 foreach (var productoOrdenar in model.productosOrdenar)
                 {
-                    res = requisicionService.UpdateProductoOrdenar(productoOrdenar);
+                    ProductoOrdenar productoOrdenarUpdate = requisicionService.SelectProductoOrdenar(productoOrdenar.IdProductoOrdenar);
+                    if (productoOrdenarUpdate != null)
+                    {
+                        productoOrdenarUpdate.IdProducto = productoOrdenar.IdProducto;
+                        productoOrdenarUpdate.Cantidad = productoOrdenar.Cantidad;
+                        res = requisicionService.UpdateProductoOrdenar(productoOrdenarUpdate);
+                    }
+                    else
+                    {
+                        productoOrdenar.IdOrdenDeCompra = model.requisicion.IdOrdenDeCompra;
+                        res = requisicionService.InsertProductoOrdenar(productoOrdenar);
+                    }
                 }
             }
             else
@@ -164,7 +175,7 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTable(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 

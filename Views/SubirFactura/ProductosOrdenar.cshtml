@@ -4,13 +4,12 @@
     <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
 </div>
 
-<div class="row row-spacer">
-    
+<div class="row row-spacer" style="margin-bottom: -5px">
     <label for="myfile">Seleccionar factura de proveedor:</label>
-    &nbsp;
+</div>
+<div class="row row-spacer" style="margin-bottom: 10px">
     <input type="file" id="myfile" name="myfile" accept=".xml"><br><br>
-    <input type="button" name="submit" id="submit" value="Cargar Archivo" class="btn btn-primary btn-sm upload" />
-
+    <input type="button" name="submit" id="submit" value="Cargar Archivo" class="btn btn-primary btn-sm upload" style="height: 50%" />
 </div>
 
 <div class="row card-row-spacer">
@@ -33,16 +32,16 @@
     <div class="row card-row-spacer">
         @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
         <div class="col-md-6">
-            @Html.EditorFor(m => m.productosOrdenar[i].Producto, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Producto, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @readonly = "true", @data_index = i } })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "true" } })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Unidad, new { htmlAttributes = new { @class = "form-control input-focus subirFactura productoOrdenarUnidad", @disabled = "disabled" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Unidad, new { htmlAttributes = new { @class = "form-control input-focus ", @readonly = "true" } })
         </div>
         <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Total, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+            @Html.EditorFor(m => m.productosOrdenar[i].Total, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "true" } })
         </div>
     </div>
 }

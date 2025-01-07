@@ -21,38 +21,22 @@ namespace AgricolaDH_GApp.Controllers
 		
 		private readonly AppDbContext context;
         private ViewRenderService renderService;
-        private UsuarioService usuarioService;
-		private ProveedorService proveedorService;
-		private AreaService areaService;
-		private CultivoService cultivoService;
-		private RanchoService ranchoService;
-		private EtapaService etapaService;
-		private TemporadaService temporadaService;
-		private ProductoService productoService;
 		private OrdenDeCompraService ordenDeCompraService;
         private OrdenDeCompraStatusEnumerators OrdenDeCompraEnumerator = new OrdenDeCompraStatusEnumerators();
 
-        public SubirFacturaController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _ordenDeCompraService)
+        public SubirFacturaController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, OrdenDeCompraService _ordenDeCompraService)
 		{
 			_logger = logger;
 			context = _ctx;
-			renderService = _renderService;
-			usuarioService = _usuarioService;
-			proveedorService = _proveedorService;
-			areaService = _areaService;
-			cultivoService = _cultivoService;
-			ranchoService = _ranchoService;
-			etapaService = _etapaService;
-			temporadaService = _temporadaService;
-			productoService = _productoService;
             ordenDeCompraService = _ordenDeCompraService;
+			renderService = _renderService;
 		}
 
 		[HttpGet]
 		public IActionResult Index()
 		{
 			SubirFacturaVM model = new SubirFacturaVM();
-			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTable(OrdenDeCompraEnumerator.Aceptado);
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Aceptado);
 
 			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
@@ -69,62 +53,18 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AgregarProductoOrdenar(RequisicionesVM model)
+        public async Task<IActionResult> SubirFacturaUpdate(SubirFacturaVM model)
         {
-            model.productosOrdenar.Add(new ProductoOrdenar());
-            model.productoList = productoService.SelectProductos();
 
-            return PartialView("~/Views/Requisicion/ProductosOrdenar.cshtml", model);
-        }
-
-        [HttpPost]
-        public IActionResult EliminarProductoOrdenar(RequisicionesVM model)
-        {
-			model.productosOrdenar.RemoveAt(model.productosOrdenar.Count - 1);
-            model.productoList = productoService.SelectProductos();
-
-            return PartialView("~/Views/Requisicion/ProductosOrdenar.cshtml", model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> InsertRequisicion(RequisicionesVM model)
-        {
-			model.requisicion.IdOrdenDeCompraStatus = 1; //Status Enviado
-			int IdOrdenDeCompra = ordenDeCompraService.InsertRequisicion(model.requisicion);
-			int res = 0;
-
-			if (IdOrdenDeCompra > 0) 
-			{
-                foreach (var productoOrdenar in model.productosOrdenar)
-                {
-                    productoOrdenar.IdOrdenDeCompra = IdOrdenDeCompra;
-                    res = ordenDeCompraService.InsertProductoOrdenar(productoOrdenar);
-                }
-            }
-			else
-			{
-				res = -1;
-			}
-
-            model = new RequisicionesVM();
-            model.requisicionList = ordenDeCompraService.SelectRequisiciones();
-
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
-
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AcceptSubirFactura(RequisicionesVM model)
-        {
-            model.requisicion.IdOrdenDeCompraStatus = OrdenDeCompraEnumerator.PorIngresar; //Status Change
             int res = 0;
-            res = ordenDeCompraService.UpdateOrdenDeCompra(model.requisicion);
+            res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.PorIngresar);
 
             if (res == 0)
             {
                 foreach (var productoOrdenar in model.productosOrdenar)
                 {
-                    res = ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
+
+                    res = ordenDeCompraService.UpdateProductoOrdenarConFactura(productoOrdenar);
                 }
             }
             else
@@ -132,10 +72,10 @@ namespace AgricolaDH_GApp.Controllers
                 res = -1;
             }
 
-            model = new RequisicionesVM();
-            model.requisicionList = ordenDeCompraService.SelectRequisiciones();
+            model = new SubirFacturaVM();
+            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Aceptado);
 
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", model) });
 
         }
 
@@ -183,19 +123,19 @@ namespace AgricolaDH_GApp.Controllers
                     Console.WriteLine(descripcion);
                 }
 
+                foreach(var productoOrdenar in model.productosOrdenar)
+                {
+                    if(productoOrdenar.Total == null || productoOrdenar.Total == 0)
+                    {
+                        productoOrdenar.Cantidad = 0;
+                    }
+                }
+
             }
             catch(Exception ex)
             {
                 res = -1;
             }
-
-
-            //Load the XML file in XmlDocument.
-
-
-
-            //var serializer = new XmlSerializer(typeof(Factura));
-            //var productLinesExtentionResult = serializer.Deserialize(file.OpenReadStream());
 
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/ProductosOrdenar.cshtml", model) });

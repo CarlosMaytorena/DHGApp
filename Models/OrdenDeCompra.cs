@@ -36,6 +36,7 @@ namespace AgricolaDH_GApp.Models
         public string Rancho { get; set; }
         public string Etapa { get; set; }
         public string Temporada { get; set; }
+        public int IdOrdenDeCompraStatus { get; set; }
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
