@@ -57,15 +57,27 @@ namespace AgricolaDH_GApp.Controllers
         {
 
             int res = 0;
-            res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.PorIngresar);
+            bool allZero = true;
+            foreach (var productoOrdenar in model.productosOrdenar)
+            {
+                if(productoOrdenar.Cantidad != 0)
+                {
+                    allZero = false;
+                }
+                res = ordenDeCompraService.UpdateProductoOrdenarConFactura(productoOrdenar);
+            }
 
             if (res == 0)
             {
-                foreach (var productoOrdenar in model.productosOrdenar)
+                if (allZero)
                 {
-
-                    res = ordenDeCompraService.UpdateProductoOrdenarConFactura(productoOrdenar);
+                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.Cancelado);
                 }
+                else
+                {
+                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.PorIngresar);
+                }
+
             }
             else
             {
