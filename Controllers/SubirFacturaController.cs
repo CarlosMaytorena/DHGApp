@@ -131,8 +131,6 @@ namespace AgricolaDH_GApp.Controllers
                         model.productosOrdenar[index].Total = Convert.ToDecimal(item.GetAttribute("Importe"));
                         model.productosOrdenar[index].Unidad = model.productosOrdenar[index].Total / model.productosOrdenar[index].Cantidad;
                     }
-
-                    Console.WriteLine(descripcion);
                 }
 
                 foreach(var productoOrdenar in model.productosOrdenar)
