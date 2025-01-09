@@ -1,1 +1,119 @@
-﻿
+﻿<div class="row top-row-spacer" style="margin-bottom: 5vh">
+    <div class="col-md-6">
+        <h4 class="page-title">Dashboard</h4>
+    </div>
+</div>
+
+<div class="text-center">
+
+    <div class="row" style="margin-bottom: 4vh;">
+        <div class="col-3 dashboard-container">
+            <div class="dashboard-kpi-card">
+                <i class="nav-icon fas fa-cube" aria-hidden="true" style="font-size: 2.3em; color: #f97e15;"></i>
+                <div>
+                    <h6 style="color: gray">KPI1</h6>
+                    <h2 style="color:#2add2a;">100</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 dashboard-container">
+            <div class="dashboard-kpi-card">
+                <i class="nav-icon fas fa-truck" aria-hidden="true" style="font-size: 2.3em; color:#2ab92a;"></i>
+                <div>
+                    <h6 style="color: gray">KPI1</h6>
+                    <h2 style="color:#d91313;">100</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 dashboard-container">
+            <div class="dashboard-kpi-card">
+                <i class="nav-icon fas fa-cubes" aria-hidden="true" style="font-size: 2.3em; color: #d30000;"></i>
+                <div>
+                    <h6 style="color: gray">KPI1</h6>
+                    <h2>50%</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 dashboard-container">
+            <div class="dashboard-kpi-card">
+                <i class="nav-icon fas fa-barcode" aria-hidden="true" style="font-size: 2.3em"></i>
+                <div>
+                    <h6 style="color: gray">KPI1</h6>
+                    <h2 style="color: #d91313;">0%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 4vh;">
+        <div class="col-8 dashboard-container">
+            <div class="dashboard-report-card"></div>
+        </div>
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-report-card"></div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 4vh;">
+        <div class="col-5 dashboard-container">
+            <div class="dashboard-report-card"></div>
+        </div>
+        <div class="col-7 dashboard-container">
+            <div class="dashboard-report-card"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(".editarProveedor").click(function () {
+
+            var IdProveedor = $(this).attr("id");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditarProveedor", "Proveedores")',
+                data: { IdProveedor: IdProveedor },
+                success: function (data) {
+
+                    $("#proveedorForm").html(data);
+
+                }
+            });
+        });
+
+        $(".borrarProveedor").click(function () {
+
+            $("#IdProveedorBorrar").val($(this).attr("id"));
+            $("#modal-borrar").modal("show");
+
+        });
+
+        $("#modal-borrar-btn").click(function () {
+
+            $("#modal-borrar").modal("hide");
+            var IdProveedor = $("#IdProveedorBorrar").val();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BorrarProveedor", "Proveedores")',
+                data: { IdProveedor: IdProveedor },
+                success: function (data) {
+
+                    if (data.res == 0) {
+                        $("#HtmlBody").html(data.url);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+
