@@ -26,6 +26,7 @@ builder.Services.AddScoped<RanchoService>();
 builder.Services.AddScoped<EtapaService>();
 builder.Services.AddScoped<TemporadaService>();
 builder.Services.AddScoped<OrdenDeCompraService>();
+builder.Services.AddScoped<AlmacenService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

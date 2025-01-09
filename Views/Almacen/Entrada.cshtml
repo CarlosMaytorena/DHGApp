@@ -1,0 +1,175 @@
+@model AgricolaDH_GApp.ViewModels.AlmacenVM
+<div class="text-center" id="html">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-4">
+            <h4 class="page-title">Entrada a Almacen</h4>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <button id="confirmacion" class="btn btn-block secondary-background-color" style="color: white">
+                Aceptar
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button type="button" id="cancelar" class="btn btn-block btn-danger" style="color: white">
+                <i class="nav-icon fas fa-ban"></i>
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <!-- Entry By Scanning Product -->
+        <form id="dataform">
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
+                    <input id="IdProducto" class="form-control" placeholder="Escanea el producto"/>
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    <select class="form-control">
+                    <option value="">Seleccione un producto</option>
+                        @foreach (var producto in Model.productoList)
+                        {
+                        <option >@producto.NombreProducto</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                    <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Area</label>
+                    <input id="Area" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Notas Adicionales</label>
+                    <textarea id="Notas" class="form-control" placeholder="Notas adicionales"></textarea>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+        </form>
+            <div class="row card-row-spacer">
+            </div>
+        </div>
+</div>
+
+<div class="modal fade" id="modal-success">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">Movimiento generado existosamente.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-confirmacion">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion de Entrada</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-agregar-body">
+                <p style="margin-left: 10px">¿Seguro que desea continuar?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="agregar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#confirmacion").click(function () {       
+            $("#modal-confirmacion").modal("show");
+        });
+
+        $("#agregar").click(function () {
+            $("#modal-confirmacion").modal("hide");
+            var IdProducto = parseInt($("#IdProducto").val(), 10);
+            var Cantidad = parseInt($("#Cantidad").val(), 10);
+
+            if (isNaN(IdProducto) || isNaN(Cantidad)) {
+                alert("Please enter valid numeric values for IdAlmacen and Cantidad.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AltaAlmacen", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    IdProducto: IdProducto,
+                    Cantidad: Cantidad,
+                }),
+                success: function (data) {
+                    if (data.res > 0) {
+                        $("#modal-success").modal("show");
+                    } 
+                    else {
+                        alert('Error: ' + data.message);
+                        $("#modal-warning").modal("show");
+                        $.ajax({
+                            type: "GET",
+                            url: '@Url.Action("Index", "Almacen")',
+                            contentType: "application/json; charset=utf-8",
+                            data: {},
+                            success: function (data) {
+                                $("#HtmlBody").html(data);
+                            },
+                        });
+                    }
+                },
+            });
+        });
+
+        $("#aceptar").click(function () {
+            $("#modal-success").modal("hide");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                },
+            });
+        });
+
+        $("#cancelar").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+    });
+</script>

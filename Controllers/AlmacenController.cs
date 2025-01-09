@@ -1,4 +1,7 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
+using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,27 +9,55 @@ namespace AgricolaDH_GApp.Controllers
 {
 	public class AlmacenController : Controller
 	{
-		private readonly ILogger<AlmacenController> _logger;
+        private AlmacenVM model = new AlmacenVM();
+        private readonly ILogger<AlmacenController> _logger;
 
-		public AlmacenController(ILogger<AlmacenController> logger)
+        private readonly AppDbContext context;
+		private AlmacenService almacenService;
+        private ViewRenderService renderService;
+
+        public AlmacenController(ILogger<AlmacenController> logger, AppDbContext _ctx, ViewRenderService _renderService, AlmacenService _almacenService)
 		{
 			_logger = logger;
-		}
+			almacenService = _almacenService;
+            context = _ctx;
+            renderService = _renderService;
+        }
 
 		[HttpGet]
 		public IActionResult Index()
 		{
-			return PartialView("~/Views/Almacen/Index.cshtml");
+            model.almacenList = almacenService.SelectAlmacen();
+            return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
 		[HttpGet]
-        public IActionResult EntradaFormato()
+        public IActionResult Entrada()
         {
-            return PartialView("~/Views/Almacen/EntradaFormato.cshtml");
+            model.productoList = almacenService.SelectProductos();
+            return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 		[HttpGet]
-        public IActionResult SalidaFormato()
+        public IActionResult Salida()
         {
-            return PartialView("~/Views/Almacen/SalidaFormato.cshtml");
+            model.productoList = almacenService.SelectProductos();
+            return PartialView("~/Views/Almacen/Salida.cshtml", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AltaAlmacen([FromBody] Almacen registro)
+        {
+            int res= almacenService.EntradaParaAlmacen(registro);
+
+            model.almacenList = almacenService.SelectAlmacen();
+            return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BajaAlmacen([FromBody] Almacen registro)
+        {
+            int res = almacenService.SalidaDeAlmacen(registro);
+            model.almacenList = almacenService.SelectAlmacen();
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 
         public IActionResult Privacy()
