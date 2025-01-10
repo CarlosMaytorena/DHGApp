@@ -10,7 +10,9 @@ namespace AgricolaDH_GApp.Models
     {
         public int IdAlmacen { get; set; }
         public int IdProducto { get; set; }
-        public int Cantidad { get; set; }
+        public int Disponible { get; set; }
+        public int EnUso { get; set; }
+        public int Terminados { get; set; }
 
     }
     /// <summary>
@@ -20,9 +22,16 @@ namespace AgricolaDH_GApp.Models
     {
         public int IdAlmacen { get; set; }
         public int IdProducto { get; set; }
-        public int Cantidad { get; set; }
         public string? NombreProducto { get; set; }
         public string? Descripcion { get; set; }
+        public int Disponible { get; set; }
+        public int EnUso { get; set; }
+        public int Terminados { get; set; }
     }
 
+    public class AlmacenDTO
+    {
+        public Almacen Almacen { get; set; }
+        public int Motivo { get; set; }
+    }
 }

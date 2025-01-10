@@ -40,14 +40,18 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
                     <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Area</label>
-                    <input id="Area" class="form-control" />
+                    <label style="font-weight: normal; text-align: left; float: left">Motivo de Salida</label>
+                    <select id="motivo-selector" class="form-control">
+                        <option>Seleccione una opcion</option>
+                        <option value="1">Uso Afuera</option>
+                        <option value="2">Producto Terminado</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Notas Adicionales</label>
@@ -106,14 +110,17 @@
 <script>
     $(document).ready(function () {
         $("#confirmacion").click(function () {
-            $("#modal-confirmacion").modal("show");
+            if (Validation()){
+                $("#modal-confirmacion").modal("show");
+            }
         });
 
         $("#agregar").click(function () {
             $("#modal-confirmacion").modal("hide");
 
-            var IdProducto = parseInt($("#IdProducto").val(), 10);
-            var Cantidad = parseInt($("#Cantidad").val(), 10);
+            var IdProducto = parseInt($("#IdProducto").val());
+            var Cantidad = parseInt($("#Cantidad").val());
+            var Motivo = parseInt($("#motivo-selector").val());
 
             if (isNaN(IdProducto) || isNaN(Cantidad)) {
                 alert("Please enter valid numeric values for IdAlmacen and Cantidad.");
@@ -125,14 +132,16 @@
                 url: '@Url.Action("BajaAlmacen", "Almacen")',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({
-                    IdProducto: IdProducto,
-                    Cantidad: Cantidad,
+                    Almacen: {
+                        IdProducto: IdProducto,
+                        Disponible: Cantidad,
+                    },
+                    Motivo: Motivo,
                 }),
                 success: function (data) {
                     if (data.res > 0) {
                         $("#modal-success").modal("show");
                     } else {
-                        alert('Error: ' + data.message);
                         $("#modal-warning").modal("show");
                         $.ajax({
                             type: "GET",
@@ -173,5 +182,26 @@
                 }
             });
         });
+
+        function Validation() {
+            var validation = true;
+            $("#IdProducto").css("border-color", "");
+            $("#Cantidad").css("border-color", "");
+            $("#motivo-selector").css("border-color", "");
+
+            if (isNaN(parseInt($("#IdProducto").val()))) {
+                $("#IdProducto").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN(parseInt($("#Cantidad").val()))) {
+                $("#Cantidad").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN(parseInt($("#motivo-selector").val()))) {
+                $("#motivo-selector").css("border-color", "red");
+                validation = false;
+            }
+            return validation;
+        }
     });
 </script>

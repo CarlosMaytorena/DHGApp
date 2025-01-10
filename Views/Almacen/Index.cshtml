@@ -44,22 +44,24 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Id Almacen</th>
                                 <th>Id Producto</th>
                                 <th>Producto</th>
                                 <th>Descripcion</th>
-                                <th>Disponible</th>                                
+                                <th>Disponible</th>
+                                <th>En Uso</th>
+                                <th>Terminados</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var almacen in Model.almacenList)
                             {
                                 <tr>
-                                    <td>@almacen.IdAlmacen</td>
                                     <td>@almacen.IdProducto</td>
                                     <td>@almacen.NombreProducto</td>
                                     <td>@almacen.Descripcion</td>
-                                    <td>@almacen.Cantidad</td>
+                                    <td>@almacen.Disponible</td>
+                                    <td>@almacen.EnUso</td>
+                                    <td>@almacen.Terminados</td>
                                 </tr>
                             }
                         </tbody>

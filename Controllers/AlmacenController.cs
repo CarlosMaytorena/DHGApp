@@ -44,16 +44,15 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AltaAlmacen([FromBody] Almacen registro)
+        public async Task<IActionResult> AltaAlmacen([FromBody] AlmacenDTO registro)
         {
             int res= almacenService.EntradaParaAlmacen(registro);
-
             model.almacenList = almacenService.SelectAlmacen();
             return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 
         [HttpPost]
-        public async Task<IActionResult> BajaAlmacen([FromBody] Almacen registro)
+        public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
         {
             int res = almacenService.SalidaDeAlmacen(registro);
             model.almacenList = almacenService.SelectAlmacen();

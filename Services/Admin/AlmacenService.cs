@@ -52,7 +52,7 @@ namespace AgricolaDH_GApp.Services.Admin
         /// Actualizar nuevo registro en tabla Almacen
         /// </summary>
         /// <returns></returns>
-        public int EntradaParaAlmacen(Almacen registro)
+        public int EntradaParaAlmacen(AlmacenDTO registro)
         {
             if (registro == null)
             {
@@ -60,21 +60,32 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             try
             {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.IdProducto);
-                if (registroProducto == null)
+                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
+                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
+                if (registroProducto == null | (registroAlmacen == null && registro.Motivo == 2))
                 {
                     return -1;
                 }
-                if (registroAlmacen == null)
+                
+                if (registroAlmacen == null && registro.Motivo == 1)
                 {
-                    //Insert new 
-                    context.Almacen.Add(registro);
+                    //Insert
+                    context.Almacen.Add(registro.Almacen);
                 }
-                else
+                if (registroAlmacen != null && registro.Motivo == 1)
                 {
-                    //update
-                    registroAlmacen.Cantidad += registro.Cantidad;
+                    //Update
+                    registroAlmacen.Disponible += registro.Almacen.Disponible;
+                }
+                if(registroAlmacen != null && registro.Motivo == 2)
+                {
+                    //Update
+                    int validacion = registroAlmacen.EnUso - registro.Almacen.Disponible;
+                    if (validacion < 0)
+                    {
+                        return -1;
+                    }
+                    registroAlmacen.Disponible += registro.Almacen.Disponible;
                 }
                 return context.SaveChanges();
             }
@@ -84,7 +95,7 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public int SalidaDeAlmacen(Almacen registro)
+        public int SalidaDeAlmacen(AlmacenDTO registro)
         {
             if (registro == null)
             {
@@ -92,18 +103,25 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             try
             {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.IdProducto);
+                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
+                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
                 if (registroProducto == null | registroAlmacen == null)
                 {
                     return -1;
                 }
-                int dec = registroAlmacen.Cantidad - registro.Cantidad;
+                int dec = registroAlmacen.Disponible - registro.Almacen.Disponible;
                 if (dec < 0)
                 {
                     return -1;
                 }
-                registroAlmacen.Cantidad -= registro.Cantidad;
+                if (registro.Motivo == 1)
+                {
+                    registroAlmacen.EnUso += registro.Almacen.Disponible;
+                }
+                if (registro.Motivo == 2)
+                {
+                    registroAlmacen.Terminados += registro.Almacen.Disponible;
+                }
                 return context.SaveChanges();
             }
             catch
