@@ -33,5 +33,6 @@ namespace AgricolaDH_GApp.Models
     {
         public Almacen Almacen { get; set; }
         public int Motivo { get; set; }
+        public Movimiento Movimiento { get; set; }
     }
 }

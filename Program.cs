@@ -27,6 +27,7 @@ builder.Services.AddScoped<EtapaService>();
 builder.Services.AddScoped<TemporadaService>();
 builder.Services.AddScoped<OrdenDeCompraService>();
 builder.Services.AddScoped<AlmacenService>();
+builder.Services.AddScoped<MovimientoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

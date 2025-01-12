@@ -96,47 +96,32 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
                                 <th>Fecha</th>
+                                <th>Movimiento</th>
+                                <th>Articulo</th>
+                                <th>Cantidad</th>
                                 <th>Solicitante</th>
                                 <th>Aprobado Por</th>
-                                <th>Área</th>
-                                <th>Tipo</th>
+                                <th>Motivo</th>
+                                <th>Uso</th>
+                                <th>Tipo de Movimiento</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Entrada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Salida</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Entrada</td>
-                            </tr>
+                            @foreach (var movimiento in Model.movimientosList)
+                            {
+                                <tr>
+                                    <td>@movimiento.Fecha</td>
+                                    <td>@movimiento.IdMovimiento</td>
+                                    <td>@movimiento.Producto</td>
+                                    <td>@movimiento.Cantidad</td>
+                                    <td>@movimiento.Solicitante</td>
+                                    <td>@movimiento.AprobadoPor</td>
+                                    <td>@movimiento.Motivo</td>
+                                    <td>@movimiento.Uso</td>
+                                    <td>@movimiento.TipoMovimiento</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

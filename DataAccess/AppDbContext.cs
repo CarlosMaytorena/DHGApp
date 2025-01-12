@@ -27,6 +27,7 @@ namespace AgricolaDH_GApp.DataAccess
 
             modelBuilder.Entity<Almacen>().HasKey(m => new { m.IdAlmacen });
             modelBuilder.Entity<AlmacenView>().HasKey(m => new { m.IdAlmacen });
+            modelBuilder.Entity<Movimiento>().HasKey(m => new { m.IdMovimiento });
         }
 
         public DbSet<OrdenDeCompra> OrdenesDeCompra { get; set; }
@@ -47,6 +48,8 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Almacen> Almacen { get; set; }
         public DbSet<AlmacenView> AlmacenView { get; set; }
+        public DbSet<Movimiento> Movimientos { get; set; }
+
 
     }
 }

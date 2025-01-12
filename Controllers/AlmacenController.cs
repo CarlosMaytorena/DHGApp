@@ -15,47 +15,72 @@ namespace AgricolaDH_GApp.Controllers
         private readonly AppDbContext context;
 		private AlmacenService almacenService;
         private ViewRenderService renderService;
-
-        public AlmacenController(ILogger<AlmacenController> logger, AppDbContext _ctx, ViewRenderService _renderService, AlmacenService _almacenService)
+        private MovimientoService movimientoService;
+        private UsuarioService usuarioService;
+        public AlmacenController(
+            ILogger<AlmacenController> logger,
+            AppDbContext _ctx,
+            ViewRenderService _renderService,
+            AlmacenService _almacenService,
+            MovimientoService _movimientoService,
+            UsuarioService _usuarioService
+            )
 		{
 			_logger = logger;
 			almacenService = _almacenService;
             context = _ctx;
             renderService = _renderService;
+            movimientoService = _movimientoService;
+            usuarioService = _usuarioService;
         }
 
 		[HttpGet]
 		public IActionResult Index()
 		{
             model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
             return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
 		[HttpGet]
         public IActionResult Entrada()
         {
             model.productoList = almacenService.SelectProductos();
+            model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 		[HttpGet]
         public IActionResult Salida()
         {
             model.productoList = almacenService.SelectProductos();
+            model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
 
         [HttpPost]
         public async Task<IActionResult> AltaAlmacen([FromBody] AlmacenDTO registro)
         {
-            int res= almacenService.EntradaParaAlmacen(registro);
+            int res = almacenService.Entrada(registro);
+            int resp_mov = movimientoService.Entrada(registro);
+            if (res < 0 || resp_mov < 0) 
+            {
+                res = -1;
+            }
             model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
             return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 
         [HttpPost]
         public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
         {
-            int res = almacenService.SalidaDeAlmacen(registro);
+            int res = almacenService.Salida(registro);
+            int resp_mov = movimientoService.Salida(registro);
+            if (res < 0 || resp_mov < 0)
+            {
+                res = -1;
+            }
             model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 

@@ -52,7 +52,7 @@ namespace AgricolaDH_GApp.Services.Admin
         /// Actualizar nuevo registro en tabla Almacen
         /// </summary>
         /// <returns></returns>
-        public int EntradaParaAlmacen(AlmacenDTO registro)
+        public int Entrada(AlmacenDTO registro)
         {
             if (registro == null)
             {
@@ -86,6 +86,7 @@ namespace AgricolaDH_GApp.Services.Admin
                         return -1;
                     }
                     registroAlmacen.Disponible += registro.Almacen.Disponible;
+                    registroAlmacen.EnUso -= registro.Almacen.Disponible;
                 }
                 return context.SaveChanges();
             }
@@ -95,7 +96,7 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public int SalidaDeAlmacen(AlmacenDTO registro)
+        public int Salida(AlmacenDTO registro)
         {
             if (registro == null)
             {
