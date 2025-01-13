@@ -19,5 +19,6 @@ namespace AgricolaDH_GApp.Models
         public int Rechazado = 3;
         public int PorIngresar = 4;
         public int Ingresado = 5;
+        public int Cancelado = 6;
     }
 }

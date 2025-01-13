@@ -1,16 +1,6 @@
 ﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <form id="dataform">
-    @{
-        bool edit = false;
-        string title = "Crear Requisición";
-
-        if (Model.ordenDeCompra.IdOrdenDeCompra > 0)
-        {
-            edit = true;
-            title = "Editar Requisición";
-        }
-    }
     <div class="text-center">
 
         <div class="row top-row-spacer">
@@ -21,7 +11,7 @@
             <div class="col-md-4">
             </div>
             <div class="col-md-2">
-                <button type="button" id="subirFactura" class="btn btn-block secondary-background-color" style="color: white">
+                <button type="button" id="subirFacturaUpdate" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-upload"></i>
                     Subir Factura
                 </button>
@@ -34,43 +24,43 @@
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Fecha de Requisición</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Fecha de Orden de Compra</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.FechaOrdenDeCompra, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.FechaOrdenDeCompra, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Solicitante, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Solicitante, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Proveedor, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Proveedor, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Area, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Area, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Cultivo, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Cultivo, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Rancho, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Rancho, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Etapa, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Etapa, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                    @Html.EditorFor(m => m.ordenDeCompra.Temporada, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @disabled = "disabled" } })
+                    @Html.EditorFor(m => m.ordenDeCompra.Temporada, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
             </div>
             <div id="productosOrdenarContent">
@@ -90,42 +80,54 @@
     </div>
 </form>
 
+<div class="modal fade" id="modal-subirFacturaConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Subir Factura</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea subir factura?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="subirFacturaConfirm" type="button" class="btn btn-primary">Subir Factura</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <script>
     $(document).ready(function () {
 
-        $("#enviarRequisicion").click(function () {
+        $("#subirFacturaUpdate").click(function () {
 
-            var dataform = $("#dataform");
-
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("InsertRequisicion", "Requisicion")',
-                    data: dataform.serialize(),
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
+            if(Validation()){
+                $("#modal-subirFacturaConfirm").modal("show");
             }
 
         });
 
-        $("#aceptarRequisicion").click(function () {
+        $("#subirFacturaConfirm").click(function () {
+
+            $("#modal-subirFacturaConfirm").modal("hide");
 
             var dataform = $("#dataform");
 
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
-                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=2",
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
-            }
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SubirFacturaUpdate", "SubirFactura")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                }
+            });
+            
 
         });
 
@@ -167,11 +169,24 @@
 
             $('.subirFactura').each(function() {
 
-                $("#" + this.id).css("border-color", "");
+                var index = $(this).attr("data-index");
+                
+                console.log(index);
 
-                if($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0"){
-                    $("#" + this.id).css("border-color", "red");
-                    validation = false;
+                $("#productosOrdenar_" + index + "__Unidad").css("border-color", "");
+                $("#productosOrdenar_" + index + "__Total").css("border-color", "");
+
+                if($("#productosOrdenar_" + index + "__Cantidad").val() != 0 ){
+
+                    if($("#productosOrdenar_" + index + "__Unidad").val() == 0 ){
+                        $("#productosOrdenar_" + index + "__Unidad").css("border-color", "red");
+                        validation = false;
+                    }
+                    
+                    if($("#productosOrdenar_" + index + "__Total").val() == 0 ){
+                        $("#productosOrdenar_" + index + "__Total").css("border-color", "red");
+                        validation = false;
+                    }
                 }
             });
 

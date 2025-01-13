@@ -34,7 +34,7 @@ namespace AgricolaDH_GApp.Services.Admin
             return requisicionList;
         }
 
-        public List<OrdenDeCompraTable> SelectOrdenDeCompraTable(int IdOrdenDeCompraStatus)
+        public List<OrdenDeCompraTable> SelectOrdenDeCompraTableList(int IdOrdenDeCompraStatus)
         {
             List<OrdenDeCompraTable> ordenDeCompraList;
 
@@ -86,6 +86,22 @@ namespace AgricolaDH_GApp.Services.Admin
             }
 
             return productosOrdenar;
+        }
+
+        public ProductoOrdenar SelectProductoOrdenar(int IdProductoOrdenar)
+        {
+            ProductoOrdenar productoOrdenar;
+
+            try
+            {
+                productoOrdenar = context.ProductosOrdenar.Find(IdProductoOrdenar);
+            }
+            catch
+            {
+                productoOrdenar = new ProductoOrdenar();
+            }
+
+            return productoOrdenar;
         }
 
         public List<ProductoOrdenarSelected> SelectProductosOrdenarSelected(int IdOrdenDeCompra)
@@ -159,13 +175,13 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
-        public int UpdateRequisicion(OrdenDeCompra requisicion)
+        public int UpdateOrdenDeCompra(OrdenDeCompra ordenDeCompra)
         {
             int res = 0;
 
             try
             {
-                context.OrdenesDeCompra.Update(requisicion);
+                context.OrdenesDeCompra.Update(ordenDeCompra);
                 context.SaveChanges();
             }
             catch(Exception ex) 
@@ -176,13 +192,66 @@ namespace AgricolaDH_GApp.Services.Admin
             return res;
         }
 
-        public int UpdateProductoOrdenar(ProductoOrdenar productoOrdenar)
+        public int UpdateOrdenDeCompraStatus(int IdOrdenDeCompra, int IdOrdenDeCompraStatus)
+        {
+            int res = 0;
+
+            OrdenDeCompra ordenDeCompra = new OrdenDeCompra() 
+            {
+                IdOrdenDeCompra = IdOrdenDeCompra, 
+                IdOrdenDeCompraStatus = IdOrdenDeCompraStatus 
+            };
+
+            try
+            {
+                context.OrdenesDeCompra.Attach(ordenDeCompra);
+                context.Entry(ordenDeCompra).Property(m => m.IdOrdenDeCompraStatus).IsModified = true;
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                res = -1;
+            }
+
+            return res;
+        }
+
+        public int UpdateProductoOrdenar(ProductoOrdenar productoOrdenarUpdate)
         {
             int res = 0;
 
             try
             {
-                context.ProductosOrdenar.Update(productoOrdenar);
+
+                context.ProductosOrdenar.Update(productoOrdenarUpdate);
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                res = -1;
+            }
+
+            return res;
+        }
+
+        public int UpdateProductoOrdenarConFactura(ProductoOrdenarSelected productoOrdenarConFactura)
+        {
+            int res = 0;
+
+            ProductoOrdenar productoOrdenar = new ProductoOrdenar()
+            {
+                IdProductoOrdenar = productoOrdenarConFactura.IdProductoOrdenar,
+                Cantidad = productoOrdenarConFactura.Cantidad,
+                Unidad = productoOrdenarConFactura.Unidad,
+                Total = productoOrdenarConFactura.Total
+            };
+
+            try
+            {
+                context.ProductosOrdenar.Attach(productoOrdenar);
+                context.Entry(productoOrdenar).Property(m => m.Cantidad).IsModified = true;
+                context.Entry(productoOrdenar).Property(m => m.Unidad).IsModified = true;
+                context.Entry(productoOrdenar).Property(m => m.Total).IsModified = true;
                 context.SaveChanges();
             }
             catch (Exception ex)
