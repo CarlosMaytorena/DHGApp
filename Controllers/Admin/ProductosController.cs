@@ -61,11 +61,21 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             int res = productoService.InsertProducto(model.producto);
 
+            if (res == -2)
+            {
+                return Json(new { res, message = "El nombre del producto ya existe. Por favor, elija un nombre diferente." });
+            }
+            else if (res == -1)
+            {
+                return Json(new { res, message = "Hubo un error al realizar la transacción. Favor de contactar al administrador." });
+            }
+
             model = new ProductosVM();
             model.productoList = productoService.SelectProductos();
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateProducto(ProductosVM model)

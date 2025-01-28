@@ -28,12 +28,16 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Almacen>().HasKey(m => new { m.IdAlmacen });
             modelBuilder.Entity<AlmacenView>().HasKey(m => new { m.IdAlmacen });
             modelBuilder.Entity<Movimiento>().HasKey(m => new { m.IdMovimiento });
+
+            modelBuilder.Entity<UltimoProductoID>().HasKey(m => new { m.ID });
+
         }
 
         public DbSet<OrdenDeCompra> OrdenesDeCompra { get; set; }
         public DbSet<OrdenDeCompraTable> OrdenDeCompraTable { get; set; }
         public DbSet<ProductoOrdenar> ProductosOrdenar { get; set; }
         public DbSet<ProductoOrdenarSelected> ProductoOrdenarSelected { get; set; }
+
 
         //Catalogos
         public DbSet<Usuario> Usuarios { get; set; }
@@ -49,6 +53,9 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<Almacen> Almacen { get; set; }
         public DbSet<AlmacenView> AlmacenView { get; set; }
         public DbSet<Movimiento> Movimientos { get; set; }
+
+        public DbSet<UltimoProductoID> UltimoProductoID { get; set; }
+
 
 
     }

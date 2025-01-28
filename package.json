@@ -1,0 +1,23 @@
+{
+  "name": "dhgapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarlosMaytorena/DHGApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CarlosMaytorena/DHGApp/issues"
+  },
+  "homepage": "https://github.com/CarlosMaytorena/DHGApp#readme",
+  "dependencies": {
+    "jsbarcode": "^3.11.6"
+  }
+}

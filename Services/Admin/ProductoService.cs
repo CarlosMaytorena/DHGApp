@@ -2,6 +2,7 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -53,16 +54,43 @@ namespace AgricolaDH_GApp.Services.Admin
 
             try
             {
-                context.Productos.Add(producto);
-                context.SaveChanges();
+                using (var transaction = context.Database.BeginTransaction())
+                {
+
+                    // Generate the ProductBarcodeID
+                    var lastSequence = context.UltimoProductoID.First();
+                    int newBarcodeNumber = lastSequence.LastBarcodeNumber + 1;
+
+                    // Update the LastBarcodeNumber in the sequence table
+                    lastSequence.LastBarcodeNumber = newBarcodeNumber;
+                    context.SaveChanges();
+
+                    // Check if a product with the same name already exists
+                    bool exists = context.Productos.Any(p => p.NombreProducto == producto.NombreProducto);
+
+                    if (exists)
+                    {
+                        // Return a specific code indicating a duplicate name
+                        return -2;
+                    }
+
+                    // Assign the new ProductBarcodeID
+                    producto.ProductBarcodeID = $"PN{newBarcodeNumber.ToString("D6")}";
+
+                    // Add the new product
+                    context.Productos.Add(producto);
+                    context.SaveChanges();
+
+                    // Commit transaction
+                    transaction.Commit();
+                }
             }
-            catch(Exception ex)
+            catch (Exception)
             {
                 res = -1;
             }
 
             return res;
-
         }
 
         public int UpdateProducto(Producto producto)
@@ -100,5 +128,24 @@ namespace AgricolaDH_GApp.Services.Admin
 
             return res;
         }
+
+        public Producto SelectProductoByName(string nombreProducto)
+        {
+            Producto producto = null;
+
+            try
+            {
+                // Use LINQ to search for the product by its name
+                producto = context.Productos
+                    .FirstOrDefault(p => p.NombreProducto == nombreProducto);
+            }
+            catch (Exception)
+            {
+                // Handle exception or log the error
+            }
+
+            return producto;
+        }
+
     }
 }

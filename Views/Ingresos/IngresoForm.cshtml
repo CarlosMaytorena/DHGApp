@@ -1,3 +1,5 @@
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -6,7 +8,7 @@
         </div>
         <div class="col-md-3"></div>
         <div class="col-md-2">
-            <button id="realizarIngreso" class="btn btn-block secondary-background-color" style="color: white">
+            <button id="realizarIngresoConfirm" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-right"></i>
                 Recibir
             </button>
@@ -24,55 +26,53 @@
         <div class="row card-row-spacer">
             <div class="col-md-8">
                 <label style="font-weight: normal; text-align: left; float: left">Orden de compra</label>
-                <input class="form-control" placeholder="Ingrese el número de orden de compra" readonly />
+                <input id="orderNumber" class="form-control" value="@Model.ordenDeCompra.IdOrdenDeCompra" readonly />
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                <input type="date" class="form-control" readonly />
+                <input type="date" class="form-control" value="@Model.ordenDeCompra.FechaOrdenDeCompra?.ToString("yyyy-MM-dd")" readonly />
             </div>
         </div>
 
         <!-- Dynamic Product Section -->
         <div class="row card-row-spacer">
             <label style="font-weight: normal; text-align: left; float: left; margin-right: 10px;">Productos a Ordenar</label>
-            <button id="addProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
-            &nbsp;
-            <button id="removeProductRow" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
         </div>
 
         <div id="productContainer">
-            <!-- Initial Product Row -->
-            <div class="row card-row-spacer product-row">
-                <div class="col-md-3">
-                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                    <select class="form-control">
-                        <option value="">Seleccione un producto</option>
-                        <option value="1">Producto 1</option>
-                        <option value="2">Producto 2</option>
-                        <option value="3">Producto 3</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
-                    <input type="number" class="form-control" placeholder="Esperada" readonly />
-                </div>
-                <div class="col-md-2">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Restante</label>
-                    <input type="number" class="form-control" placeholder="Restante" readonly />
-                </div>
-                <div class="col-md-2">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad Recibida</label>
-                    <input type="number" class="form-control" placeholder="Recibida" />
-                </div>
-                <div class="col-md-2">
-                    <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                    <input class="form-control" placeholder="Unidad" />
-                </div>
-                <div class="col-md-1">
-                    <label style="font-weight: normal; text-align: left; float: left">Total</label>
-                    <input type="number" class="form-control" placeholder="Total" readonly />
-                </div>
-            </div>
+            @if (Model.productosOrdenar != null && Model.productosOrdenar.Any())
+            {
+                @foreach (var product in Model.productosOrdenar)
+                {
+                    <div class="row card-row-spacer product-row">
+                        <div class="col-md-4">
+                            <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                            <input class="form-control" value="@product.Producto" readonly />
+                            <input type="hidden" class="product-barcode" data-barcode-value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
+                            <input type="number" class="form-control" value="@product.Cantidad" readonly />
+                        </div>
+                        <div class="col-md-1">
+                            <label style="font-weight: normal; text-align: left; float: left">Restante</label>
+                            <input type="number" class="form-control cantidad-restante" placeholder="Restante" />
+                        </div>
+                        <div class="col-md-1">
+                            <label style="font-weight: normal; text-align: left; float: left">Recibida</label>
+                            <input type="number" class="form-control cantidad-recibida" placeholder="Recibida" />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
+                            <input type="number" class="form-control" value="@product.Unidad" readonly />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-weight: normal; text-align: left; float: left">Total</label>
+                            <input type="number" class="form-control" value="@product.Total" readonly />
+                        </div>
+                    </div>
+                }
+            }
         </div>
 
         <!-- Additional Details -->
@@ -93,5 +93,62 @@
     </div>
 </div>
 
-<!-- Importing the main.js file -->
-<script type="module" src="/js/IngresoMain.js"></script>
+<script type="module">
+    import { openPrintWindow } from "/js/labelPrinter.js";
+
+    $(document).ready(function () {
+        // Fetch barcodes for all products on page load
+        $(".product-row").each(function () {
+            const $row = $(this);
+            const productName = $row.find("input[readonly]").val(); // Get the product name
+
+            if (productName) {
+                // Make AJAX request to fetch the barcode
+                $.ajax({
+                    url: '/Ingresos/GetProductBarcodeID',
+                    type: 'GET',
+                    data: { nombreProducto: productName },
+                    success: function (response) {
+                        if (response.success) {
+                            $row.find(".product-barcode").data("barcode-value", response.barcodeID);
+                        } else {
+                            console.error(`Error: ${response.message}`);
+                        }
+                    },
+                    error: function () {
+                        console.error("Error fetching product barcode.");
+                    }
+                });
+            }
+        });
+
+        // Event handler for "Imprimir Etiquetas"
+        $("#imprimirEtiquetas").click(function () {
+            const orderNumber = $("#orderNumber").val(); // Get the order number from the updated ID
+            const labels = [];
+
+            $(".product-row").each(function () {
+                const $row = $(this);
+                const productName = $row.find("input[readonly]").val(); // Get product name
+                const productBarcodeID = $row.find(".product-barcode").data("barcode-value"); // Get barcode value
+
+                if (productName && productBarcodeID) {
+                    // Generate label HTML
+                    labels.push(`
+                            <div class="label">
+                                <h4>Orden: ${orderNumber}</h4>
+                                <h4>Producto: ${productName}</h4>
+                                <svg class="barcode" data-barcode-value="${productBarcodeID}"></svg>
+                            </div>
+                        `);
+                }
+            });
+
+            if (labels.length > 0) {
+                openPrintWindow(labels.join(''), orderNumber); // Pass both labels and order number
+            } else {
+                alert("No hay datos para imprimir etiquetas.");
+            }
+        });
+    });
+</script>
