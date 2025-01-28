@@ -56,29 +56,27 @@ namespace AgricolaDH_GApp.Services.Admin
             {
                 using (var transaction = context.Database.BeginTransaction())
                 {
-
-                    // Generate the ProductBarcodeID
-                    var lastSequence = context.UltimoProductoID.First();
-                    int newBarcodeNumber = lastSequence.LastBarcodeNumber + 1;
-
-                    // Update the LastBarcodeNumber in the sequence table
-                    lastSequence.LastBarcodeNumber = newBarcodeNumber;
-                    context.SaveChanges();
-
                     // Check if a product with the same name already exists
                     bool exists = context.Productos.Any(p => p.NombreProducto == producto.NombreProducto);
-
                     if (exists)
                     {
                         // Return a specific code indicating a duplicate name
                         return -2;
                     }
-
-                    // Assign the new ProductBarcodeID
-                    producto.ProductBarcodeID = $"PN{newBarcodeNumber.ToString("D6")}";
-
-                    // Add the new product
+                    UltimoProductoID newRecord = new UltimoProductoID();
+                    Producto lastProduct = context.Productos.OrderByDescending(p => p.IdProducto).FirstOrDefault(); // Get the first one in the ordered list
+                    if (lastProduct == null)
+                    {
+                        producto.ProductBarcodeID = $"PN{1.ToString("D6")}";
+                        newRecord.LastBarcodeNumber = 1;
+                    }
+                    else
+                    {
+                        producto.ProductBarcodeID = $"PN{(lastProduct.IdProducto+1).ToString("D6")}";
+                        newRecord.LastBarcodeNumber = lastProduct.IdProducto + 1;
+                    }                    
                     context.Productos.Add(producto);
+                    context.UltimoProductoID.Add(newRecord);
                     context.SaveChanges();
 
                     // Commit transaction
