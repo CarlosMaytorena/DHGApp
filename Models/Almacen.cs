@@ -14,6 +14,7 @@ namespace AgricolaDH_GApp.Models
         public int EnUso { get; set; }
         public int Terminados { get; set; }
 
+
     }
     /// <summary>
     /// Estructura para mostrar en vista
@@ -27,6 +28,7 @@ namespace AgricolaDH_GApp.Models
         public int Disponible { get; set; }
         public int EnUso { get; set; }
         public int Terminados { get; set; }
+        public string? ProductBarcodeID { get; set; }
     }
 
     public class AlmacenDTO
@@ -34,5 +36,6 @@ namespace AgricolaDH_GApp.Models
         public Almacen Almacen { get; set; }
         public int Motivo { get; set; }
         public Movimiento Movimiento { get; set; }
+        public Producto Producto { get; set; }
     }
 }

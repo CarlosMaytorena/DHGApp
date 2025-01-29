@@ -27,7 +27,7 @@
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
-                    <input id="IdProducto" type="text" class="form-control" placeholder="Escanea el producto" />
+                    <input id="ProductBarcodeID" type="text" class="form-control" placeholder="Escanea el producto" />
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Producto</label>
@@ -38,11 +38,11 @@
                     <input id="Descripcion" type="text" class="form-control" readonly />
                 </div>
             </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
-                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
-            </div>
             <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
+                    <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
+                </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Motivo</label>
                     <select id="Motivo" class="form-control">
@@ -56,11 +56,11 @@
                     <input id="Uso" class="form-control" />
                 </div>
             </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input id="Solicitante" class="form-control" />
-            </div>
             <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                    <input id="Solicitante" class="form-control" />
+                </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
                     <select id="AprobadoPor" class="form-control">
@@ -129,9 +129,10 @@
 
         $("#procesar").click(function () {
             $("#modal-confirmacion").modal("hide");
-            var IdProducto = parseInt($("#IdProducto").val());
+            var ProductBarcodeID = $("#ProductBarcodeID").val();
             var Disponible = parseInt($("#Cantidad").val());
             var Motivo = parseInt($("#Motivo").val());
+            var IdProducto = 0;
 
             // Movimiento
             var Solicitante = $("#Solicitante").val();
@@ -158,6 +159,9 @@
                         AprobadoPor: AprobadoPor,
                         Uso: Uso,
                         Motivo: MotivoText,
+                    },
+                    Producto: {
+                        ProductBarcodeID: ProductBarcodeID,
                     },
                 }),
                 success: function (data) {
@@ -206,18 +210,18 @@
 
         function Validation() {
             var validation = true;
-            $("#IdProducto").css("border-color", "");
+            $("#ProductBarcodeID").css("border-color", "");
             $("#Producto").css("border-color", "");
             $("#Cantidad").css("border-color", "");
             $("#Motivo").css("border-color", "");
             $("#Solicitante").css("border-color", "");
             $("#AprobadoPor").css("border-color", "");
 
-            if (isNaN(parseInt($("#IdProducto").val()))) {
-                $("#IdProducto").css("border-color", "red");
+            if ($("#ProductBarcodeID").val() == null || $("#ProductBarcodeID").val() == "") {
+                $("#ProductBarcodeID").css("border-color", "red");
                 validation = false;
             }
-            if (isNaN($("#Producto").val())) {
+            if ($("#Producto").val() == null || $("#Producto").val() == "") {
                 $("#Producto").css("border-color", "red");
                 validation = false;
             }
@@ -240,8 +244,9 @@
             return validation;
         }
 
-        $('#IdProducto').on('change', function () {
+        $('#ProductBarcodeID').on('change', function () {
             var ProductBarcodeID = $(this).val();
+            alert('inside')
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("EncontrarProducto", "Almacen")',

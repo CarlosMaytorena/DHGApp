@@ -2,6 +2,7 @@
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
+using Antlr.Runtime.Tree;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -62,6 +63,12 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AltaAlmacen([FromBody] AlmacenDTO registro)
         {
+            //------------------------------ Arreglo temporal ---------------------------
+            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+            registro.Almacen.IdProducto = model.producto.IdProducto;
+            registro.Movimiento.IdProducto = model.producto.IdProducto;
+            //---------------------------------------------------------------------------
+
             int res = almacenService.Entrada(registro);
             int resp_mov = movimientoService.Entrada(registro);
             if (res < 0 || resp_mov < 0) 
@@ -76,6 +83,12 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
         {
+            //------------------------------ Arreglo temporal ---------------------------
+            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+            registro.Almacen.IdProducto = model.producto.IdProducto;
+            registro.Movimiento.IdProducto = model.producto.IdProducto;
+            //---------------------------------------------------------------------------
+
             int res = almacenService.Salida(registro);
             int resp_mov = movimientoService.Salida(registro);
             if (res < 0 || resp_mov < 0)

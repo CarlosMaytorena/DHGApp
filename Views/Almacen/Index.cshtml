@@ -44,7 +44,7 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Id Producto</th>
+                                <th>Producto #</th>
                                 <th>Producto</th>
                                 <th>Descripción</th>
                                 <th>Disponible</th>
@@ -56,7 +56,7 @@
                             @foreach (var almacen in Model.almacenList)
                             {
                                 <tr>
-                                    <td>@almacen.IdProducto</td>
+                                    <td>@almacen.ProductBarcodeID</td>
                                     <td>@almacen.NombreProducto</td>
                                     <td>@almacen.Descripcion</td>
                                     <td>@almacen.Disponible</td>
@@ -97,7 +97,7 @@
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Movimiento</th>
+                                <th>Movimiento #</th>
                                 <th>Articulo</th>
                                 <th>Cantidad</th>
                                 <th>Solicitante</th>
