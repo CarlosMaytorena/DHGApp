@@ -27,22 +27,20 @@
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
-                    <input id="IdProducto" class="form-control" placeholder="Escanea el producto" readonly />
+                    <input id="IdProducto" type="text" class="form-control" placeholder="Escanea el producto" />
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                    <select id="Producto" class="form-control">
-                        <option>Seleccione un producto</option>
-                        @foreach (var producto in Model.productoList)
-                        {
-                            <option value="@producto.IdProducto">@producto.NombreProducto</option>
-                        }
-                    </select>
+                    <input id="Producto" type="text" class="form-control" readonly />
                 </div>
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
-                    <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
+                    <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+                    <input id="Descripcion" type="text" class="form-control" readonly />
                 </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
+                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
@@ -57,10 +55,10 @@
                     <label style="font-weight: normal; text-align: left; float: left">Uso</label>
                     <input id="Uso" class="form-control" />
                 </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    <input id="Solicitante" class="form-control"/>
-                </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                <input id="Solicitante" class="form-control" />
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
@@ -241,9 +239,28 @@
             }
             return validation;
         }
-        $('#Producto').on('change', function () {
-            var IdProducto = parseInt($(this).val());
-            $('#IdProducto').val(IdProducto);
+
+        $('#IdProducto').on('change', function () {
+            var ProductBarcodeID = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EncontrarProducto", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ProductBarcodeID: ProductBarcodeID,
+                }),
+                success: function (response) {
+                    //alert(JSON.stringify(response));
+                    if (response.res) {
+                        $("#Producto").val(response.producto.nombreProducto);
+                        $("#Descripcion").val(response.producto.descripcion);
+
+                    } else {
+                        $("#Producto").val('');
+                        $("#Descripcion").val('');
+                    }
+                },
+            });
         });
     });
 </script>

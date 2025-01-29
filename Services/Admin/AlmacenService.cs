@@ -131,6 +131,19 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
+        public Producto SelectProductoByBarcode(Producto registro)
+        {
+            Producto registroTable = new Producto();
+            try
+            {
+                registroTable = context.Productos.SingleOrDefault(a => a.ProductBarcodeID == registro.ProductBarcodeID);
+            }
+            catch
+            {
+            }
+            return registroTable;
+        }
+
         private int JsonResult(object value)
         {
             throw new NotImplementedException();

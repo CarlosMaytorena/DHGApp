@@ -17,13 +17,15 @@ namespace AgricolaDH_GApp.Controllers
         private ViewRenderService renderService;
         private MovimientoService movimientoService;
         private UsuarioService usuarioService;
+        private ProductoService productoService;
         public AlmacenController(
             ILogger<AlmacenController> logger,
             AppDbContext _ctx,
             ViewRenderService _renderService,
             AlmacenService _almacenService,
             MovimientoService _movimientoService,
-            UsuarioService _usuarioService
+            UsuarioService _usuarioService,
+            ProductoService _productoService
             )
 		{
 			_logger = logger;
@@ -32,6 +34,7 @@ namespace AgricolaDH_GApp.Controllers
             renderService = _renderService;
             movimientoService = _movimientoService;
             usuarioService = _usuarioService;
+            productoService = _productoService;
         }
 
 		[HttpGet]
@@ -82,6 +85,17 @@ namespace AgricolaDH_GApp.Controllers
             model.almacenList = almacenService.SelectAlmacen();
             model.movimientosList = movimientoService.SelectMovimientos();
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EncontrarProducto([FromBody] Producto registro)
+        {
+            model.producto = almacenService.SelectProductoByBarcode(registro);
+            if (model.producto == null)
+            {
+                return Json(new { res = false});
+            }
+            return Json(new { res = true, model.producto });
         }
 
         public IActionResult Privacy()
