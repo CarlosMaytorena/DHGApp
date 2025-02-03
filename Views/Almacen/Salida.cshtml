@@ -246,7 +246,6 @@
 
         $('#ProductBarcodeID').on('change', function () {
             var ProductBarcodeID = $(this).val();
-            alert('inside')
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("EncontrarProducto", "Almacen")',

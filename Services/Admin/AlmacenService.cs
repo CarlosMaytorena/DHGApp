@@ -115,12 +115,14 @@ namespace AgricolaDH_GApp.Services.Admin
                 {
                     return -1;
                 }
+                registroAlmacen.Disponible -= registro.Almacen.Disponible;
                 if (registro.Motivo == 1)
                 {
                     registroAlmacen.EnUso += registro.Almacen.Disponible;
                 }
                 if (registro.Motivo == 2)
                 {
+
                     registroAlmacen.Terminados += registro.Almacen.Disponible;
                 }
                 return context.SaveChanges();

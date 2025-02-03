@@ -3,6 +3,7 @@ using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
 using Azure.Identity;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,9 @@ namespace AgricolaDH_GApp.Services.Admin
                 registro.Terminados -= egreso.Cantidad;
                 egreso.Fecha = DateTime.Now;
                 context.Egresos.Add(egreso);
-                return context.SaveChanges();
+                context.SaveChanges();
+                egreso.IdEgreso = context.Egresos.OrderByDescending(x => x.IdEgreso).FirstOrDefault().IdEgreso;
+                return 1;
             }
             catch
             {
@@ -89,5 +92,28 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             return producto;
         }
+
+        public string UploadFile(Egreso egreso, string tipo)
+        {
+            string path;
+            try
+            {
+                if (tipo.Equals("antes")){
+                    tipo = "Antes";
+                }
+                if (tipo.Equals("despues")){
+                    tipo = "Despues";
+                }
+                // Generate a new file name with date and time
+                path  = $"Evidencia{tipo}_Id{egreso.IdEgreso}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.jpg";
+            }
+            catch
+            {
+                path = null;
+            }
+            //return blobClient.Uri.ToString(); // Return the URL of the uploaded blob
+            return path;
+        }
+
     }
 }

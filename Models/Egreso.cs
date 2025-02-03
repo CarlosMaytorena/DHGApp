@@ -1,6 +1,7 @@
 ﻿using AgricolaDH_GApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgricolaDH_GApp.Models
 {
@@ -19,6 +20,15 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
+
+        [NotMapped]
+        public IFormFile EvidenciaAntes { get; set; }
+        [NotMapped]
+        public string PathPicAntes { get; set; }
+        [NotMapped]
+        public IFormFile EvidenciaDespues { get; set; }
+        [NotMapped]
+        public string PathPicDespues { get; set; }
     }
     public class EgresoDTO
     {

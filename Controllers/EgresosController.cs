@@ -53,7 +53,7 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]
-        public async Task<IActionResult> GenerarEgreso([FromBody] EgresoDTO registro)
+        public async Task<IActionResult> GenerarEgreso(EgresoDTO registro)
         {
             //------------------------------ Arreglo temporal ---------------------------
             model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
@@ -61,7 +61,10 @@ namespace AgricolaDH_GApp.Controllers
             //---------------------------------------------------------------------------
 
             int res = egresoService.Generar(registro.Egreso);
+            model.egreso.PathPicAntes = egresoService.UploadFile(registro.Egreso, "antes");
+            model.egreso.PathPicDespues = egresoService.UploadFile(registro.Egreso, "despues");
             model.egresosList = egresoService.SelectEgresos();
+
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
         }
 

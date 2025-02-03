@@ -207,26 +207,49 @@
             var Solicitante = $("#Solicitante").val();
             var AprobadoPor = $("#AprobadoPor option:selected").text();
             var ProductBarcodeID = $("#ProductBarcodeID").val();
+
+            var EvidenciaAntes = ($("#SubirArchivoAntes"))[0].files[0];
+            //var EvidenciaDespues = ($("#SubirArchivoDespues"))[0].files[0];
+            alert(EvidenciaAntes.name);
             //alert(JSON.stringify({ProductBarcodeID:ProductBarcodeID ,Producto: Producto,Cantidad: Cantidad, Comentarios: Comentarios, Solicitante: Solicitante, AprobadoPor: AprobadoPor}));
+
+            // Create a FormData object
+            var formData = new FormData();
+
+            // Append data to FormData
+            formData.append("Egreso.Producto", Producto);
+            formData.append("Egreso.Cantidad", Cantidad);
+            formData.append("Egreso.Comentarios", Comentarios);
+            formData.append("Egreso.Solicitante", Solicitante);
+            formData.append("Egreso.AprobadoPor", AprobadoPor);
+            formData.append("Producto.ProductBarcodeID", ProductBarcodeID);
+            formData.append("Egreso.EvidenciaAntes", EvidenciaAntes);
+
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GenerarEgreso", "Egresos")',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    Egreso: {
-                        Producto: Producto,
-                        Cantidad: Cantidad,
-                        Comentarios: Comentarios,
-                        Solicitante: Solicitante,
-                        AprobadoPor: AprobadoPor,
-                    },
-                    Producto: {
-                        ProductBarcodeID: ProductBarcodeID,
-                    }
-                }),
+                //contentType: "application/json; charset=utf-8",
+                data: formData,
+                // data: JSON.stringify({
+                //     Egreso: {
+                //         Producto: Producto,
+                //         Cantidad: Cantidad,
+                //         Comentarios: Comentarios,
+                //         Solicitante: Solicitante,
+                //         AprobadoPor: AprobadoPor,
+                //         EvidenciaAntes: EvidenciaAntes,
+                //         EvidenciaDespues: EvidenciaDespues,
+                //     },
+                //     Producto: {
+                //         ProductBarcodeID: ProductBarcodeID,
+                //     }
+                // }),
+                processData: false, // Important: Prevent jQuery from processing the data
+                contentType: false, // Important: Prevent jQuery from overriding the Content-Type
                 success: function (data) {
                     if (data.res > 0) {
                         $("#modal-success").modal("show");
+                        alert(data.model.egreso.pathPicAntes);
                     }
                     else {
                         $("#modal-warning").modal("show");
