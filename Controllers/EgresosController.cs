@@ -53,11 +53,24 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]
-        public async Task<IActionResult> GenerarEgreso([FromBody] Egreso egreso)
+        public async Task<IActionResult> GenerarEgreso([FromBody] EgresoDTO registro)
         {
-			int res = egresoService.Generar(egreso);
+            //------------------------------ Arreglo temporal ---------------------------
+            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+			registro.Producto = model.producto;
+            //---------------------------------------------------------------------------
+
+            int res = egresoService.Generar(registro.Egreso);
             model.egresosList = egresoService.SelectEgresos();
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DetallesEgreso([FromBody] int IdEgreso)
+        {
+            model.egreso = egresoService.SelectEgreso(IdEgreso);
+			model.producto = egresoService.SelectProductoByName(model.egreso);
+            return Json(new { model });
         }
 
         public IActionResult Privacy()

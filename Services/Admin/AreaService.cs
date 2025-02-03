@@ -55,7 +55,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 context.Areas.Add(area);
                 context.SaveChanges();
             }
-            catch(Exception ex)
+            catch
             {
                 res = -1;
             }
@@ -73,7 +73,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 context.Areas.Update(area);
                 context.SaveChanges();
             }
-            catch(Exception ex) 
+            catch 
             { 
                 res = -1;
             }
@@ -92,7 +92,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 context.Areas.Remove(area);
                 context.SaveChanges();
             }
-            catch (Exception ex)
+            catch
             {
                 res = -1;
             }

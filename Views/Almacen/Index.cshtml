@@ -96,30 +96,30 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
                                 <th>Movimiento #</th>
-                                <th>Articulo</th>
+                                <th>Producto</th>
+                                <th>Tipo de Movimiento</th>
+                                <th>Motivo</th>
+                                <th>Uso</th>
                                 <th>Cantidad</th>
                                 <th>Solicitante</th>
                                 <th>Aprobado Por</th>
-                                <th>Motivo</th>
-                                <th>Uso</th>
-                                <th>Tipo de Movimiento</th>
+                                <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var movimiento in Model.movimientosList)
                             {
                                 <tr>
-                                    <td>@movimiento.Fecha</td>
                                     <td>@movimiento.IdMovimiento</td>
                                     <td>@movimiento.Producto</td>
+                                    <td>@movimiento.TipoMovimiento</td>
+                                    <td>@movimiento.Motivo</td>
+                                    <td>@movimiento.Uso</td>
                                     <td>@movimiento.Cantidad</td>
                                     <td>@movimiento.Solicitante</td>
                                     <td>@movimiento.AprobadoPor</td>
-                                    <td>@movimiento.Motivo</td>
-                                    <td>@movimiento.Uso</td>
-                                    <td>@movimiento.TipoMovimiento</td>
+                                    <td>@movimiento.Fecha</td>
                                 </tr>
                             }
                         </tbody>

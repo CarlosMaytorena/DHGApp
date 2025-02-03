@@ -108,7 +108,7 @@ namespace AgricolaDH_GApp.Controllers
             {
                 return Json(new { res = false});
             }
-            return Json(new { res = true, model.producto });
+            return  Json(new {res = true, model.producto});
         }
 
         public IActionResult Privacy()

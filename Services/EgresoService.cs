@@ -3,9 +3,12 @@ using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
 using Azure.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Win32;
+using System.Web.WebPages;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -56,6 +59,35 @@ namespace AgricolaDH_GApp.Services.Admin
             {
                 return -1;
             }
+        }
+
+        public Egreso SelectEgreso(int IdEgreso)
+        {
+            Egreso egreso;
+            try
+            {
+                egreso = context.Egresos.Find(IdEgreso);
+            }
+            catch
+            {
+                egreso = null;
+            }
+            return egreso;
+        }
+
+        public Producto SelectProductoByName(Egreso egreso)
+        {
+            Producto producto;
+            try
+            {
+                producto = context.Productos.SingleOrDefault(a => a.NombreProducto == egreso.Producto);
+
+            }
+            catch
+            {
+                producto = null;
+            }
+            return producto;
         }
     }
 }

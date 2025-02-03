@@ -27,7 +27,7 @@ namespace AgricolaDH_GApp.Services.Admin
             List<Movimiento> movimientosList;
             try
             {
-                movimientosList = context.Movimientos.ToList();
+                movimientosList = context.Movimientos.OrderByDescending(m => m.IdMovimiento).ToList();
             }
             catch
             {

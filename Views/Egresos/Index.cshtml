@@ -40,7 +40,7 @@
                         <thead>
                             <tr>    
                                 <th></th>
-                                <th># Egreso</th>
+                                <th>Egreso #</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
                                 <th>Solicitante</th>
@@ -54,7 +54,9 @@
                             {
                                 <tr>
                                     <td>
-                                        <button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-eye"></i></button>
+                                        <button href="#" id="@egreso.IdEgreso" class="btn btn-default button-plus">
+                                            <i class="nav-icon fas fa-search"></i>
+                                        </button>
                                     </td>
                                     <td>@egreso.IdEgreso</td>
                                     <td>@egreso.Producto</td>
@@ -74,39 +76,73 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Detalles del Movimiento</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Comentarios</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>123</td>
-                                <td>Quimico 1</td>
-                                <td>5</td>
-                                <td>Limpieza de equipo</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+    <div class="card card-margin">
+        <div class="card-header">
+            <h3 class="card-title">Detalles</h3>
         </div>
-    </div>
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
+                <input id="ProductBarcodeID" type="text" class="form-control" readonly />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                <input id="Producto" type="text" class="form-control" readonly />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
+                <input id="Fecha" type="text" class="form-control" readonly />
+            </div>
+        </div>
 
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" readonly/>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
+                <input id="AprobadoPor" type="text" class="form-control" readonly />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                <input id="Solicitante" type="text" class="form-control" readonly/>
+            </div>
+        </div>
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Comentarios</label>
+                <textarea id="Comentarios" class="form-control" readonly></textarea>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
+                <div id="GrupoAntes" class="input-group">
+                    <div class="custom-file">
+                        <input id="SubirArchivoAntes" type="text" class="form-control" readonly>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="EvidenciaDespues" class="input-group-text">
+                            <i class="nav-icon fas fa-arrow-circle-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
+                <div id="GrupoEvidenciaDespues" class="input-group">
+                    <div class="custom-file">
+                        <input id="SubirArchivoDespues" type="text" class="form-control" readonly>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="EvidenciaDespues" class="input-group-text">
+                            <i class="nav-icon fas fa-arrow-circle-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
 
 <script>
     $(document).ready(function () {
@@ -118,6 +154,46 @@
                 data: {},
                 success: function (data) {
                     $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".btn.btn-default.button-plus").click(function () {
+            var IdEgreso = parseInt($(this).attr("id"));
+            //alert(IdEgreso);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DetallesEgreso", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(IdEgreso),
+                success: function (response) {
+                    //alert(JSON.stringify(response));
+                    var producto = response.model.producto;
+                    var egreso = response.model.egreso;
+
+                    let fecha = new Date(egreso.fecha);        
+                    let options = {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    };
+                    let formattedFecha = fecha.toLocaleString('en-CA', options); // 'en-CA' for yyyy-MM-dd HH:mm format
+                    
+                    if (response !== null) {
+                        $("#ProductBarcodeID").val(producto.productBarcodeID);
+                        $("#Producto").val(egreso.producto);
+                        $("#Fecha").val(formattedFecha);
+                        $("#Cantidad").val(egreso.cantidad);
+                        $("#AprobadoPor").val(egreso.aprobadoPor);
+                        $("#Solicitante").val(egreso.solicitante);
+                        $("#Comentarios").val(egreso.comentarios);
+
+                        //$("#EvidenciaAntes").val(response.egreso.producto);
+                        //$("#EvidenciaDespues").val(response.egreso.descripcion);
+                    }
                 }
             });
         });
