@@ -3,6 +3,8 @@ using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
@@ -18,6 +20,8 @@ namespace AgricolaDH_GApp.Controllers
 		private UsuarioService usuarioService;
 		private AlmacenService almacenService;
 		private ViewRenderService renderService;
+        private BlobStorageService blobStorageService;
+
 
         public EgresosController(
 			ILogger<EgresosController> logger, 
@@ -26,7 +30,8 @@ namespace AgricolaDH_GApp.Controllers
 			ViewRenderService _renderService,
             ProductoService _productoService,
 			UsuarioService _usuarioService,
-			AlmacenService _almacenService)
+			AlmacenService _almacenService,
+            BlobStorageService __blobStorageService)
 		{
 			_logger = logger;
 			context = _ctx;
@@ -35,6 +40,7 @@ namespace AgricolaDH_GApp.Controllers
 			usuarioService = _usuarioService;
             almacenService = _almacenService;
 			renderService = _renderService;
+            blobStorageService = __blobStorageService;
 
         }
 
@@ -55,17 +61,28 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpPost]
         public async Task<IActionResult> GenerarEgreso(EgresoDTO registro)
         {
-            //------------------------------ Arreglo temporal ---------------------------
-            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
-			registro.Producto = model.producto;
-            //---------------------------------------------------------------------------
+			try
+			{
+                //------------------------------ Arreglo temporal ---------------------------
+                model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+                registro.Producto = model.producto;
+                //---------------------------------------------------------------------------
 
-            int res = egresoService.Generar(registro.Egreso);
-            model.egreso.PathPicAntes = egresoService.UploadFile(registro.Egreso, "antes");
-            model.egreso.PathPicDespues = egresoService.UploadFile(registro.Egreso, "despues");
-            model.egresosList = egresoService.SelectEgresos();
+                egresoService.Generar(registro.Egreso);
+                registro.Egreso.EvidenciaAntesPath = egresoService.UploadFile(registro.Egreso, "Antes");
+                registro.Egreso.EvidenciaDespuesPath = egresoService.UploadFile(registro.Egreso, "Despues");
+				context.Egresos.Update(registro.Egreso);
+				context.SaveChanges();
+                model.egresosList = egresoService.SelectEgresos();
+				int res = 1;
+                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+            }
+			catch
+			{
+                int res = -1;
+                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+            }
 
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
         }
 
         [HttpPost]
@@ -74,6 +91,24 @@ namespace AgricolaDH_GApp.Controllers
             model.egreso = egresoService.SelectEgreso(IdEgreso);
 			model.producto = egresoService.SelectProductoByName(model.egreso);
             return Json(new { model });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DescargarArchivo([FromBody] string filename)
+        {
+			try
+			{
+				if (filename.IsNullOrEmpty())
+					throw new Exception();
+				blobStorageService.DownloadFileAsync(filename);
+				int res = 1;
+                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+            }
+            catch
+			{
+                int res = -1;
+                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+            }
         }
 
         public IActionResult Privacy()

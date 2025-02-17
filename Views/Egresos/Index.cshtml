@@ -121,7 +121,7 @@
                         <input id="SubirArchivoAntes" type="text" class="form-control" readonly>
                     </div>
                     <div class="input-group-append">
-                        <button id="EvidenciaDespues" class="input-group-text">
+                        <button id="EvidenciaAntes" class="input-group-text" data-target="#SubirArchivoAntes">
                             <i class="nav-icon fas fa-arrow-circle-down"></i>
                         </button>
                     </div>
@@ -134,7 +134,7 @@
                         <input id="SubirArchivoDespues" type="text" class="form-control" readonly>
                     </div>
                     <div class="input-group-append">
-                        <button id="EvidenciaDespues" class="input-group-text">
+                        <button id="EvidenciaDespues" class="input-group-text" data-target="#SubirArchivoDespues">
                             <i class="nav-icon fas fa-arrow-circle-down"></i>
                         </button>
                     </div>
@@ -143,6 +143,28 @@
         </div>
         <br />
     </div>
+
+    <div class="modal fade" id="modal-success">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirmacion</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-editar-body">
+                    <p style="margin-left: 10px">Egreso generado existosamente.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 
 <script>
     $(document).ready(function () {
@@ -159,6 +181,7 @@
         });
 
         $(".btn.btn-default.button-plus").click(function () {
+            //Mostrar datos en el forms
             var IdEgreso = parseInt($(this).attr("id"));
             //alert(IdEgreso);
             $.ajax({
@@ -190,14 +213,48 @@
                         $("#AprobadoPor").val(egreso.aprobadoPor);
                         $("#Solicitante").val(egreso.solicitante);
                         $("#Comentarios").val(egreso.comentarios);
-
-                        //$("#EvidenciaAntes").val(response.egreso.producto);
-                        //$("#EvidenciaDespues").val(response.egreso.descripcion);
+                        $("#SubirArchivoAntes").val(egreso.evidenciaAntesPath);
+                        $("#SubirArchivoDespues").val(egreso.evidenciaDespuesPath);
                     }
                 }
             });
         });
 
+        $(".input-group-text").click(function () {
+            alert("Button clicked!");
+            // Get the target input id from the data attribute
+            var targetInputId = $(this).data("target");
+            // Get the value of the corresponding input field
+            var filename = $(targetInputId).val();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DescargarArchivo", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(filename),
+                success: function (response) {
+                    if (response.res == 1){
+                        $("#modal-confirmacion").modal("show");
+                    }
+                    if (response.res==-1){
+                            $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#aceptar").click(function () {
+            $("#modal-success").modal("hide");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
     });
 </script>
 

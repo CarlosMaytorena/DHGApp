@@ -2,7 +2,9 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
+using Azure.Core;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +18,12 @@ namespace AgricolaDH_GApp.Services.Admin
     public class EgresoService
     {
         private readonly AppDbContext context;
+        private readonly BlobStorageService _blobStorageService;
 
-        public EgresoService(AppDbContext _ctx)
+        public EgresoService(AppDbContext _ctx, BlobStorageService blobStorageService)
         {
             context = _ctx;
+            _blobStorageService = blobStorageService;
         }
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace AgricolaDH_GApp.Services.Admin
             return egresosList;
         }
 
-        public int Generar(Egreso egreso)
+        public void Generar(Egreso egreso)
         {
             try
             {
@@ -49,18 +53,18 @@ namespace AgricolaDH_GApp.Services.Admin
                 int attempt = registro.Terminados - egreso.Cantidad;
                 if (attempt < 0)
                 {
-                    return -1;
+                    throw new Exception();
                 }
                 registro.Terminados -= egreso.Cantidad;
                 egreso.Fecha = DateTime.Now;
                 context.Egresos.Add(egreso);
                 context.SaveChanges();
                 egreso.IdEgreso = context.Egresos.OrderByDescending(x => x.IdEgreso).FirstOrDefault().IdEgreso;
-                return 1;
+                return;
             }
             catch
             {
-                return -1;
+                throw new Exception();
             }
         }
 
@@ -95,25 +99,28 @@ namespace AgricolaDH_GApp.Services.Admin
 
         public string UploadFile(Egreso egreso, string tipo)
         {
-            string path;
+            string filename;
+            filename = $"EgresoId{egreso.IdEgreso}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_Evidencia{tipo}.jpg";
+            IFormFile file = null;
             try
             {
-                if (tipo.Equals("antes")){
-                    tipo = "Antes";
+                if (tipo.Equals("Antes"))
+                {
+                    file = egreso.EvidenciaAntesFile;
                 }
-                if (tipo.Equals("despues")){
-                    tipo = "Despues";
+                if (tipo.Equals("Despues"))
+                {
+                    file = egreso.EvidenciaDespuesFile;
                 }
-                // Generate a new file name with date and time
-                path  = $"Evidencia{tipo}_Id{egreso.IdEgreso}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.jpg";
+
+                _blobStorageService.UploadFileAsync(file, filename);
             }
             catch
             {
-                path = null;
+                filename = null;
             }
-            //return blobClient.Uri.ToString(); // Return the URL of the uploaded blob
-            return path;
+            return filename;
         }
-
     }
-}
+ }
+

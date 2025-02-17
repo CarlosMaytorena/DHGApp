@@ -20,15 +20,14 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
+        public string? EvidenciaAntesPath { get; set; }
+        public string? EvidenciaDespuesPath { get; set; }
 
         [NotMapped]
-        public IFormFile EvidenciaAntes { get; set; }
+        public IFormFile EvidenciaAntesFile { get; set; }
+        
         [NotMapped]
-        public string PathPicAntes { get; set; }
-        [NotMapped]
-        public IFormFile EvidenciaDespues { get; set; }
-        [NotMapped]
-        public string PathPicDespues { get; set; }
+        public IFormFile EvidenciaDespuesFile { get; set; }
     }
     public class EgresoDTO
     {
