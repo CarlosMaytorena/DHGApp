@@ -1,5 +1,6 @@
 using AgricolaDH_GApp.Controllers;
 using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Helper;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -31,6 +32,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<ViewRenderService>();
+
+builder.Services.AddSingleton<Email>();
 
 var app = builder.Build();
 

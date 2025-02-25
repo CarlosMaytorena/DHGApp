@@ -20,4 +20,11 @@ namespace AgricolaDH_GApp.Models
         public string RolDescripcion { get; set; }
 
     }
+
+    public class UsuarioDropdown
+    {
+        public int IdUsuario { get; set; }
+        public string NombreCompleto { get; set; }
+
+    }
 }

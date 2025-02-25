@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>

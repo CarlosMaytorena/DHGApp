@@ -2,6 +2,8 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -30,20 +32,22 @@ namespace AgricolaDH_GApp.Services.Admin
             return usuarioList;
         }
 
-        public List<Usuario> SelectUsuariosByIdRol(int IdRol)
+        public List<UsuarioDropdown> SelectUsuariosByIdRol(int IdRol)
         {
-            List<Usuario> usuarioList;
+
+            List<UsuarioDropdown> usuarioDropdown;
 
             try
             {
-                usuarioList = context.Usuarios.Where(m => m.IdRol == IdRol).ToList();
+                usuarioDropdown = context.UsuariosDropdown.FromSqlRaw("exec SP_SelectIngenierosDropdown @IdRol",
+                    new SqlParameter("@IdRol", IdRol)).ToList();
             }
             catch
             {
-                usuarioList = new List<Usuario>();
+                usuarioDropdown = new List<UsuarioDropdown>();
             }
 
-            return usuarioList;
+            return usuarioDropdown;
         }
 
         public Usuario SelectUsuario(int IdUsuario)

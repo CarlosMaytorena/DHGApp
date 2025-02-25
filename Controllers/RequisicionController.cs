@@ -1,4 +1,5 @@
 ﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Helper;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
@@ -23,9 +24,9 @@ namespace AgricolaDH_GApp.Controllers
 		private ProductoService productoService;
 		private OrdenDeCompraService requisicionService;
         private OrdenDeCompraStatusEnumerators OrdenDeCompraEnumerator = new OrdenDeCompraStatusEnumerators();
+        private Email email;
 
-
-        public RequisicionController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _requisicionService)
+        public RequisicionController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _requisicionService, Email _email)
 		{
 			_logger = logger;
 			context = _ctx;
@@ -39,6 +40,7 @@ namespace AgricolaDH_GApp.Controllers
 			temporadaService = _temporadaService;
 			productoService = _productoService;
 			requisicionService = _requisicionService;
+            email = _email;
 		}
 
 		[HttpGet]
@@ -146,27 +148,37 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AcceptRejectRequisicion(RequisicionesVM model, int IdOrdenDeCompraStatus)
         {
-            model.requisicion.FechaOrdenDeCompra = DateTime.Now;
-            model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
             int res = 0;
-            res = requisicionService.UpdateOrdenDeCompra(model.requisicion);
+            foreach (var productoOrdenar in model.productosOrdenar)
+            {
+                ProductoOrdenar productoOrdenarUpdate = requisicionService.SelectProductoOrdenar(productoOrdenar.IdProductoOrdenar);
+                if (productoOrdenarUpdate != null)
+                {
+                    productoOrdenarUpdate.IdProducto = productoOrdenar.IdProducto;
+                    productoOrdenarUpdate.Cantidad = productoOrdenar.Cantidad;
+                    res = requisicionService.UpdateProductoOrdenar(productoOrdenarUpdate);
+                }
+                else
+                {
+                    productoOrdenar.IdOrdenDeCompra = model.requisicion.IdOrdenDeCompra;
+                    res = requisicionService.InsertProductoOrdenar(productoOrdenar);
+                }
+            }
 
             if (res == 0)
             {
-                foreach (var productoOrdenar in model.productosOrdenar)
+                model.requisicion.FechaOrdenDeCompra = DateTime.Now;
+                model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
+                res = requisicionService.UpdateOrdenDeCompra(model.requisicion);
+
+                OrdenDeCompraTable ordenDeCompra = requisicionService.SelectOrdenDeCompra(model.requisicion.IdOrdenDeCompra);
+                List<ProductoOrdenarSelected> productosOrdenar = requisicionService.SelectProductosOrdenarSelected(model.requisicion.IdOrdenDeCompra);
+
+                Proveedor proveedor = proveedorService.SelectProveedor(model.requisicion.IdProveedor);
+
+                if(res == 0)
                 {
-                    ProductoOrdenar productoOrdenarUpdate = requisicionService.SelectProductoOrdenar(productoOrdenar.IdProductoOrdenar);
-                    if (productoOrdenarUpdate != null)
-                    {
-                        productoOrdenarUpdate.IdProducto = productoOrdenar.IdProducto;
-                        productoOrdenarUpdate.Cantidad = productoOrdenar.Cantidad;
-                        res = requisicionService.UpdateProductoOrdenar(productoOrdenarUpdate);
-                    }
-                    else
-                    {
-                        productoOrdenar.IdOrdenDeCompra = model.requisicion.IdOrdenDeCompra;
-                        res = requisicionService.InsertProductoOrdenar(productoOrdenar);
-                    }
+                    email.SendMail(proveedor.Correo, proveedor.Nombre, "Requisicion #" + ordenDeCompra.IdOrdenDeCompra, ordenDeCompra.FechaRequisicion.ToShortDateString(), ordenDeCompra.Cultivo, ordenDeCompra.Rancho, ordenDeCompra.Etapa, ordenDeCompra.Temporada, productosOrdenar);
                 }
             }
             else

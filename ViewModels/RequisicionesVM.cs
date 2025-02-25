@@ -10,7 +10,7 @@ namespace AgricolaDH_GApp.ViewModels
         public List<ProductoOrdenar> productosOrdenar { get; set; }
 
         //Dropdowns
-        public List<Usuario> solicitanteList { get; set; }
+        public List<UsuarioDropdown> solicitanteList { get; set; }
         public List<Proveedor> proveedorList { get; set; }
         public List<Area> areaList { get; set; }
         public List<Cultivo> cultivoList { get; set; }
@@ -24,7 +24,7 @@ namespace AgricolaDH_GApp.ViewModels
             requisicion = new OrdenDeCompra();
 
             //Dropdowns
-            solicitanteList = new List<Usuario>();
+            solicitanteList = new List<UsuarioDropdown>();
             proveedorList = new List<Proveedor>();
             areaList = new List<Area>();
             cultivoList = new List<Cultivo>();
