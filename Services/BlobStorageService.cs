@@ -11,8 +11,8 @@ public class BlobStorageService
         _containerName = containerName;
 
         // Create the container if it doesn't exist
-        var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-        blobContainerClient.CreateIfNotExists();
+        //var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+        //blobContainerClient.CreateIfNotExists();
     }
     public async Task UploadFileAsync(IFormFile file, string fileName)
     {
