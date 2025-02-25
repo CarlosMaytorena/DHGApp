@@ -1,4 +1,5 @@
-﻿
+﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
+
 <div class="text-center">
     
     <div class="row top-row-spacer">
@@ -9,130 +10,177 @@
         </div>
 
         <div class="col-md-2">
-            <button id="enviarEgreso" class="btn btn-block secondary-background-color" style="color: white">
+            <button id="generar" class="btn btn-block secondary-background-color" style="color: white">
                     Generar
             </button>
         </div>
     </div>
 
-    <div class="card card-margin" style="height: 200px">
-        <div class="row card-row-spacer">
-            <div class="col-md-0">
-                <button id="addProductRow" class="btn btn-default button-plus realizarIngreso" style="margin: 18px 5px 0 0;"><i class="nav-icon fas fa-plus"></i></button>
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Id</label>
-                <input class="form-control" readonly placeholder="Escanea el producto"/>
-            </div>          
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <input class="form-control" readonly placeholder="Escanea el producto" />
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input type="number" min="0" max="99999" step="1" class="form-control" placeholder="Ingresa la cantidad" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-0">
-                <button class="btn btn-default button-plus realizarIngreso" style="margin: 18px 5px 0 0; visibility: hidden"><i class="nav-icon fas fa-plus"></i></button>
-            </div>
-            <div class="col-md-3">    
-                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
-                <div class="input-group">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="fileInput" accept=".jpg,.jpeg">
-                        <label id="fileLabel" class="custom-file-label" for="fileInput" style="text-align: left">Seleccionar</label>
-                    </div>
-                    <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
-                <div class="input-group">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="fileInput" accept=".jpg,.jpeg">
-                        <label id="fileLabel" class="custom-file-label" for="fileInput" style="text-align: left">Seleccionar</label>
-                    </div>
-                    <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="card card-margin">
-        <div class="row">
-            <div class="col-12">
-                <div">
-                    <div class="card-header">
-                        <h3 class="card-title">Producto Agregados</h3>
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left"># Producto</label>
+                <input id="ProductBarcodeID" type="text" class="form-control" placeholder="Escanea el producto" />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                <input id="Producto" type="text" class="form-control" readonly />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+                <input id="Descripcion" type="text" class="form-control" readonly />
+            </div>
+        </div>
+        
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
+                <select id="AprobadoPor" class="form-control">
+                    <option>Seleccione una opcion</option>
+                    @foreach (var usuario in Model.usuariosList)
+                    {
+                        <option value="@usuario.IdUsuario">@usuario.Username</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                <input id="Solicitante" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Comentarios</label>
+                <textarea id="Comentarios" class="form-control"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
+                <div id="GrupoAntes" class="input-group">
+                    <div class="custom-file">
+                        <input id="SubirArchivoAntes" type="file" class="custom-file-input" accept=".jpg,.jpeg">
+                        <label id="SubirAntesLabel" for="SubirArchivoAntes" class="custom-file-label" style=" text-align: left"></label>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="EvidenciaAntes" class="input-group-text">Cargar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
+                <div id="GrupoEvidenciaDespues" class="input-group">
+                    <div class="custom-file">
+                        <input id="SubirArchivoDespues" type="file" class="custom-file-input" accept=".jpg,.jpeg">
+                        <label id="SubirDespuesLabel" for="SubirArchivoDespues" class="custom-file-label" style=" text-align: left"></label>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="EvidenciaDespues" class="input-group-text">Cargar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
 
-                        <div class="card-tools">
-                            <div class="input-group input-group-sm" style="width: 150px;">
-                                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Disponible para Egresar</h3>
 
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-default">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <!-- /.card-header -->
-                    <div class="card-body table-responsive p-0" style="height: 300px;">
-                        <table class="table table-head-fixed text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>ID</th>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Imagen Previa</th>
-                                    <th>Imagen Posterior</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="tableBody">
-                                <tr>
-                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
-                                    <td>183</td>
-                                    <td>Quimico 1</td>
-                                    <td>1</td>
-                                    <td>previa.jpg</td>
-                                    <td>posterior.jpg</td>
-                                </tr>
-                                <tr>
-                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
-                                    <td>183</td>
-                                    <td>Quimico 1</td>
-                                    <td>1</td>
-                                    <td>previa.jpg</td>
-                                    <td>posterior.jpg</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Producto #</th>
+                                <th>Producto</th>
+                                <th>Descripción</th>
+                                <th>Disponible</th>
+                                <th>Terminados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var almacen in Model.almacenList)
+                            {
+                                <tr>
+                                    <td>@almacen.ProductBarcodeID</td>
+                                    <td>@almacen.NombreProducto</td>
+                                    <td>@almacen.Descripcion</td>
+                                    <td>@almacen.Disponible</td>
+                                    <td>@almacen.Terminados</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
             </div>
-
-
-        <div class="row card-row-spacer">
+            <!-- /.card -->
         </div>
-
     </div>
+</div>
 
+<div class="modal fade" id="modal-confirmacion">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion de Egreso</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-agregar-body">
+                <p style="margin-left: 10px">¿Seguro que desea continuar?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="procesar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="modal-success">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">Egreso generado existosamente.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 <script>
     $(document).ready(function () {
-
-        $("#enviarEgreso").click(function () {
+        $("#aceptar").click(function () {
+            $("#modal-success").modal("hide");
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Egresos")',
@@ -144,5 +192,139 @@
             });
         });
 
+        $("#generar").click(function () {
+            //if (Validation()) {
+               $("#modal-confirmacion").modal("show");
+            //}
+        });
+
+        $("#procesar").click(function () {
+            $("#modal-confirmacion").modal("hide");
+            //Egreso
+            var Producto = $("#Producto").val();
+            var Cantidad = parseInt($("#Cantidad").val());
+            var Comentarios = $("#Comentarios").val();
+            var Solicitante = $("#Solicitante").val();
+            var AprobadoPor = $("#AprobadoPor option:selected").text();
+            var ProductBarcodeID = $("#ProductBarcodeID").val();
+            var EvidenciaAntes = ($("#SubirArchivoAntes"))[0].files[0];
+            var EvidenciaDespues = ($("#SubirArchivoDespues"))[0].files[0];
+            //alert(EvidenciaAntes.name);
+            //alert(JSON.stringify({ProductBarcodeID:ProductBarcodeID ,Producto: Producto,Cantidad: Cantidad, Comentarios: Comentarios, Solicitante: Solicitante, AprobadoPor: AprobadoPor}));
+
+            var formData = new FormData();
+            formData.append("Egreso.Producto", Producto);
+            formData.append("Egreso.Cantidad", Cantidad);
+            formData.append("Egreso.Comentarios", Comentarios);
+            formData.append("Egreso.Solicitante", Solicitante);
+            formData.append("Egreso.AprobadoPor", AprobadoPor);
+            formData.append("Producto.ProductBarcodeID", ProductBarcodeID);
+            formData.append("Egreso.EvidenciaAntesFile", EvidenciaAntes);
+            formData.append("Egreso.EvidenciaDespuesFile", EvidenciaAntes);
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GenerarEgreso", "Egresos")',
+                //contentType: "application/json; charset=utf-8",
+                data: formData,
+                processData: false, // Important: Prevent jQuery from processing the data
+                contentType: false, // Important: Prevent jQuery from overriding the Content-Type
+                success: function (data) {
+                    if (data.res > 0) {
+                        $("#modal-success").modal("show");
+                        alert(data.model.egreso.pathPicAntes);
+                    }
+                    else {
+                        $("#modal-warning").modal("show");
+                    }
+                }
+            });
+        });
+
+        $("#EvidenciaAntes").click(function () {
+            var fileInput = ($("#SubirArchivoAntes"))[0].files[0];
+            if (fileInput.name != null) 
+            {
+                $("#SubirAntesLabel").text(fileInput.name);
+            } 
+        });
+
+        $("#EvidenciaDespues").click(function () {
+            var fileInput = ($("#SubirArchivoDespues"))[0].files[0];
+            if (fileInput.name != null) {
+                $("#SubirDespuesLabel").text(fileInput.name);
+            }
+        });
+
+        function Validation() {
+            var validation = true;
+            $("#ProductBarcodeID").css("border-color", "");
+            $("#Producto").css("border-color", "");
+            //$("#Comentario").css("border-color", "");
+            $("#Solicitante").css("border-color", "");
+            $("#AprobadoPor").css("border-color", "");
+            $("#Cantidad").css("border-color", "");
+
+            $("#SubirAntesLabel").css("border-color", "");
+            $("#EvidenciaAntes").css("border-color", "");
+
+            $("#SubirDespuesLabel").css("border-color", "");
+            $("#EvidenciaDespues").css("border-color", "");
+
+            if ($("#ProductBarcodeID").val() == null || $("#ProductBarcodeID").val() == "") {
+                $("#ProductBarcodeID").css("border-color", "red");
+                validation = false;
+            }
+            if ( $("#Producto").val() == null || $("#Producto").val() == "") {
+                $("#Producto").css("border-color", "red");
+                validation = false;
+            }
+            if ($("#Solicitante").val() == null || $("#Solicitante").val() == "") {
+                $("#Solicitante").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN($("#AprobadoPor").val())) {
+                $("#AprobadoPor").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN(parseInt($("#Cantidad").val()))) {
+                $("#Cantidad").css("border-color", "red");
+                validation = false;
+            }
+            if ($("#SubirAntesLabel").text() == null || $("#SubirAntesLabel").text() == "") {
+                $("#SubirAntesLabel").css("border-color", "red");
+                $("#EvidenciaAntes").css("border-color", "red"); 
+                validation = false;
+            }
+            if ($("#SubirDespuesLabel").text() == null || $("#SubirDespuesLabel").text() == "") {
+                $("#SubirDespuesLabel").css("border-color", "red");
+                $("#EvidenciaDespues").css("border-color", "red");
+                validation = false;
+            }
+            return validation;
+        };
+
+        $('#ProductBarcodeID').on('change', function () {
+            var ProductBarcodeID = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EncontrarProducto", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ProductBarcodeID: ProductBarcodeID,
+                }),
+                success: function (response) {
+                    //alert(JSON.stringify(response));
+                    if (response.res) {
+                        $("#Producto").val(response.producto.nombreProducto);
+                        $("#Descripcion").val(response.producto.descripcion);
+
+                    } else {
+                        $("#Producto").val('');
+                        $("#Descripcion").val('');
+                    }
+                },
+            });
+        });
     });
 </script>

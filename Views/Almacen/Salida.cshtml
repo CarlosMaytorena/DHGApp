@@ -1,0 +1,270 @@
+@model AgricolaDH_GApp.ViewModels.AlmacenVM
+
+<div class="text-center" id="html">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-4">
+            <h4 class="page-title">Salida a Almacen</h4>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <button id="confirmacion" class="btn btn-block secondary-background-color" style="color: white">
+                Aceptar
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button type="button" id="cancelar" class="btn btn-block btn-danger" style="color: white">
+                <i class="nav-icon fas fa-ban"></i>
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <!-- Entry By Scanning Product -->
+        <form id="dataform">
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
+                    <input id="ProductBarcodeID" type="text" class="form-control" placeholder="Escanea el producto" />
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    <input id="Producto" type="text" class="form-control" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+                    <input id="Descripcion" type="text" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Cantidad de Salida</label>
+                    <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Motivo</label>
+                    <select id="Motivo" class="form-control">
+                        <option>Seleccione una opcion</option>
+                        <option value="1">Uso Afuera</option>
+                        <option value="2">Producto Terminado</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Uso</label>
+                    <input id="Uso" class="form-control" />
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+                    <input id="Solicitante" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
+                    <select id="AprobadoPor" class="form-control">
+                        <option>Seleccione una opcion</option>
+                        @foreach (var usuario in Model.usuariosList)
+                        {
+                            <option value="@usuario.IdUsuario">@usuario.Username</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+        <div class="row card-row-spacer">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-success">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">Movimiento generado existosamente.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-confirmacion">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion de Salida</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-agregar-body">
+                <p style="margin-left: 10px">¿Seguro que desea continuar?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="procesar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#confirmacion").click(function () {
+            if (Validation()){
+                $("#modal-confirmacion").modal("show");
+            }
+        });
+
+        $("#procesar").click(function () {
+            $("#modal-confirmacion").modal("hide");
+            var ProductBarcodeID = $("#ProductBarcodeID").val();
+            var Disponible = parseInt($("#Cantidad").val());
+            var Motivo = parseInt($("#Motivo").val());
+            var IdProducto = 0;
+
+            // Movimiento
+            var Solicitante = $("#Solicitante").val();
+            var AprobadoPor = $("#AprobadoPor option:selected").text();
+            var Producto = $("#Producto option:selected").val();
+            var Uso = $("#Uso").val();
+            var MotivoText = $('#Motivo option:selected').text();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BajaAlmacen", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    Almacen: {
+                        IdProducto: IdProducto,
+                        Disponible: Disponible,
+                    },
+                    Motivo: Motivo,
+                    Movimiento: {
+                        IdProducto: IdProducto,
+                        //Producto: Producto,
+                        Cantidad: Disponible,
+                        Solicitante: Solicitante,
+                        AprobadoPor: AprobadoPor,
+                        Uso: Uso,
+                        Motivo: MotivoText,
+                    },
+                    Producto: {
+                        ProductBarcodeID: ProductBarcodeID,
+                    },
+                }),
+                success: function (data) {
+                    if (data.res > 0) {
+                        $("#modal-success").modal("show");
+                    } else {
+                        $("#modal-warning").modal("show");
+                        $.ajax({
+                            type: "GET",
+                            url: '@Url.Action("Index", "Almacen")',
+                            contentType: "application/json; charset=utf-8",
+                            data: {},
+                            success: function (data) {
+                                $("#HtmlBody").html(data);
+                            },
+                        });
+                    }
+                },
+            });
+        });
+
+        $("#aceptar").click(function () {
+            $("#modal-success").modal("hide");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                },
+            });
+        });
+
+        $("#cancelar").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        function Validation() {
+            var validation = true;
+            $("#ProductBarcodeID").css("border-color", "");
+            $("#Producto").css("border-color", "");
+            $("#Cantidad").css("border-color", "");
+            $("#Motivo").css("border-color", "");
+            $("#Solicitante").css("border-color", "");
+            $("#AprobadoPor").css("border-color", "");
+
+            if ($("#ProductBarcodeID").val() == null || $("#ProductBarcodeID").val() == "") {
+                $("#ProductBarcodeID").css("border-color", "red");
+                validation = false;
+            }
+            if ($("#Producto").val() == null || $("#Producto").val() == "") {
+                $("#Producto").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN(parseInt($("#Cantidad").val()))) {
+                $("#Cantidad").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN(parseInt($("#Motivo").val()))) {
+                $("#Motivo").css("border-color", "red");
+                validation = false;
+            }
+            if ( $("#Solicitante").val() == null || $("#Solicitante").val() == "" ) {
+                $("#Solicitante").css("border-color", "red");
+                validation = false;
+            }
+            if (isNaN($("#AprobadoPor").val())) {
+                $("#AprobadoPor").css("border-color", "red");
+                validation = false;
+            }
+            return validation;
+        }
+
+        $('#ProductBarcodeID').on('change', function () {
+            var ProductBarcodeID = $(this).val();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("EncontrarProducto", "Almacen")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ProductBarcodeID: ProductBarcodeID,
+                }),
+                success: function (response) {
+                    //alert(JSON.stringify(response));
+                    if (response.res) {
+                        $("#Producto").val(response.producto.nombreProducto);
+                        $("#Descripcion").val(response.producto.descripcion);
+
+                    } else {
+                        $("#Producto").val('');
+                        $("#Descripcion").val('');
+                    }
+                },
+            });
+        });
+    });
+</script>

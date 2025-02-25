@@ -1,4 +1,8 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
+using AgricolaDH_GApp.ViewModels;
+using Antlr.Runtime.Tree;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,27 +10,105 @@ namespace AgricolaDH_GApp.Controllers
 {
 	public class AlmacenController : Controller
 	{
-		private readonly ILogger<AlmacenController> _logger;
+        private AlmacenVM model = new AlmacenVM();
+        private readonly ILogger<AlmacenController> _logger;
 
-		public AlmacenController(ILogger<AlmacenController> logger)
+        private readonly AppDbContext context;
+		private AlmacenService almacenService;
+        private ViewRenderService renderService;
+        private MovimientoService movimientoService;
+        private UsuarioService usuarioService;
+        private ProductoService productoService;
+        public AlmacenController(
+            ILogger<AlmacenController> logger,
+            AppDbContext _ctx,
+            ViewRenderService _renderService,
+            AlmacenService _almacenService,
+            MovimientoService _movimientoService,
+            UsuarioService _usuarioService,
+            ProductoService _productoService
+            )
 		{
 			_logger = logger;
-		}
+			almacenService = _almacenService;
+            context = _ctx;
+            renderService = _renderService;
+            movimientoService = _movimientoService;
+            usuarioService = _usuarioService;
+            productoService = _productoService;
+        }
 
 		[HttpGet]
 		public IActionResult Index()
 		{
-			return PartialView("~/Views/Almacen/Index.cshtml");
+            model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
+            return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
 		[HttpGet]
-        public IActionResult EntradaFormato()
+        public IActionResult Entrada()
         {
-            return PartialView("~/Views/Almacen/EntradaFormato.cshtml");
+            model.productoList = almacenService.SelectProductos();
+            model.usuariosList = usuarioService.SelectUsuarios();
+            return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 		[HttpGet]
-        public IActionResult SalidaFormato()
+        public IActionResult Salida()
         {
-            return PartialView("~/Views/Almacen/SalidaFormato.cshtml");
+            model.productoList = almacenService.SelectProductos();
+            model.usuariosList = usuarioService.SelectUsuarios();
+            return PartialView("~/Views/Almacen/Salida.cshtml", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AltaAlmacen([FromBody] AlmacenDTO registro)
+        {
+            //------------------------------ Arreglo temporal ---------------------------
+            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+            registro.Almacen.IdProducto = model.producto.IdProducto;
+            registro.Movimiento.IdProducto = model.producto.IdProducto;
+            //---------------------------------------------------------------------------
+
+            int res = almacenService.Entrada(registro);
+            int resp_mov = movimientoService.Entrada(registro);
+            if (res < 0 || resp_mov < 0) 
+            {
+                res = -1;
+            }
+            model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
+            return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
+        {
+            //------------------------------ Arreglo temporal ---------------------------
+            model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
+            registro.Almacen.IdProducto = model.producto.IdProducto;
+            registro.Movimiento.IdProducto = model.producto.IdProducto;
+            //---------------------------------------------------------------------------
+
+            int res = almacenService.Salida(registro);
+            int resp_mov = movimientoService.Salida(registro);
+            if (res < 0 || resp_mov < 0)
+            {
+                res = -1;
+            }
+            model.almacenList = almacenService.SelectAlmacen();
+            model.movimientosList = movimientoService.SelectMovimientos();
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EncontrarProducto([FromBody] Producto registro)
+        {
+            model.producto = almacenService.SelectProductoByBarcode(registro);
+            if (model.producto == null)
+            {
+                return Json(new { res = false});
+            }
+            return  Json(new {res = true, model.producto});
         }
 
         public IActionResult Privacy()

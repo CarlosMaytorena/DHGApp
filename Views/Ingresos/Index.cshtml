@@ -1,48 +1,31 @@
-<head>   
-    <style>
-        /* Reduce the width of the first column */
-        .table th:first-child,
-        .table td:first-child {
-            width: 30px;
-        }
-    </style>
-</head>
-<body>
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="text-center">
 
     <div class="row top-row-spacer">
         <div class="col-md-6">
-            <h4 class="page-title">Ingreso</h4>
+            <h4 class="page-title">Ingresos</h4>
         </div>
-
+        <div class="col-md-4"></div>
         <div class="col-md-2">
-                <input class="form-control" placeholder="# Orden" />
+            <input type="text" class="form-control" placeholder="# Orden" id="searchOrder" />
         </div>
-
         <div class="col-md-2">
-                <input class="form-control" type="text" id="datepicker" placeholder="Fecha" />
-        </div>
-            
-        <div class="col-md-2">
-            <button id="busquedaIngreso" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-plus"></i>
-                    Buscar
+            <button id="searchIngreso" class="btn btn-block secondary-background-color" style="color: white">
+                <i class="nav-icon fas fa-search"></i>
+                Buscar
             </button>
         </div>
     </div>
-    
 
     <div class="row">
         <div class="col-12">
             <div class="card card-margin">
                 <div class="card-header">
                     <h3 class="card-title">Ordenes para Recibo</h3>
-
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-default">
                                     <i class="fas fa-search"></i>
@@ -50,58 +33,44 @@
                             </div>
                         </div>
                     </div>
-                 
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th></th>
+                                <th>Acción</th>
                                 <th># Orden</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
-                                <th>Status</th>
+                                <th>Proveedor</th>
                                 <th>Área</th>
                                 <th>Cultivo</th>
                                 <th>Rancho</th>
                                 <th>Etapa</th>
+                                <th>Temporada</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
-                                <td>181</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                            </tr>
-                            <tr>
-                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
-                                <td>182</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                            </tr>
-                            <tr>
-                                    <td><button class="btn btn-default button-plus realizarIngreso"><i class="nav-icon fas fa-plus"></i></button></td>
-                                <td>183</td>
-                                <td>11-7-2014</td>
-                                <td>Carlos Maytorena</td>
-                                <td><span class="tag tag-success">Aceptada</span></td>
-                                <td>Área</td>
-                                <td>Cultivo</td>
-                                <td>Rancho</td>
-                                <td>Etapa</td>
-                            </tr>
+                            @foreach (var order in Model.subirFacturaList)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" data-id="@order.IdOrdenDeCompra" class="realizarIngreso" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-pen"></i>
+                                        </a>
+                                    </td>
+                                    <td>@order.IdOrdenDeCompra</td>
+                                    <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
+                                    <td>@order.Solicitante</td>
+                                    <td>@order.Proveedor</td>
+                                    <td>@order.Area</td>
+                                    <td>@order.Cultivo</td>
+                                    <td>@order.Rancho</td>
+                                    <td>@order.Etapa</td>
+                                    <td>@order.Temporada</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -115,20 +84,24 @@
 
 <script>
     $(document).ready(function () {
-        $("#datepicker").datepicker();
-
-            $(".realizarIngreso").on("click", function () {
+        $(".realizarIngreso").click(function () {
+            var idOrdenDeCompra = $(this).data("id");
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("RealizarIngreso", "Ingresos")',
-                contentType: "application/json; charset=utf-8",
-                data: {},
+                data: { idOrdenDeCompra: idOrdenDeCompra },
                 success: function (data) {
                     $("#HtmlBody").html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error during RealizarIngreso:", status, error);
                 }
             });
         });
+
+        $("#searchIngreso").click(function () {
+            // Implement search functionality if needed
+            alert("Search functionality not implemented yet.");
+        });
     });
 </script>
-
-</body>

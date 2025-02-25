@@ -1,4 +1,4 @@
-
+@model AgricolaDH_GApp.ViewModels.AlmacenVM
 <div class="text-center">
 
     <div class="row top-row-spacer">
@@ -44,54 +44,26 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>Producto #</th>
                                 <th>Producto</th>
-                                <th>Cantidad</th>                                
-                                <th>Status</th>
-                                <th>Área</th>
-                                <th>Cultivo</th>
-                                <th>Rancho</th>
-                                <th>Etapa</th>
-                                <th>Ultima Orden</th>
+                                <th>Descripci�n</th>
+                                <th>Disponible</th>
+                                <th>En Uso</th>
+                                <th>Terminados</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>49</td>
-                                <td>Disponible</td>
-                                <td>Cultivo 1</td>
-                                <td>Rancho 1</td>
-                                <td>Etapa 1</td>
-                                <td>Temporada 1</td>
-                                <td>112345</td>
-
-                            </tr>
+                            @foreach (var almacen in Model.almacenList)
+                            {
+                                <tr>
+                                    <td>@almacen.ProductBarcodeID</td>
+                                    <td>@almacen.NombreProducto</td>
+                                    <td>@almacen.Descripcion</td>
+                                    <td>@almacen.Disponible</td>
+                                    <td>@almacen.EnUso</td>
+                                    <td>@almacen.Terminados</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -124,47 +96,32 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Movimiento #</th>
                                 <th>Producto</th>
+                                <th>Tipo de Movimiento</th>
+                                <th>Motivo</th>
+                                <th>Uso</th>
                                 <th>Cantidad</th>
-                                <th>Fecha</th>
                                 <th>Solicitante</th>
                                 <th>Aprobado Por</th>
-                                <th>Área</th>
-                                <th>Tipo</th>
+                                <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Entrada</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Salida</td>
-                            </tr>
-                            <tr>
-                                <td>183</td>
-                                <td>Quimico 1</td>
-                                <td>2</td>
-                                <td>11-09-2024</td>
-                                <td>Saul Aurelio Mendoza Leal</td>
-                                <td>Carlos Emiliano Maytorena Covantes</td>
-                                <td>Pastizal 3</td>
-                                <td>Entrada</td>
-                            </tr>
+                            @foreach (var movimiento in Model.movimientosList)
+                            {
+                                <tr>
+                                    <td>@movimiento.IdMovimiento</td>
+                                    <td>@movimiento.Producto</td>
+                                    <td>@movimiento.TipoMovimiento</td>
+                                    <td>@movimiento.Motivo</td>
+                                    <td>@movimiento.Uso</td>
+                                    <td>@movimiento.Cantidad</td>
+                                    <td>@movimiento.Solicitante</td>
+                                    <td>@movimiento.AprobadoPor</td>
+                                    <td>@movimiento.Fecha</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -182,11 +139,10 @@
         $("#ingresoAlmacen").click(function () {
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("EntradaFormato", "Almacen")',
+                url: '@Url.Action("Entrada", "Almacen")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
-
                     $("#HtmlBody").html(data);
                 }
             });
@@ -194,7 +150,7 @@
         $("#salidaAlmacen").click(function () {
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("SalidaFormato", "Almacen")',
+                url: '@Url.Action("Salida", "Almacen")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {

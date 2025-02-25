@@ -3,6 +3,9 @@
 
 <form id="dataform">
     @Html.HiddenFor(m => m.producto.IdProducto)
+    @Html.HiddenFor(m => m.producto.ProductBarcodeID)
+
+
     <div class="row align-items-end top-row-spacer">
         <div class="col-md-3">
             <label style="font-weight: normal; text-align: left; float: left">Nombre de Producto</label>
@@ -106,11 +109,15 @@
                 url: '@Url.Action("InsertProducto", "Productos")',
                 data: dataform.serialize(),
                 success: function (data) {
-                    if (data.res == 0) {
+                    if (data.res == -2) {
+                        // Show duplicate error message
+                        alert(data.message);
+                    } else if (data.res == -1) {
+                        // Show generic error message
+                        alert(data.message);
+                    } else if (data.res == 0) {
+                        // Success - refresh the page content
                         $("#HtmlBody").html(data.url);
-                    }
-                    else {
-                        $("#modal-warning").modal("show");
                     }
                 }
             });

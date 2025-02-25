@@ -37,9 +37,11 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th style="width:30px">Acción</th>
+                                <th style="width:20px">Acción</th>
                                 <th style="width:30%">Nombre de Producto</th>
-                                <th style="width:70%">Descripción</th>
+                                <th style="width:60%">Descripción</th>
+                                <th style="width:20%">Numero de Producto</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -58,6 +60,8 @@
                                     </td>
                                     <td>@proveedor.NombreProducto</td>
                                     <td>@proveedor.Descripcion</td>
+                                    <td>@proveedor.ProductBarcodeID</td> <!-- Display Barcode ID -->
+
                                 </tr>
                             }
                         </tbody>
