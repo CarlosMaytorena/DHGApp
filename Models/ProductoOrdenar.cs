@@ -10,7 +10,8 @@ namespace AgricolaDH_GApp.Models
         public int Cantidad { get; set; }
         public decimal? Unidad { get; set; }
         public decimal? Total { get; set; }
-       
+        public decimal? Impuesto { get; set; }
+
     }
 
     public class ProductoOrdenarSelected
@@ -21,6 +22,8 @@ namespace AgricolaDH_GApp.Models
         public int Cantidad { get; set; }
         public decimal? Unidad { get; set; }
         public decimal? Total { get; set; }
+        public decimal? Impuesto { get; set; }
+        public decimal? Descuento { get; set; }
 
     }
 }

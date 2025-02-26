@@ -20,6 +20,7 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Rancho>().HasKey(m => new { m.IdRancho });
             modelBuilder.Entity<Etapa>().HasKey(m => new { m.IdEtapa });
             modelBuilder.Entity<Temporada>().HasKey(m => new { m.IdTemporada });
+            modelBuilder.Entity<Constante>().HasKey(m => new { m.Descripcion });
 
             modelBuilder.Entity<OrdenDeCompra>().HasKey(m => new { m.IdOrdenDeCompra});
             modelBuilder.Entity<ProductoOrdenar>().HasKey(m => new { m.IdProductoOrdenar});
@@ -53,6 +54,7 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<Etapa> Etapas { get; set; }
         public DbSet<Temporada> Temporadas { get; set; }
         public DbSet<Rol> Roles { get; set; }
+        public DbSet<Constante> Constantes { get; set; }
 
         public DbSet<Almacen> Almacen { get; set; }
         public DbSet<AlmacenView> AlmacenView { get; set; }

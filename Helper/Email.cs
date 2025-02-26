@@ -2,25 +2,18 @@
 using SendGrid;
 using System.Globalization;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
 
 namespace AgricolaDH_GApp.Helper
 {
     public class Email
     {
-        private readonly string SendgridKey;
-        private readonly string defaultEmailFrom;
 
-        public Email(IConfiguration configuration)
-        {
-            if(configuration != null)
-            {
-                SendgridKey = configuration.GetSection("SendgridKey").Value;
-                defaultEmailFrom = configuration.GetSection("defaultEmailFrom").Value;
-            }
-
+        public Email()
+        {         
         }
 
-        public async void SendMail(string recipient, string proveedor, string requisicion, string fecha, string cultivo, string rancho, string etapa, string temporada, List<ProductoOrdenarSelected> productos)
+        public async void SendMail(string SendgridKey, string defaultEmailFrom, string recipient, string proveedor, string requisicion, string fecha, string cultivo, string rancho, string etapa, string temporada, List<ProductoOrdenarSelected> productos)
         {
 
             try

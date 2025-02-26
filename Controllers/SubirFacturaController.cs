@@ -114,11 +114,11 @@ namespace AgricolaDH_GApp.Controllers
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
 
-                List<string> productosOrdenarName = model.productosOrdenar.Select(m => m.Producto).ToList();
+                List<string> productosOrdenarName = model.productosOrdenar.Select(m => m.Producto.ToLower()).ToList();
 
                 foreach (XmlElement item in doc.GetElementsByTagName("cfdi:Concepto"))
                 {
-                    string descripcion = item.GetAttribute("Descripcion");
+                    string descripcion = item.GetAttribute("Descripcion").ToLower();
 
                     RegexOptions options = RegexOptions.None;
                     Regex regex = new Regex("[ ]{2,}", options);
