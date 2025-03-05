@@ -1,25 +1,56 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.Controllers.Admin;
+using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services.Admin;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
 	public class HomeController : Controller
 	{
-		private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger;
 
-		public HomeController(ILogger<HomeController> logger)
+        private readonly AppDbContext context;
+        private UsuarioService usuarioService;
+        private ViewRenderService renderService;
+
+		public HomeController(ILogger<HomeController> logger, AppDbContext _ctx,
+            UsuarioService _usuarioService, ViewRenderService _renderService)
 		{
 			_logger = logger;
-		}
+            context = _ctx;
+            usuarioService = _usuarioService;
+            renderService = _renderService;
+        }
 
 		public IActionResult Index()
 		{
-			//CAMBIO
-			return View("~/Views/Dashboard/Index.cshtml");
+            //CAMBIO
+			Login model = new Login();
+
+            return View("~/Views/Login/Index.cshtml", model);
+
 		}
 
-		public IActionResult Privacy()
+        public IActionResult Login(Login model)
+        {
+			//CAMBIO
+			Usuario user = new Usuario();
+			user = usuarioService.UsuarioLogin(model.Username, model.Password);
+
+			if (user == null) 
+			{
+                return View("~/Views/Login/Index.cshtml", model);
+            }
+
+			HttpContext.Session.SetString("s_SessionUser", JsonConvert.SerializeObject(user));
+
+            return View("~/Views/Dashboard/Index.cshtml", user);
+        }
+
+        public IActionResult Privacy()
 		{
 			return View();
 		}

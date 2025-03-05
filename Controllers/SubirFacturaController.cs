@@ -22,7 +22,6 @@ namespace AgricolaDH_GApp.Controllers
 		private readonly AppDbContext context;
         private ViewRenderService renderService;
 		private OrdenDeCompraService ordenDeCompraService;
-        private OrdenDeCompraStatusEnumerators OrdenDeCompraEnumerator = new OrdenDeCompraStatusEnumerators();
 
         public SubirFacturaController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, OrdenDeCompraService _ordenDeCompraService)
 		{
@@ -36,7 +35,7 @@ namespace AgricolaDH_GApp.Controllers
 		public IActionResult Index()
 		{
 			SubirFacturaVM model = new SubirFacturaVM();
-			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Aceptado);
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado);
 
 			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
@@ -71,11 +70,11 @@ namespace AgricolaDH_GApp.Controllers
             {
                 if (allZero)
                 {
-                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.Cancelado);
+                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraStatusEnumerators.Cancelado);
                 }
                 else
                 {
-                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraEnumerator.PorIngresar);
+                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraStatusEnumerators.PorIngresar);
                 }
 
             }
@@ -85,7 +84,7 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             model = new SubirFacturaVM();
-            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Aceptado);
+            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", model) });
 

@@ -24,7 +24,6 @@ namespace AgricolaDH_GApp.Controllers
 		private ProductoService productoService;
 		private OrdenDeCompraService requisicionService;
         private ConstanteService constanteService;
-        private OrdenDeCompraStatusEnumerators OrdenDeCompraEnumerator = new OrdenDeCompraStatusEnumerators();
         private Email email;
 
         public RequisicionController(ILogger<RequisicionController> logger, AppDbContext _ctx, ViewRenderService _renderService, UsuarioService _usuarioService, ProveedorService _proveedorService, AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, EtapaService _etapaService, TemporadaService _temporadaService, ProductoService _productoService, OrdenDeCompraService _requisicionService, ConstanteService _constanteService, Email _email)
@@ -50,7 +49,7 @@ namespace AgricolaDH_GApp.Controllers
 		{
 			RequisicionesVM model = new RequisicionesVM();
 
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado);
 
 			return PartialView("~/Views/Requisicion/Index.cshtml", model);
 		}
@@ -60,15 +59,13 @@ namespace AgricolaDH_GApp.Controllers
         {
             RequisicionesVM model = new RequisicionesVM();
 
-			RolEnumerators rolEnumerators = new RolEnumerators();
-
 			model.requisicion.FechaRequisicion = DateTime.Now;
 
 			model.productosOrdenar = new List<ProductoOrdenar>() { 
 				new ProductoOrdenar()
 			};
 
-			model.solicitanteList = usuarioService.SelectUsuariosByIdRol(rolEnumerators.Ingeniero);
+			model.solicitanteList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
 			model.proveedorList = proveedorService.SelectProveedores();
 			model.areaList = areaService.SelectAreas();
 			model.cultivoList = cultivoService.SelectCultivos();
@@ -88,9 +85,7 @@ namespace AgricolaDH_GApp.Controllers
 			model.requisicion = requisicionService.SelectRequisicion(IdOrdenDeCompra);
             model.productosOrdenar = requisicionService.SelectProductosOrdenar(IdOrdenDeCompra);
 
-            RolEnumerators rolEnumerators = new RolEnumerators();
-
-            model.solicitanteList = usuarioService.SelectUsuariosByIdRol(rolEnumerators.Ingeniero);
+            model.solicitanteList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
             model.proveedorList = proveedorService.SelectProveedores();
             model.areaList = areaService.SelectAreas();
             model.cultivoList = cultivoService.SelectCultivos();
@@ -141,7 +136,7 @@ namespace AgricolaDH_GApp.Controllers
 			}
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
@@ -191,7 +186,7 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             model = new RequisicionesVM();
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraEnumerator.Enviado);
+            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 

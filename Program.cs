@@ -46,6 +46,7 @@ builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<ViewRenderService>();
 
 builder.Services.AddSingleton<Email>();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -61,6 +62,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 

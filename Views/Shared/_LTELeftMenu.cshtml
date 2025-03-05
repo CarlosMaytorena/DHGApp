@@ -1,4 +1,7 @@
-﻿@using System.Web.Optimization
+﻿@model AgricolaDH_GApp.Models.Usuario
+
+
+@using System.Web.Optimization
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #AAD9BB;">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -22,14 +25,19 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" id="requisicion" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-pen"></i>
-                        <p>
-                            Requisición
-                        </p>
-                    </a>
-                </li>
+
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Ingeniero)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="requisicion" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-pen"></i>
+                            <p>
+                                Requisición
+                            </p>
+                        </a>
+                    </li>
+                }
+
                 <li class="nav-item">
                     <a href="#" id="subirFactura" class="nav-link" style="color: #2E2E2E">
                         <i class="nav-icon fas fa-upload"></i>

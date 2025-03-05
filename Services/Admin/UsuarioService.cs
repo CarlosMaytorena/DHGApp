@@ -16,6 +16,25 @@ namespace AgricolaDH_GApp.Services.Admin
             context = _ctx;
         }
 
+        public Usuario UsuarioLogin(string username, string password)
+        {
+            Usuario usuario;
+
+            try
+            {
+                usuario = context.Usuarios.FromSqlRaw("EXEC SP_SelectUsuarioLogin @Username, @Password",
+                    new SqlParameter("@Username", username),
+                    new SqlParameter("@Password", password)).ToList().FirstOrDefault();
+
+            }
+            catch
+            {
+                usuario = new Usuario();
+            }
+
+            return usuario;
+        }
+
         public List<Usuario> SelectUsuarios()
         {
             List<Usuario> usuarioList;
