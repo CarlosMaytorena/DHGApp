@@ -5,6 +5,7 @@ using AgricolaDH_GApp.ViewModels;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -75,18 +76,18 @@ namespace AgricolaDH_GApp.Services.Admin
                 if (registroAlmacen != null && registro.Motivo == 1)
                 {
                     //Update
-                    registroAlmacen.Disponible += registro.Almacen.Disponible;
+                    //registroAlmacen.Disponible += registro.Almacen.Disponible;
                 }
                 if(registroAlmacen != null && registro.Motivo == 2)
                 {
                     //Update
-                    int validacion = registroAlmacen.EnUso - registro.Almacen.Disponible;
+                    int validacion = 0;//registroAlmacen.EnUso - registro.Almacen.Disponible;
                     if (validacion < 0)
                     {
                         return -1;
                     }
-                    registroAlmacen.Disponible += registro.Almacen.Disponible;
-                    registroAlmacen.EnUso -= registro.Almacen.Disponible;
+                    //registroAlmacen.Disponible += registro.Almacen.Disponible;
+                    //registroAlmacen.EnUso -= registro.Almacen.Disponible;
                 }
                 return context.SaveChanges();
             }
@@ -110,20 +111,20 @@ namespace AgricolaDH_GApp.Services.Admin
                 {
                     return -1;
                 }
-                int dec = registroAlmacen.Disponible - registro.Almacen.Disponible;
+                int dec = 0;//registroAlmacen.Disponible - registro.Almacen.Disponible;
                 if (dec < 0)
                 {
                     return -1;
                 }
-                registroAlmacen.Disponible -= registro.Almacen.Disponible;
+                //registroAlmacen.Disponible -= registro.Almacen.Disponible;
                 if (registro.Motivo == 1)
                 {
-                    registroAlmacen.EnUso += registro.Almacen.Disponible;
+                    //registroAlmacen.EnUso += registro.Almacen.Disponible;
                 }
                 if (registro.Motivo == 2)
                 {
 
-                    registroAlmacen.Terminados += registro.Almacen.Disponible;
+                    //registroAlmacen.Terminados += registro.Almacen.Disponible;
                 }
                 return context.SaveChanges();
             }
@@ -133,22 +134,17 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public Producto SelectProductoByBarcode(Producto registro)
+        public Producto SelectProductoByBarcode(string id)
         {
-            Producto registroTable = new Producto();
+            Producto registro = new Producto();
             try
             {
-                registroTable = context.Productos.SingleOrDefault(a => a.ProductBarcodeID == registro.ProductBarcodeID);
+                registro = context.Productos.SingleOrDefault(a => a.ProductBarcodeID.Equals(id));
             }
             catch
             {
             }
-            return registroTable;
-        }
-
-        private int JsonResult(object value)
-        {
-            throw new NotImplementedException();
+            return registro;
         }
     }
 }

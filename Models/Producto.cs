@@ -10,5 +10,9 @@ namespace AgricolaDH_GApp.Models
         public string NombreProducto { get; set; }
         public string Descripcion { get; set; }
         public string ProductBarcodeID { get; set; }
+        
+        [NotMapped]
+        public int Unidades { get; set; }
+
     }
 }

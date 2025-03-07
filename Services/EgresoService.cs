@@ -50,12 +50,12 @@ namespace AgricolaDH_GApp.Services.Admin
             {
                 Producto producto = context.Productos.FirstOrDefault(p => p.NombreProducto.Equals(egreso.Producto));
                 Almacen registro = context.Almacen.FirstOrDefault(x => x.IdProducto.Equals(producto.IdProducto));
-                int attempt = registro.Terminados - egreso.Cantidad;
+                int attempt = 0;// registro.Terminados - egreso.Cantidad;
                 if (attempt < 0)
                 {
                     throw new Exception();
                 }
-                registro.Terminados -= egreso.Cantidad;
+                //registro.Terminados -= egreso.Cantidad;
                 egreso.Fecha = DateTime.Now;
                 context.Egresos.Add(egreso);
                 context.SaveChanges();
