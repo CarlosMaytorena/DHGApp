@@ -1,5 +1,6 @@
 ﻿using AgricolaDH_GApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace AgricolaDH_GApp.Models
 {
@@ -10,10 +11,15 @@ namespace AgricolaDH_GApp.Models
     {
         public int IdAlmacen { get; set; }
         public int IdProducto { get; set; }
-        public int Disponible { get; set; }
-        public int EnUso { get; set; }
-        public int Terminados { get; set; }
+        public string ProductoID { get; set; } //Unique ID
+        public int IdSolicitante { get; set; }
+        public int IdAlmacenista { get; set; }
+        public string TipoMovimiento { get; set; }
+        public string RazonUso { get; set; }
 
+        [DataType(DataType.Date, ErrorMessage = "Date only")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime Fecha { get; set; }
 
     }
     /// <summary>

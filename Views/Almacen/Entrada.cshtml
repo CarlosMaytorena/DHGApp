@@ -1,81 +1,54 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
-<div class="text-center" id="html">
+<form id="dataform">
 
-    <div class="row top-row-spacer">
-        <div class="col-md-4">
-            <h4 class="page-title">Entrada a Almacen</h4>
-        </div>
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-2">
-            <button id="confirmacion" class="btn btn-block secondary-background-color" style="color: white">
-                Aceptar
-            </button>
-        </div>
-        <div class="col-md-2">
-            <button type="button" id="cancelar" class="btn btn-block btn-danger" style="color: white">
-                <i class="nav-icon fas fa-ban"></i>
-                Cancelar
-            </button>
+<div class="row top-row-spacer">
+    <div class="col-md-4">
+        <h4 class="page-title">Entrada a Almacen</h4>
+    </div>
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-2">
+        <button id="confirmacion" class="btn btn-block secondary-background-color" style="color: white">
+            Aceptar
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button type="button" id="cancelar" class="btn btn-block btn-danger" style="color: white">
+            <i class="nav-icon fas fa-ban"></i>
+            Cancelar
+        </button>
+    </div>
+</div>
+
+<div class="card card-margin">
+    <div class="row card-row-spacer">
+        <div class="col-md-12">
+            <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
+            @Html.EditorFor(m => m.almacen.ProductoID, new { htmlAttributes = new { @class = "form-control input-focus", @type = "text", @id = "ProductID", @placeholder="Escanea el producto aqui, presiona enter" } })
         </div>
     </div>
-
-    <div class="card card-margin">
-        <!-- Entry By Scanning Product -->
-        <form id="dataform">
-            <div class="row card-row-spacer">
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
-                    <input id="ProductBarcodeID" type="text" class="form-control" placeholder="Escanea el producto"/>
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                    <input id="Producto" type="text" class="form-control" readonly/>
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
-                    <input id="Descripcion" type="text" class="form-control" readonly />
-                </div>
-            </div>
-            <div class="row card-row-spacer">
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Cantidad de Entrada</label>
-                    <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Motivo</label>
-                    <select id="Motivo" class="form-control">
-                        <option>Seleccione una opcion</option>
-                        <option value="1">Nueva Entrada</option>
-                        <option value="2">Regreso Producto</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Uso</label>
-                    <input id="Uso" type="text" class="form-control" readonly/>
-                </div>
-            </div>
-            <div class="row card-row-spacer">
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    <input id="Solicitante" type="text" class="form-control" />
-                </div>
-                <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
-                    <select id="AprobadoPor" class="form-control">
-                        <option>Seleccione una opcion</option>
-                        @foreach (var usuario in Model.usuariosList)
-                        {
-                            <option value="@usuario.IdUsuario">@usuario.Username</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </form>
-            <div class="row card-row-spacer">
-            </div>
+    <div class="row card-row-spacer">
+        <div class="col-md-4">
+            <label style="font-weight: normal; text-align: left; float: left">Razon</label>
+            @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus", @type = "text" } })
         </div>
+        <div class="col-md-4">
+            <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
+            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus" })
+        </div>
+        <div class="col-md-4">
+            <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
+            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus" })
+        </div>
+    </div>
+    <div class="row card-row-spacer">
+    </div>
 </div>
+
+<div id="ListaDeProductos">
+    @Html.Partial("~/Views/Almacen/ListaProductos.cshtml", Model)
+</div>
+</form>
 
 <div class="modal fade" id="modal-success">
     <div class="modal-dialog">

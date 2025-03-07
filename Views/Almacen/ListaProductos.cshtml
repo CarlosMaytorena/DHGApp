@@ -1,0 +1,58 @@
+@model AgricolaDH_GApp.ViewModels.AlmacenVM
+<div class="card card-margin">
+    <div class="card-header">
+        <h3 class="card-title">Lista de Productos</h3>
+    </div>
+    <div class="row card-row-spacer">
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
+        </div>
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+        </div>
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+        </div>
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+        </div>
+    </div>
+    @for (int i=0; i< Model.productoList.Count; i++)
+    {
+        <div class="row card-row-spacer">
+            @Html.HiddenFor(m => m.productoList[i].IdProducto)
+            <div class="col-md-3">
+                @Html.EditorFor(m => m.productoList[i].ProductBarcodeID, new { htmlAttributes = new { @class = "form-control input-focus" } })
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(m => m.productoList[i].NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" } })
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(m => m.productoList[i].Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" } })
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(m => m.productoList[i].Unidades, new { htmlAttributes = new { @class = "form-control input-focus"} })
+            </div>
+        </div>
+    }
+    <div class="row card-row-spacer">
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#ProductID').on('change', function () {
+            var dataform = $("#dataform");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarProductoLista", "Almacen")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    console.log(data);
+                    $("#ListaDeProductos").html(data);
+                }
+            });
+        });
+           
+    });
+</script>
