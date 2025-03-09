@@ -28,9 +28,8 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<OrdenDeCompraTable>().HasKey(m => new { m.IdOrdenDeCompra});
 
             modelBuilder.Entity<Almacen>().HasKey(m => new { m.IdAlmacen });
-            modelBuilder.Entity<AlmacenView>().HasKey(m => new { m.IdAlmacen });
-            modelBuilder.Entity<Movimiento>().HasKey(m => new { m.IdMovimiento });
             modelBuilder.Entity<Egreso>().HasKey(m => new { m.IdEgreso });
+            modelBuilder.Entity<Estatus>().HasKey(m => new { m.IdEstatus });
 
 
             modelBuilder.Entity<UltimoProductoID>().HasKey(m => new { m.ID });
@@ -57,9 +56,8 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<Constante> Constantes { get; set; }
 
         public DbSet<Almacen> Almacen { get; set; }
-        public DbSet<AlmacenView> AlmacenView { get; set; }
-        public DbSet<Movimiento> Movimientos { get; set; }
         public DbSet<Egreso> Egresos { get; set; }
+        public DbSet<Estatus> Estatus { get; set; }
 
         public DbSet<UltimoProductoID> UltimoProductoID { get; set; }
 

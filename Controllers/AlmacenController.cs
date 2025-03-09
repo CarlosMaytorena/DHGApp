@@ -16,7 +16,6 @@ namespace AgricolaDH_GApp.Controllers
         private readonly AppDbContext context;
 		private AlmacenService almacenService;
         private ViewRenderService renderService;
-        private MovimientoService movimientoService;
         private UsuarioService usuarioService;
         private ProductoService productoService;
         public AlmacenController(
@@ -24,7 +23,6 @@ namespace AgricolaDH_GApp.Controllers
             AppDbContext _ctx,
             ViewRenderService _renderService,
             AlmacenService _almacenService,
-            MovimientoService _movimientoService,
             UsuarioService _usuarioService,
             ProductoService _productoService
             )
@@ -33,7 +31,6 @@ namespace AgricolaDH_GApp.Controllers
 			almacenService = _almacenService;
             context = _ctx;
             renderService = _renderService;
-            movimientoService = _movimientoService;
             usuarioService = _usuarioService;
             productoService = _productoService;
         }
@@ -41,8 +38,7 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
-            model.almacenList = almacenService.SelectAlmacen();
-            model.movimientosList = movimientoService.SelectMovimientos();
+            model.almacenLista = almacenService.SelectAlmacen();
             return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
 		[HttpGet]
@@ -63,19 +59,24 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AltaAlmacen(AlmacenVM model)
         {
-            model.producto = almacenService.ProductTypeByPN(model.producto.PN);
-            //registro.Almacen.IdProducto = model.producto.IdProducto;
-            //registro.Movimiento.IdProducto = model.producto.IdProducto;
-            //---------------------------------------------------------------------------
-
-            int res = 0; //almacenService.Entrada(registro);
-            int resp_mov = 0; // movimientoService.Entrada(registro);
-            if (res < 0 || resp_mov < 0) 
+            int res = 1;
+            try
+            {
+                foreach(Almacen a in model.almacenLista)
+                {
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 2; //Almacen
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Entrada";
+                }
+                context.SaveChanges();
+            }
+            catch
             {
                 res = -1;
             }
-            model.almacenList = almacenService.SelectAlmacen();
-            model.movimientosList = movimientoService.SelectMovimientos();
+            model.almacenLista = almacenService.SelectAlmacen();
             return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 
@@ -85,17 +86,14 @@ namespace AgricolaDH_GApp.Controllers
             //------------------------------ Arreglo temporal ---------------------------
             model.producto = almacenService.ProductTypeByPN(registro.Producto.PN);
             registro.Almacen.IdProducto = model.producto.IdProducto;
-            registro.Movimiento.IdProducto = model.producto.IdProducto;
             //---------------------------------------------------------------------------
 
             int res = almacenService.Salida(registro);
-            int resp_mov = movimientoService.Salida(registro);
-            if (res < 0 || resp_mov < 0)
+            if (res < 0)
             {
                 res = -1;
             }
-            model.almacenList = almacenService.SelectAlmacen();
-            model.movimientosList = movimientoService.SelectMovimientos();
+            model.almacenLista = almacenService.SelectAlmacen();
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
         }
 
@@ -113,6 +111,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model)
         {
+            // TODO: Primer escaneo no transmite el SerialNumber
             if (context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)))
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));

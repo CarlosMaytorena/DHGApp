@@ -22,16 +22,40 @@ namespace AgricolaDH_GApp.Services.Admin
         /// Mostrar datos de tabla principal de Almacen
         /// </summary>
         /// <returns></returns>
-        public List<AlmacenView> SelectAlmacen()
+        public List<Almacen> SelectAlmacen()
         {
-            List<AlmacenView> almacenList;
+            List<Almacen> almacenList;
             try
             {
-                almacenList = context.AlmacenView.FromSqlRaw("exec SP_JoinAlmacen").ToList();
+                //almacenList = context.Almacen.FromSqlRaw("exec SP_JoinAlmacen").ToList();
+                almacenList = context.Almacen.ToList();
+                foreach (Almacen a in almacenList)
+                {
+                    Producto p = context.Productos.Single(x => x.IdProducto.Equals(a.IdProducto));
+                    Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
+                    a.Estatus = estatus.NombreEstatus;
+                    switch (a.Estatus)
+                    {
+                        case "Ingreso":
+                            a.Almacenista = "N/A";
+                            a.Solicitante = "N/A";
+                            break;
+
+                        case "Almacen":
+                            Usuario almacenista = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdAlmacenista));
+                            Usuario solicitante = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdSolicitante));
+                            a.Almacenista = almacenista.Username;
+                            a.Solicitante = solicitante.Username;
+                            break;
+                    }
+                    a.NombreProducto = p.NombreProducto;
+                    a.Descripcion = p.Descripcion;
+                }
+                context.SaveChanges();
             }
             catch
             {
-                almacenList = new List<AlmacenView>();
+                almacenList = new List<Almacen>();
             }
             return almacenList;
         }

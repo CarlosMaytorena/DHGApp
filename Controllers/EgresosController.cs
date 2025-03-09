@@ -55,7 +55,7 @@ namespace AgricolaDH_GApp.Controllers
         {
 			model.productosList = productoService.SelectProductos();
 			model.usuariosList = usuarioService.SelectUsuarios();
-			model.almacenList = almacenService.SelectAlmacen();
+			model.almacenLista = almacenService.SelectAlmacen();
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]

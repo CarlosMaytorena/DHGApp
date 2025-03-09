@@ -35,7 +35,6 @@ builder.Services.AddScoped<EtapaService>();
 builder.Services.AddScoped<TemporadaService>();
 builder.Services.AddScoped<OrdenDeCompraService>();
 builder.Services.AddScoped<AlmacenService>();
-builder.Services.AddScoped<MovimientoService>();
 builder.Services.AddScoped<EgresoService>();
 builder.Services.AddScoped<ConstanteService>();
 

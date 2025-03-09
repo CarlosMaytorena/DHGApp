@@ -13,7 +13,7 @@
         </button>
     </div>
     <div class="col-md-2">
-        <button type="button" id="cancelar" class="btn btn-block btn-danger" style="color: white">
+        <button type="button" class="btn btn-block btn-danger entradaAlmacen" style="color: white">
             <i class="nav-icon fas fa-ban"></i>
             Cancelar
         </button>
@@ -25,15 +25,15 @@
         <div class="col-md-4">
             @Html.HiddenFor(m => m.almacen.IdProducto)
             <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
-            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus", @id="Almacenista"})
+            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar"})
         </div>
         <div class="col-md-4">
             <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus", @id="Solicitante" })
+            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar"})
         </div>
         <div class="col-md-4">
             <label style="font-weight: normal; text-align: left; float: left">Razon</label>
-            @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus"} })
+            @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus validar"} })
         </div>
     </div>
     <div class="row card-row-spacer">
@@ -62,7 +62,7 @@
                 <p style="margin-left: 10px">Movimiento generado existosamente.</p>
             </div>
             <div class="modal-footer justify-content-between">
-                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+                <button type="button" class="btn btn-primary entradaAlmacen">Aceptar</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -92,7 +92,8 @@
 
 <script>
     $(document).ready(function () {
-        $("#cancelar").click(function () {
+        $(".entradaAlmacen").click(function () {
+            $("#modal-success").modal("hide");
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Almacen")',
@@ -112,7 +113,7 @@
 
         $("#procesarMovimiento").click(function () {
             $("#modal-confirmacion").modal("hide");
-            var dataform = $("#dataform").serialize() + '&' + $("#listaForms").serialize();
+            var dataform = $("#dataform").serialize() + '&' + $("#lista").serialize();
             alert(dataform);
             $.ajax({
                 type: "POST",
@@ -133,22 +134,15 @@
         
         function Validation() {
             var validation = true;
-            $("#Almacenista").css("border-color", "");
-            $("#Solicitante").css("border-color", "");
-            $("#RazonUso").css("border-color", "");
+            $('.validar').each(function() {
 
-            if ($("#Almacenista").val() == null || $("#Almacenista").val() == "") {
-                $("#Almacenista").css("border-color", "red");
-                validation = false;
-            }
-            if ( $("#Solicitante").val() == null || $("#Solicitante").val() == "") {
-                $("#Solicitante").css("border-color", "red");
-                validation = false;
-            }
-            if ( $("#RazonUso").val() == null || $("#RazonUso").val() == "") {
-                $("#RazonUso").css("border-color", "red");
-                validation = false;
-            }
+                $("#" + this.id).css("border-color", "");
+
+                if($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0"){
+                    $("#" + this.id).css("border-color", "red");
+                    validation = false;
+                }
+            });
             return validation;
         };
     });

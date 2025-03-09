@@ -116,14 +116,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var almacen in Model.almacenList)
+                            @foreach (var almacen in Model.almacenLista)
                             {
                                 <tr>
-                                    <td>@almacen.ProductBarcodeID</td>
+                                    <td>@almacen.SerialNumber</td>
                                     <td>@almacen.NombreProducto</td>
                                     <td>@almacen.Descripcion</td>
-                                    <td>@almacen.Disponible</td>
-                                    <td>@almacen.Terminados</td>
+                                    <td>1</td>
+                                    <td>1</td>
                                 </tr>
                             }
                         </tbody>
