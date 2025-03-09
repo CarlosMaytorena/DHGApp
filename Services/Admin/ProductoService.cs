@@ -67,12 +67,12 @@ namespace AgricolaDH_GApp.Services.Admin
                     Producto lastProduct = context.Productos.OrderByDescending(p => p.IdProducto).FirstOrDefault(); // Get the first one in the ordered list
                     if (lastProduct == null)
                     {
-                        producto.ProductBarcodeID = $"PN{1.ToString("D6")}";
+                        producto.PN = $"PN{1.ToString("D6")}";
                         newRecord.LastBarcodeNumber = 1;
                     }
                     else
                     {
-                        producto.ProductBarcodeID = $"PN{(lastProduct.IdProducto+1).ToString("D6")}";
+                        producto.PN = $"PN{(lastProduct.IdProducto+1).ToString("D6")}";
                         newRecord.LastBarcodeNumber = lastProduct.IdProducto + 1;
                     }                    
                     context.Productos.Add(producto);

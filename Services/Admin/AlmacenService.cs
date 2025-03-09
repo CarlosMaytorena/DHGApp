@@ -49,51 +49,24 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             return productoList;
         }
-        /// <summary>
-        /// Actualizar nuevo registro en tabla Almacen
-        /// </summary>
-        /// <returns></returns>
-        public int Entrada(AlmacenDTO registro)
+
+        public void Entrada(AlmacenVM model)
         {
-            if (registro == null)
-            {
-                return -1;
-            }
             try
             {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                if (registroProducto == null | (registroAlmacen == null && registro.Motivo == 2))
+                foreach (Almacen a in model.almacenLista)
                 {
-                    return -1;
-                }
-                
-                if (registroAlmacen == null && registro.Motivo == 1)
-                {
-                    //Insert
-                    context.Almacen.Add(registro.Almacen);
-                }
-                if (registroAlmacen != null && registro.Motivo == 1)
-                {
-                    //Update
-                    //registroAlmacen.Disponible += registro.Almacen.Disponible;
-                }
-                if(registroAlmacen != null && registro.Motivo == 2)
-                {
-                    //Update
-                    int validacion = 0;//registroAlmacen.EnUso - registro.Almacen.Disponible;
-                    if (validacion < 0)
+                    if (context.Almacen.Any(a => a.SerialNumber.Equals(a.SerialNumber)))
                     {
-                        return -1;
+                        //Producto llega a Almacen correctamente
+                        context.Almacen.FirstOrDefault(a => a.SerialNumber.Equals(a.SerialNumber)).IdEstatus = 2;
                     }
-                    //registroAlmacen.Disponible += registro.Almacen.Disponible;
-                    //registroAlmacen.EnUso -= registro.Almacen.Disponible;
                 }
-                return context.SaveChanges();
+                context.SaveChanges();
             }
             catch
             {
-                return -1;
+                throw;
             }
         }
 
@@ -134,12 +107,12 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public Producto SelectProductoByBarcode(string id)
+        public Producto ProductTypeByPN(string id)
         {
             Producto registro = new Producto();
             try
             {
-                registro = context.Productos.SingleOrDefault(a => a.ProductBarcodeID.Equals(id));
+                registro = context.Productos.SingleOrDefault(a => a.PN.Equals(id));
             }
             catch
             {

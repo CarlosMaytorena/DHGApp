@@ -8,7 +8,7 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-2">
-        <button id="confirmacion" class="btn btn-block secondary-background-color" style="color: white">
+        <button type="button" id="aceptar" class="btn btn-block secondary-background-color" style="color: white">
             Aceptar
         </button>
     </div>
@@ -22,30 +22,29 @@
 
 <div class="card card-margin">
     <div class="row card-row-spacer">
-        <div class="col-md-12">
-            <label style="font-weight: normal; text-align: left; float: left">ID Producto</label>
-            @Html.EditorFor(m => m.almacen.ProductoID, new { htmlAttributes = new { @class = "form-control input-focus", @type = "text", @id = "ProductID", @placeholder="Escanea el producto aqui, presiona enter" } })
-        </div>
-    </div>
-    <div class="row card-row-spacer">
         <div class="col-md-4">
-            <label style="font-weight: normal; text-align: left; float: left">Razon</label>
-            @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus", @type = "text" } })
-        </div>
-        <div class="col-md-4">
+            @Html.HiddenFor(m => m.almacen.IdProducto)
             <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
-            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus" })
+            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus", @id="Almacenista"})
         </div>
         <div class="col-md-4">
             <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus" })
+            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus", @id="Solicitante" })
+        </div>
+        <div class="col-md-4">
+            <label style="font-weight: normal; text-align: left; float: left">Razon</label>
+            @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus"} })
         </div>
     </div>
     <div class="row card-row-spacer">
     </div>
+
 </div>
 
+
+
 <div id="ListaDeProductos">
+
     @Html.Partial("~/Views/Almacen/ListaProductos.cshtml", Model)
 </div>
 </form>
@@ -85,7 +84,7 @@
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="procesar" type="button" class="btn btn-primary">Aceptar</button>
+                <button id="procesarMovimiento" type="button" class="btn btn-primary">Aceptar</button>
             </div>
         </div>
     </div>
@@ -93,67 +92,6 @@
 
 <script>
     $(document).ready(function () {
-        $("#confirmacion").click(function () {
-            if (Validation()) {
-                $("#modal-confirmacion").modal("show");
-            }
-        });
-
-        $("#procesar").click(function () {
-            $("#modal-confirmacion").modal("hide");
-            //Almacen
-            var ProductBarcodeID = $("#ProductBarcodeID").val();
-            var Disponible = parseInt($("#Cantidad").val());
-            var Motivo = parseInt($("#Motivo").val());
-            var IdProducto = 0;
-
-            // Movimiento
-            var Solicitante = $("#Solicitante").val();
-            var AprobadoPor = $("#AprobadoPor option:selected").text();
-            var Producto = $("#Producto").val();
-            var Uso = $("#Uso").val();
-            var MotivoText = $('#Motivo option:selected').text();
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("AltaAlmacen", "Almacen")',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    Almacen: {
-                        IdProducto: IdProducto,
-                        Disponible: Disponible,
-                    },
-                    Motivo: Motivo,
-                    Movimiento: {
-                        IdProducto: IdProducto,
-                        //Producto: Producto,
-                        Cantidad: Disponible,
-                        Solicitante: Solicitante,
-                        AprobadoPor: AprobadoPor,
-                        //Uso: Uso,
-                        Motivo: MotivoText,
-                    },
-                    Producto: {
-                        ProductBarcodeID: ProductBarcodeID,
-                    },
-                }),
-                success: function (data) {
-                    if (data.res > 0) {
-                        $("#modal-success").modal("show");
-                    } 
-                    else {
-                        $("#modal-warning").modal("show");
-                        $("#cancelar").click();
-                    }
-                },
-            });
-        });
-
-        $("#aceptar").click(function () {
-            $("#modal-success").modal("hide");
-            $("#cancelar").click();
-        });
-
         $("#cancelar").click(function () {
             $.ajax({
                 type: "GET",
@@ -165,65 +103,53 @@
                 }
             });
         });
+
+        $("#aceptar").click(function () {
+            if (Validation()) {
+                $("#modal-confirmacion").modal("show");
+            }
+        });
+
+        $("#procesarMovimiento").click(function () {
+            $("#modal-confirmacion").modal("hide");
+            var dataform = $("#dataform").serialize() + '&' + $("#listaForms").serialize();
+            alert(dataform);
+            $.ajax({
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                url: '@Url.Action("AltaAlmacen", "Almacen")',
+                data: dataform,
+                success: function (data) {
+                    if (data.res > 0) {
+                        $("#modal-success").modal("show");
+                    } 
+                    else {
+                        $("#modal-warning").modal("show");
+                        $("#cancelar").click();
+                    }
+                },
+            });
+        });     
         
         function Validation() {
             var validation = true;
-            $("#ProductBarcodeID").css("border-color", "");
-            $("#Producto").css("border-color", "");
-            $("#Cantidad").css("border-color", "");
-            $("#Motivo").css("border-color", "");
+            $("#Almacenista").css("border-color", "");
             $("#Solicitante").css("border-color", "");
-            $("#AprobadoPor").css("border-color", "");
+            $("#RazonUso").css("border-color", "");
 
-            if ($("#ProductBarcodeID").val() == null || $("#ProductBarcodeID").val() == "") {
-                $("#ProductBarcodeID").css("border-color", "red");
+            if ($("#Almacenista").val() == null || $("#Almacenista").val() == "") {
+                $("#Almacenista").css("border-color", "red");
                 validation = false;
             }
-            if ( $("#Producto").val() == null || $("#Producto").val() == "") {
-                $("#Producto").css("border-color", "red");
-                validation = false;
-            }
-            if (isNaN(parseInt($("#Cantidad").val()))) {
-                $("#Cantidad").css("border-color", "red");
-                validation = false;
-            }
-            if (isNaN(parseInt($("#Motivo").val()))) {
-                $("#Motivo").css("border-color", "red");
-                validation = false;
-            }
-            if ($("#Solicitante").val() == null || $("#Solicitante").val() == "") {
+            if ( $("#Solicitante").val() == null || $("#Solicitante").val() == "") {
                 $("#Solicitante").css("border-color", "red");
                 validation = false;
             }
-            if (isNaN($("#AprobadoPor").val())) {
-                $("#AprobadoPor").css("border-color", "red");
+            if ( $("#RazonUso").val() == null || $("#RazonUso").val() == "") {
+                $("#RazonUso").css("border-color", "red");
                 validation = false;
             }
             return validation;
         };
-
-        $('#ProductBarcodeID').on('change', function () {
-            var ProductBarcodeID = $(this).val();            
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("EncontrarProducto", "Almacen")',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ProductBarcodeID: ProductBarcodeID,
-                }),
-                success: function (response) {
-                    //alert(JSON.stringify(response));
-                    if (response.res) {
-                        $("#Producto").val(response.producto.nombreProducto);
-                        $("#Descripcion").val(response.producto.descripcion);
-
-                    } else {
-                        $("#Producto").val('');
-                        $("#Descripcion").val('');
-                    }
-                },
-            });
-            
-        });
     });
 </script>

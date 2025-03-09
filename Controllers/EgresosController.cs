@@ -64,7 +64,7 @@ namespace AgricolaDH_GApp.Controllers
 			try
 			{
                 //------------------------------ Arreglo temporal ---------------------------
-                model.producto = almacenService.SelectProductoByBarcode(registro.Producto.ProductBarcodeID);
+                //model.producto = almacenService.ProductBySN(registro.Producto.SerialNumber);
                 registro.Producto = model.producto;
                 //---------------------------------------------------------------------------
 

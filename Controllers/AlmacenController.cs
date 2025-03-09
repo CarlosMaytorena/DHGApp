@@ -55,22 +55,21 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
         public IActionResult Salida()
         {
-            model.productoList = almacenService.SelectProductos();
+            //model.productoList = almacenService.SelectProductos();
             model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AltaAlmacen([FromBody] AlmacenDTO registro)
+        public async Task<IActionResult> AltaAlmacen(AlmacenVM model)
         {
-            //------------------------------ Arreglo temporal ---------------------------
-            model.producto = almacenService.SelectProductoByBarcode(registro.Producto.ProductBarcodeID);
-            registro.Almacen.IdProducto = model.producto.IdProducto;
-            registro.Movimiento.IdProducto = model.producto.IdProducto;
+            model.producto = almacenService.ProductTypeByPN(model.producto.PN);
+            //registro.Almacen.IdProducto = model.producto.IdProducto;
+            //registro.Movimiento.IdProducto = model.producto.IdProducto;
             //---------------------------------------------------------------------------
 
-            int res = almacenService.Entrada(registro);
-            int resp_mov = movimientoService.Entrada(registro);
+            int res = 0; //almacenService.Entrada(registro);
+            int resp_mov = 0; // movimientoService.Entrada(registro);
             if (res < 0 || resp_mov < 0) 
             {
                 res = -1;
@@ -84,7 +83,7 @@ namespace AgricolaDH_GApp.Controllers
         public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
         {
             //------------------------------ Arreglo temporal ---------------------------
-            model.producto = almacenService.SelectProductoByBarcode(registro.Producto.ProductBarcodeID);
+            model.producto = almacenService.ProductTypeByPN(registro.Producto.PN);
             registro.Almacen.IdProducto = model.producto.IdProducto;
             registro.Movimiento.IdProducto = model.producto.IdProducto;
             //---------------------------------------------------------------------------
@@ -103,7 +102,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> EncontrarProducto([FromBody] Producto registro)
         {
-            model.producto = almacenService.SelectProductoByBarcode(registro.ProductBarcodeID);
+            //model.producto = almacenService.ProductBySN(registro.PN);
             if (model.producto == null)
             {
                 return Json(new { res = false});
@@ -114,18 +113,14 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model)
         {
-            Producto producto = almacenService.SelectProductoByBarcode(model.almacen.ProductoID);
+            if (context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)))
+            {
+                Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+                a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
+                a.Descripcion = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).Descripcion;
+                model.almacenLista.Add(a);
+            }
 
-            if (model.productoList.Any(x => x.ProductBarcodeID == model.producto.ProductBarcodeID))
-            {
-                //Already exists, so we increment the units
-                model.productoList.FirstOrDefault(p => p.ProductBarcodeID == model.producto.ProductBarcodeID).Unidades += 1 ;
-            }
-            else
-            {
-                model.productoList.Add(producto);
-            }
-            //context.SaveChanges();
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 

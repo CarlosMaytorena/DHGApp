@@ -59,7 +59,7 @@ namespace AgricolaDH_GApp.Controllers
             if (producto != null)
             {
                 // Return the barcode if the product is found
-                return Json(new { success = true, barcodeID = producto.ProductBarcodeID });
+                return Json(new { success = true, barcodeID = producto.PN });
             }
 
             // Return an error message if the product is not found
