@@ -27,7 +27,7 @@ namespace AgricolaDH_GApp.Models
         [NotMapped]
         public string? Descripcion { get; set; }
         [NotMapped]
-        public int Unidades { get; set; }
+        public int Unidades { get; set; } = 1;
         [NotMapped]
         public string? Almacenista { get; set; }
         [NotMapped]

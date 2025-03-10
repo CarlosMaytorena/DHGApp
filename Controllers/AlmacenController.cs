@@ -104,6 +104,13 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 
+        [HttpPost]
+        public IActionResult EliminarProductoLista(AlmacenVM model)
+        {
+            model.almacenLista.RemoveAt(model.almacenLista.Count-1);
+            return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
+        }
+
         public IActionResult Privacy()
 		{
 			return View();

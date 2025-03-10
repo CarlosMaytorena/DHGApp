@@ -3,6 +3,16 @@
     <div class="card card-margin">
         <div class="card-header">
             <h3 class="card-title">Lista de Productos</h3>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            @{
+                if (Model.almacenLista.Count > 0)
+                {
+                    <button type="button" class="btn-sm secondary-background-color eliminarAlmacenLista" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
+                }
+            }
         </div>
         <div class="row card-row-spacer">
             <div class="col-md-12">
@@ -70,6 +80,19 @@
                 }
             });
         });
+
+        $('.eliminarAlmacenLista').click(function () {
+                var dataform = $("#lista");
+                //alert(dataform.serialize());
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("EliminarProductoLista", "Almacen")',
+                    data: dataform.serialize(),
+                    success: function (data) {
+                        $("#ListaDeProductos").html(data);
+                    }
+                });
+            });
 
     });
 </script>
