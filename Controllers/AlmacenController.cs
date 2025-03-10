@@ -4,6 +4,7 @@ using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Antlr.Runtime.Tree;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
@@ -44,14 +45,12 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
         public IActionResult Entrada()
         {
-            //model.productoList = almacenService.SelectProductos();
             model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 		[HttpGet]
         public IActionResult Salida()
         {
-            //model.productoList = almacenService.SelectProductos();
             model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
@@ -62,15 +61,7 @@ namespace AgricolaDH_GApp.Controllers
             int res = 1;
             try
             {
-                foreach(Almacen a in model.almacenLista)
-                {
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 2; //Almacen
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Entrada";
-                }
-                context.SaveChanges();
+                almacenService.Entrada(model);
             }
             catch
             {
@@ -81,31 +72,19 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BajaAlmacen([FromBody] AlmacenDTO registro)
+        public async Task<IActionResult> BajaAlmacen(AlmacenVM model)
         {
-            //------------------------------ Arreglo temporal ---------------------------
-            model.producto = almacenService.ProductTypeByPN(registro.Producto.PN);
-            registro.Almacen.IdProducto = model.producto.IdProducto;
-            //---------------------------------------------------------------------------
-
-            int res = almacenService.Salida(registro);
-            if (res < 0)
+            int res = 1;
+            try
+            {
+                almacenService.Salida(model);
+            }
+            catch
             {
                 res = -1;
             }
             model.almacenLista = almacenService.SelectAlmacen();
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EncontrarProducto([FromBody] Producto registro)
-        {
-            //model.producto = almacenService.ProductBySN(registro.PN);
-            if (model.producto == null)
-            {
-                return Json(new { res = false});
-            }
-            return  Json(new {res = true, model.producto});
         }
 
         [HttpPost]
@@ -117,9 +96,11 @@ namespace AgricolaDH_GApp.Controllers
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
                 a.Descripcion = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).Descripcion;
+                Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
+                a.Estatus = estatus.NombreEstatus;
+
                 model.almacenLista.Add(a);
             }
-
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 

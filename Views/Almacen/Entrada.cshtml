@@ -8,12 +8,12 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-2">
-        <button type="button" id="aceptar" class="btn btn-block secondary-background-color" style="color: white">
+        <button type="button" class="btn btn-block secondary-background-color validacion" style="color: white">
             Aceptar
         </button>
     </div>
     <div class="col-md-2">
-        <button type="button" class="btn btn-block btn-danger entradaAlmacen" style="color: white">
+        <button type="button" class="btn btn-block btn-danger almacen" style="color: white">
             <i class="nav-icon fas fa-ban"></i>
             Cancelar
         </button>
@@ -62,7 +62,7 @@
                 <p style="margin-left: 10px">Movimiento generado existosamente.</p>
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-primary entradaAlmacen">Aceptar</button>
+                <button type="button" class="btn btn-primary almacen">Aceptar</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -84,7 +84,7 @@
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="procesarMovimiento" type="button" class="btn btn-primary">Aceptar</button>
+                <button type="button" class="btn btn-primary entradaAlmacen">Aceptar</button>
             </div>
         </div>
     </div>
@@ -92,7 +92,7 @@
 
 <script>
     $(document).ready(function () {
-        $(".entradaAlmacen").click(function () {
+        $(".almacen").click(function () {
             $("#modal-success").modal("hide");
             $.ajax({
                 type: "GET",
@@ -105,16 +105,16 @@
             });
         });
 
-        $("#aceptar").click(function () {
+        $(".validacion").click(function () {
             if (Validation()) {
                 $("#modal-confirmacion").modal("show");
             }
         });
 
-        $("#procesarMovimiento").click(function () {
+        $(".entradaAlmacen").click(function () {
             $("#modal-confirmacion").modal("hide");
             var dataform = $("#dataform").serialize() + '&' + $("#lista").serialize();
-            alert(dataform);
+            //alert(dataform);
             $.ajax({
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -126,7 +126,7 @@
                     } 
                     else {
                         $("#modal-warning").modal("show");
-                        $("#cancelar").click();
+                        $(".almacen").click();
                     }
                 },
             });

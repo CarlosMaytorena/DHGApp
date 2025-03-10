@@ -10,25 +10,32 @@
                 @Html.EditorFor(m => m.almacen.SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus escanear", @placeholder = "Escanea el producto aqui, presiona enter" } })
             </div>
         </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
-            </div>
-            <div class="col-md-3">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-            </div>
-        </div>
+        @{
+            if (Model.almacenLista.Count > 0 )
+            {
+                <div class="row card-row-spacer">
+                    <div class="col-md-3">
+                        <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+                    </div>
+                </div>
+            }
+        }
         @for (int i = 0; i < Model.almacenLista.Count; i++)
         {
             <div class="row card-row-spacer">
                 @Html.HiddenFor(m => m.almacenLista[i].IdAlmacen)
                 @Html.HiddenFor(m => m.almacenLista[i].IdProducto)
+                @Html.HiddenFor(m => m.almacenLista[i].IdEstatus)
+                @Html.HiddenFor(m => m.almacenLista[i].Estatus)
                 <div class="col-md-3">
                     @Html.EditorFor(m => m.almacenLista[i].SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
                 </div>

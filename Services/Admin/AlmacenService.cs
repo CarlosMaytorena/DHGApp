@@ -4,6 +4,7 @@ using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 
@@ -27,7 +28,6 @@ namespace AgricolaDH_GApp.Services.Admin
             List<Almacen> almacenList;
             try
             {
-                //almacenList = context.Almacen.FromSqlRaw("exec SP_JoinAlmacen").ToList();
                 almacenList = context.Almacen.ToList();
                 foreach (Almacen a in almacenList)
                 {
@@ -41,7 +41,7 @@ namespace AgricolaDH_GApp.Services.Admin
                             a.Solicitante = "N/A";
                             break;
 
-                        case "Almacen":
+                        default:
                             Usuario almacenista = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdAlmacenista));
                             Usuario solicitante = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdSolicitante));
                             a.Almacenista = almacenista.Username;
@@ -60,31 +60,24 @@ namespace AgricolaDH_GApp.Services.Admin
             return almacenList;
         }
 
-        public List<Producto> SelectProductos()
-        {
-            List<Producto> productoList;
-            try
-            {
-                productoList = context.Productos.ToList();
-            }
-            catch
-            {
-                productoList = new List<Producto>();
-            }
-            return productoList;
-        }
-
         public void Entrada(AlmacenVM model)
         {
             try
             {
+                if (model.almacenLista.Any(x => x.Estatus.Equals("Almacen")) )
+                {
+                    throw new Exception();
+                }
+                DateTime fecha = DateTime.Now;
                 foreach (Almacen a in model.almacenLista)
                 {
-                    if (context.Almacen.Any(a => a.SerialNumber.Equals(a.SerialNumber)))
-                    {
-                        //Producto llega a Almacen correctamente
-                        context.Almacen.FirstOrDefault(a => a.SerialNumber.Equals(a.SerialNumber)).IdEstatus = 2;
-                    }
+
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 2; //Almacen
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Entrada";
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
                 }
                 context.SaveChanges();
             }
@@ -94,40 +87,29 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public int Salida(AlmacenDTO registro)
+        public void Salida(AlmacenVM model)
         {
-            if (registro == null)
-            {
-                return -1;
-            }
             try
             {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                if (registroProducto == null | registroAlmacen == null)
+                if (model.almacenLista.Any(x => !x.Estatus.Equals("Almacen")))
                 {
-                    return -1;
+                    throw new Exception();
                 }
-                int dec = 0;//registroAlmacen.Disponible - registro.Almacen.Disponible;
-                if (dec < 0)
+                DateTime fecha = DateTime.Now;
+                foreach (Almacen a in model.almacenLista)
                 {
-                    return -1;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 3; //Fuera
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Salida";
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
                 }
-                //registroAlmacen.Disponible -= registro.Almacen.Disponible;
-                if (registro.Motivo == 1)
-                {
-                    //registroAlmacen.EnUso += registro.Almacen.Disponible;
-                }
-                if (registro.Motivo == 2)
-                {
-
-                    //registroAlmacen.Terminados += registro.Almacen.Disponible;
-                }
-                return context.SaveChanges();
+                context.SaveChanges();
             }
             catch
             {
-                return -1;
+                throw;
             }
         }
 
