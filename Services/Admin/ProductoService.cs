@@ -145,5 +145,10 @@ namespace AgricolaDH_GApp.Services.Admin
             return producto;
         }
 
+        public Producto SelectProductoByBarcodeID(string barcodeID)
+        {
+            return context.Productos.FirstOrDefault(p => p.PN == barcodeID);
+        }
+
     }
 }

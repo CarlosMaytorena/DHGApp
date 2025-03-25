@@ -301,6 +301,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
         });
 
+        $("#reimpresion").click(function () {
+            sidebarClickColor($(this));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Reimpresion")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
         $("#almacen").click(function () {
             sidebarClickColor($(this));
             $.ajax({

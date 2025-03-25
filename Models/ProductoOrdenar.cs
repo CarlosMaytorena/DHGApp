@@ -11,6 +11,9 @@ namespace AgricolaDH_GApp.Models
         public decimal? Unidad { get; set; }
         public decimal? Total { get; set; }
         public decimal? Impuesto { get; set; }
+        public int PorRecibir { get; set; }
+
+
 
     }
 
@@ -24,6 +27,10 @@ namespace AgricolaDH_GApp.Models
         public decimal? Total { get; set; }
         public decimal? Impuesto { get; set; }
         public decimal? Descuento { get; set; }
+        public int PorRecibir { get; set; }
+
+
+
 
     }
 }

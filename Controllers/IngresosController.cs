@@ -1,6 +1,7 @@
 ﻿using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -65,5 +66,33 @@ namespace AgricolaDH_GApp.Controllers
             // Return an error message if the product is not found
             return Json(new { success = false, message = "Producto no encontrado." });
         }
+
+        [HttpPost]
+        public IActionResult ActualizarPorRecibir([FromBody] List<ProductoOrdenar> receivedProducts)
+        {
+            int res = 0;
+            foreach (var item in receivedProducts)
+            {
+                // Fetch existing product data
+                var productoOrdenar = _ordenDeCompraService.SelectProductoOrdenar(item.IdProductoOrdenar);
+
+                if (productoOrdenar != null)
+                {
+                    productoOrdenar.PorRecibir = item.PorRecibir; // Update with new remaining quantity
+                    res = _ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
+                }
+            }
+
+            if (res == 0)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return Json(new { success = false });
+            }
+        }
+
+
     }
 }

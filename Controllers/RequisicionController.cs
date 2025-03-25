@@ -127,6 +127,7 @@ namespace AgricolaDH_GApp.Controllers
                 foreach (var productoOrdenar in model.productosOrdenar)
                 {
                     productoOrdenar.IdOrdenDeCompra = IdOrdenDeCompra;
+                    productoOrdenar.PorRecibir = productoOrdenar.Cantidad;
                     res = requisicionService.InsertProductoOrdenar(productoOrdenar);
                 }
             }
