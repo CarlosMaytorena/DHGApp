@@ -112,18 +112,5 @@ namespace AgricolaDH_GApp.Services.Admin
                 throw;
             }
         }
-
-        public Producto ProductTypeByPN(string id)
-        {
-            Producto registro = new Producto();
-            try
-            {
-                registro = context.Productos.SingleOrDefault(a => a.PN.Equals(id));
-            }
-            catch
-            {
-            }
-            return registro;
-        }
     }
 }

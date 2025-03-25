@@ -4,8 +4,12 @@ using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Antlr.Runtime.Tree;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
+using System.Security.Cryptography.Xml;
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -38,15 +42,16 @@ namespace AgricolaDH_GApp.Controllers
 
 		[HttpGet]
 		public IActionResult Index()
-		{
+        {
+
             model.almacenLista = almacenService.SelectAlmacen();
             return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
-		[HttpGet]
+        [HttpGet]
         public IActionResult Entrada()
         {
             model.usuariosList = usuarioService.SelectUsuarios();
-            return PartialView("~/Views/Almacen/Entrada.cshtml", model);
+            return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 		[HttpGet]
         public IActionResult Salida()
@@ -54,7 +59,6 @@ namespace AgricolaDH_GApp.Controllers
             model.usuariosList = usuarioService.SelectUsuarios();
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
-
         [HttpPost]
         public async Task<IActionResult> AltaAlmacen(AlmacenVM model)
         {
@@ -90,8 +94,10 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model)
         {
-            // TODO: Primer escaneo no transmite el SerialNumber
-            if (context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)))
+            // TODO: Primer escaneo no se agrega a la lista
+            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            if (cond1 && cond2)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
