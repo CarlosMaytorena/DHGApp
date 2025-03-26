@@ -112,7 +112,7 @@
         $(".salidaAlmacen").click(function () {
             $("#modal-confirmacion").modal("hide");
             var dataform = $("#dataform").serialize() + '&' + $("#lista").serialize();
-            alert(dataform);
+            //alert(dataform);
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("BajaAlmacen", "Almacen")',

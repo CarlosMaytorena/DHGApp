@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Diagnostics;
 using System.Security.Cryptography.Xml;
+using System.Xml;
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -51,9 +52,10 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult Entrada()
         {
             model.usuariosList = usuarioService.SelectUsuarios();
-            return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
+            return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
-		[HttpGet]
+
+        [HttpGet]
         public IActionResult Salida()
         {
             model.usuariosList = usuarioService.SelectUsuarios();
@@ -113,7 +115,8 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult EliminarProductoLista(AlmacenVM model)
         {
-            model.almacenLista.RemoveAt(model.almacenLista.Count-1);
+            if (model.almacenLista.Count > 0)
+                model.almacenLista.RemoveAt(model.almacenLista.Count-1);
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 
