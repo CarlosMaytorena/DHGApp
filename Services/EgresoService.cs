@@ -36,6 +36,14 @@ namespace AgricolaDH_GApp.Services.Admin
             try
             {
                 egresosList = context.Egresos.ToList();
+
+                //Extra Fields
+                foreach(Egreso item in egresosList)
+                {
+                    item.Producto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(item.IdProducto)).NombreProducto;
+                    item.Solicitante = context.Usuarios.FirstOrDefault(x => x.IdUsuario.Equals(item.IdSolicitante)).Username;
+                    item.SerialNumber = context.Almacen.FirstOrDefault(x => x.IdAlmacen.Equals(item.IdAlmacen)).SerialNumber; 
+                }
             }
             catch
             {
@@ -44,22 +52,31 @@ namespace AgricolaDH_GApp.Services.Admin
             return egresosList;
         }
 
-        public void Generar(Egreso egreso)
+        public void Generar(EgresosVM model)
         {
             try
             {
-                Producto producto = context.Productos.FirstOrDefault(p => p.NombreProducto.Equals(egreso.Producto));
-                Almacen registro = context.Almacen.FirstOrDefault(x => x.IdProducto.Equals(producto.IdProducto));
-                int attempt = 0;// registro.Terminados - egreso.Cantidad;
-                if (attempt < 0)
+                foreach (Almacen a in model.almacenLista)
                 {
-                    throw new Exception();
+                    Egreso e = new Egreso();
+                    e.IdAlmacen = a.IdAlmacen;
+                    e.IdProducto = a.IdProducto;
+                    e.Fecha = DateTime.Now;
+                    e.SerialNumber = a.SerialNumber;
+                    
+                    e.IdEvidencia = model.egreso.IdEvidencia;
+
+                    e.IdSolicitante = model.egreso.IdSolicitante;
+                    e.PathAntes = model.egreso.PathAntes;
+                    e.PathDespues = model.egreso.PathDespues;
+                    context.Egresos.Add(e);
                 }
-                //registro.Terminados -= egreso.Cantidad;
-                egreso.Fecha = DateTime.Now;
-                context.Egresos.Add(egreso);
+
+                Evidencia evi = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(model.egreso.IdEvidencia));
+                evi.PathDespues = model.egreso.PathDespues;
+                evi.PathAntes = model.egreso.PathAntes;
+                context.Evidencia.Update(evi);
                 context.SaveChanges();
-                egreso.IdEgreso = context.Egresos.OrderByDescending(x => x.IdEgreso).FirstOrDefault().IdEgreso;
                 return;
             }
             catch
@@ -87,39 +104,38 @@ namespace AgricolaDH_GApp.Services.Admin
             Producto producto;
             try
             {
-                producto = context.Productos.SingleOrDefault(a => a.NombreProducto == egreso.Producto);
+                //producto = context.Productos.SingleOrDefault(a => a.NombreProducto == egreso.Producto);
 
             }
             catch
             {
                 producto = null;
             }
-            return producto;
+            return new Producto();
         }
 
-        public string UploadFile(Egreso egreso, string tipo)
+        public string UploadFile(EgresosVM model, string tipo)
         {
             string filename;
-            filename = $"EgresoId{egreso.IdEgreso}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_Evidencia{tipo}.jpg";
             IFormFile file = null;
             try
             {
-                if (tipo.Equals("Antes"))
-                {
-                    file = egreso.EvidenciaAntesFile;
-                }
-                if (tipo.Equals("Despues"))
-                {
-                    file = egreso.EvidenciaDespuesFile;
-                }
+                Evidencia e = context.Evidencia.SingleOrDefault(x => x.IdEvidencia.Equals(model.egreso.IdEvidencia));
 
-                _blobStorageService.UploadFileAsync(file, filename);
+                if (tipo.Equals("Antes"))
+                    file = model.egreso.FileAntes;
+                if (tipo.Equals("Despues"))
+                    file = model.egreso.FileDespues;
+
+                filename = $"{e.IdEvidencia}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{tipo}.jpg";
+                //_blobStorageService.UploadFileAsync(file, filename);
+                
+                return filename;
             }
             catch
             {
-                filename = null;
+                throw new Exception();
             }
-            return filename;
         }
     }
  }

@@ -1,140 +1,54 @@
 ﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
 
-<div class="text-center">
-    
-    <div class="row top-row-spacer">
-        <div class="col-md-5">
-            <h4 class="page-title">Crear Egreso</h4>
-        </div>
-        <div class="col-md-5">
-        </div>
-
-        <div class="col-md-2">
-            <button id="generar" class="btn btn-block secondary-background-color" style="color: white">
-                    Generar
-            </button>
-        </div>
+<div class="row top-row-spacer">
+    <div class="col-md-5">
+        <h4 class="page-title">Generar Egreso de Productos</h4>
     </div>
-
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-block secondary-background-color validacion" style="color: white">
+            Aceptar
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn btn-block btn-danger egreso" style="color: white">
+            <i class="nav-icon fas fa-ban"></i>
+            Cancelar
+        </button>
+    </div>
+</div>
+<form id="egreso-form">
     <div class="card card-margin">
         <div class="row card-row-spacer">
             <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left"># Producto</label>
-                <input id="ProductBarcodeID" type="text" class="form-control" placeholder="Escanea el producto" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <input id="Producto" type="text" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
-                <input id="Descripcion" type="text" class="form-control" readonly />
-            </div>
-        </div>
-        
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
-                <select id="AprobadoPor" class="form-control">
-                    <option>Seleccione una opcion</option>
-                    @foreach (var usuario in Model.usuariosList)
-                    {
-                        <option value="@usuario.IdUsuario">@usuario.Username</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-4">
+                @Html.HiddenFor(m => m.egreso.IdProducto)
                 <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input id="Solicitante" type="text" class="form-control" />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Comentarios</label>
-                <textarea id="Comentarios" class="form-control"></textarea>
+                @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar" })
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
-                <div id="GrupoAntes" class="input-group">
-                    <div class="custom-file">
-                        <input id="SubirArchivoAntes" type="file" class="custom-file-input" accept=".jpg,.jpeg">
-                        <label id="SubirAntesLabel" for="SubirArchivoAntes" class="custom-file-label" style=" text-align: left"></label>
-                    </div>
-                    <div class="input-group-append">
-                        <button id="EvidenciaAntes" class="input-group-text">Cargar</button>
-                    </div>
+                <div class="custom-file">
+                    @Html.EditorFor(m => m.egreso.FileAntes, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = ".png, .jpg, .jpeg" } })
+                    @Html.Label("", "", new { @class = "custom-file-label validarArchivo", @style = "text-align: left"})
                 </div>
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
-                <div id="GrupoEvidenciaDespues" class="input-group">
-                    <div class="custom-file">
-                        <input id="SubirArchivoDespues" type="file" class="custom-file-input" accept=".jpg,.jpeg">
-                        <label id="SubirDespuesLabel" for="SubirArchivoDespues" class="custom-file-label" style=" text-align: left"></label>
-                    </div>
-                    <div class="input-group-append">
-                        <button id="EvidenciaDespues" class="input-group-text">Cargar</button>
-                    </div>
+                <div class="custom-file">
+                    @Html.EditorFor(m => m.egreso.FileDespues, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = ".png, .jpg, .jpeg" } })
+                    @Html.Label("", "", new { @class = "custom-file-label validarArchivo", @style = "text-align: left"})
                 </div>
             </div>
         </div>
-        <br />
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Disponible para Egresar</h3>
-
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Producto #</th>
-                                <th>Producto</th>
-                                <th>Descripción</th>
-                                <th>Disponible</th>
-                                <th>Terminados</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var almacen in Model.almacenLista)
-                            {
-                                <tr>
-                                    <td>@almacen.SerialNumber</td>
-                                    <td>@almacen.NombreProducto</td>
-                                    <td>@almacen.Descripcion</td>
-                                    <td>1</td>
-                                    <td>1</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+        <div class="row card-row-spacer">
         </div>
     </div>
-</div>
+
+    <div id="ListaDeProductos">
+        @Html.Partial("~/Views/Egresos/ListaProductos.cshtml", Model)
+    </div>
+</form>
 
 <div class="modal fade" id="modal-confirmacion">
     <div class="modal-dialog">
@@ -150,7 +64,7 @@
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="procesar" type="button" class="btn btn-primary">Aceptar</button>
+                <button type="button" class="btn btn-primary generarEgreso">Aceptar</button>
             </div>
         </div>
     </div>
@@ -169,7 +83,7 @@
                 <p style="margin-left: 10px">Egreso generado existosamente.</p>
             </div>
             <div class="modal-footer justify-content-between">
-                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+                <button type="button" class="btn btn-primary egreso">Aceptar</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -179,8 +93,9 @@
 
 <script>
     $(document).ready(function () {
-        $("#aceptar").click(function () {
+        $(".egreso").click(function () {
             $("#modal-success").modal("hide");
+
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Egresos")',
@@ -192,36 +107,24 @@
             });
         });
 
-        $("#generar").click(function () {
+        $(".validacion").click(function () {
             //if (Validation()) {
-               $("#modal-confirmacion").modal("show");
+                $("#modal-confirmacion").modal("show");
             //}
         });
 
-        $("#procesar").click(function () {
+        $(".generarEgreso").click(function () {
             $("#modal-confirmacion").modal("hide");
-            //Egreso
-            var Producto = $("#Producto").val();
-            var Cantidad = parseInt($("#Cantidad").val());
-            var Comentarios = $("#Comentarios").val();
-            var Solicitante = $("#Solicitante").val();
-            var AprobadoPor = $("#AprobadoPor option:selected").text();
-            var ProductBarcodeID = $("#ProductBarcodeID").val();
-            var EvidenciaAntes = ($("#SubirArchivoAntes"))[0].files[0];
-            var EvidenciaDespues = ($("#SubirArchivoDespues"))[0].files[0];
-            //alert(EvidenciaAntes.name);
-            //alert(JSON.stringify({ProductBarcodeID:ProductBarcodeID ,Producto: Producto,Cantidad: Cantidad, Comentarios: Comentarios, Solicitante: Solicitante, AprobadoPor: AprobadoPor}));
 
-            var formData = new FormData();
-            formData.append("Egreso.Producto", Producto);
-            formData.append("Egreso.Cantidad", Cantidad);
-            formData.append("Egreso.Comentarios", Comentarios);
-            formData.append("Egreso.Solicitante", Solicitante);
-            formData.append("Egreso.AprobadoPor", AprobadoPor);
-            formData.append("Producto.ProductBarcodeID", ProductBarcodeID);
-            formData.append("Egreso.EvidenciaAntesFile", EvidenciaAntes);
-            formData.append("Egreso.EvidenciaDespuesFile", EvidenciaAntes);
+            var egresoForm = $("#egreso-form")[0];
+            var listaProductos = $("#lista")[0].querySelectorAll('input, select, textarea');
+            var formData = new FormData(egresoForm);
 
+            listaProductos.forEach(function (input) {               
+                formData.append(input.name, input.value);
+            });
+
+            //var dataform = $("#egreso-form").serialize() + '&' + $("#lista").serialize();
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GenerarEgreso", "Egresos")',
@@ -232,99 +135,53 @@
                 success: function (data) {
                     if (data.res > 0) {
                         $("#modal-success").modal("show");
-                        alert(data.model.egreso.pathPicAntes);
                     }
                     else {
                         $("#modal-warning").modal("show");
+                        $(".egreso").click();
                     }
                 }
             });
-        });
-
-        $("#EvidenciaAntes").click(function () {
-            var fileInput = ($("#SubirArchivoAntes"))[0].files[0];
-            if (fileInput.name != null) 
-            {
-                $("#SubirAntesLabel").text(fileInput.name);
-            } 
-        });
-
-        $("#EvidenciaDespues").click(function () {
-            var fileInput = ($("#SubirArchivoDespues"))[0].files[0];
-            if (fileInput.name != null) {
-                $("#SubirDespuesLabel").text(fileInput.name);
-            }
-        });
+        }); 
 
         function Validation() {
             var validation = true;
-            $("#ProductBarcodeID").css("border-color", "");
-            $("#Producto").css("border-color", "");
-            //$("#Comentario").css("border-color", "");
-            $("#Solicitante").css("border-color", "");
-            $("#AprobadoPor").css("border-color", "");
-            $("#Cantidad").css("border-color", "");
+            $('.validar').each(function () {
 
-            $("#SubirAntesLabel").css("border-color", "");
-            $("#EvidenciaAntes").css("border-color", "");
+                $("#" + this.id).css("border-color", "");
 
-            $("#SubirDespuesLabel").css("border-color", "");
-            $("#EvidenciaDespues").css("border-color", "");
+                if ($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0") {
+                    $("#" + this.id).css("border-color", "red");
+                    validation = false;
+                }
+            });
+            $('.custom-file-input').each(function () {
+                var fileInput = $(this);
+                var label = fileInput.next(".custom-file-label");
+                fileInput.css("border-color", "");
+                label.css("border-color", "");
 
-            if ($("#ProductBarcodeID").val() == null || $("#ProductBarcodeID").val() == "") {
-                $("#ProductBarcodeID").css("border-color", "red");
-                validation = false;
-            }
-            if ( $("#Producto").val() == null || $("#Producto").val() == "") {
-                $("#Producto").css("border-color", "red");
-                validation = false;
-            }
-            if ($("#Solicitante").val() == null || $("#Solicitante").val() == "") {
-                $("#Solicitante").css("border-color", "red");
-                validation = false;
-            }
-            if (isNaN($("#AprobadoPor").val())) {
-                $("#AprobadoPor").css("border-color", "red");
-                validation = false;
-            }
-            if (isNaN(parseInt($("#Cantidad").val()))) {
-                $("#Cantidad").css("border-color", "red");
-                validation = false;
-            }
-            if ($("#SubirAntesLabel").text() == null || $("#SubirAntesLabel").text() == "") {
-                $("#SubirAntesLabel").css("border-color", "red");
-                $("#EvidenciaAntes").css("border-color", "red"); 
-                validation = false;
-            }
-            if ($("#SubirDespuesLabel").text() == null || $("#SubirDespuesLabel").text() == "") {
-                $("#SubirDespuesLabel").css("border-color", "red");
-                $("#EvidenciaDespues").css("border-color", "red");
-                validation = false;
-            }
+                if (label.text() == null || label.text() == "") {
+                    fileInput.css("border-color", "red");
+                    label.css("border-color", "red");
+                    validation = false;
+                }
+            });
+
             return validation;
         };
 
-        $('#ProductBarcodeID').on('change', function () {
-            var ProductBarcodeID = $(this).val();
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("EncontrarProducto", "Almacen")',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ProductBarcodeID: ProductBarcodeID,
-                }),
-                success: function (response) {
-                    //alert(JSON.stringify(response));
-                    if (response.res) {
-                        $("#Producto").val(response.producto.nombreProducto);
-                        $("#Descripcion").val(response.producto.descripcion);
+        $(".custom-file-input").change(function () {
+            var fileInput = $(this);
+            var label = fileInput.next(".custom-file-label");
 
-                    } else {
-                        $("#Producto").val('');
-                        $("#Descripcion").val('');
-                    }
-                },
-            });
+            if (fileInput[0].files.length > 0) {
+                var fileName = fileInput[0].files[0].name;
+                label.text(fileName); 
+                yourQueryFunction(fileInput[0].files[0]);
+            } else {
+                label.text("No file chosen");
+            }
         });
     });
 </script>
