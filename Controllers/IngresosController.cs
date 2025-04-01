@@ -23,7 +23,9 @@ namespace AgricolaDH_GApp.Controllers
         {
             SubirFacturaVM model = new SubirFacturaVM
             {
-                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4) // Status 4 for Ingresos
+                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4), // Status 4 for Ingresos
+                ordenesCerradas = _ordenDeCompraService.SelectOrdenDeCompraTableList(5)  // Status 5: Closed
+
             };
             return PartialView("~/Views/Ingresos/Index.cshtml", model);
         }
@@ -71,27 +73,50 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult ActualizarPorRecibir([FromBody] List<ProductoOrdenar> receivedProducts)
         {
             int res = 0;
+
+            if (receivedProducts == null || receivedProducts.Count == 0)
+                return Json(new { success = false });
+
+            // Get the order ID from one of the product entries
+            int idOrdenDeCompra = _ordenDeCompraService
+                .SelectProductoOrdenar(receivedProducts[0].IdProductoOrdenar)?.IdOrdenDeCompra ?? 0;
+
             foreach (var item in receivedProducts)
             {
-                // Fetch existing product data
                 var productoOrdenar = _ordenDeCompraService.SelectProductoOrdenar(item.IdProductoOrdenar);
-
                 if (productoOrdenar != null)
                 {
-                    productoOrdenar.PorRecibir = item.PorRecibir; // Update with new remaining quantity
+                    productoOrdenar.PorRecibir = item.PorRecibir;
                     res = _ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
                 }
             }
 
-            if (res == 0)
+            // Check if all products in the order have been received
+            var productosOrden = _ordenDeCompraService.SelectProductosOrdenarSelected(idOrdenDeCompra);
+            bool allReceived = productosOrden.All(p => p.PorRecibir == 0);
+
+            if (allReceived)
             {
-                return Json(new { success = true });
+                // Update only the order status
+                _ordenDeCompraService.UpdateOrdenDeCompraStatus(idOrdenDeCompra, 5); // 5 = Closed
             }
-            else
-            {
-                return Json(new { success = false });
-            }
+
+            return Json(new { success = (res == 0) });
         }
+
+        [HttpPost]
+        public IActionResult VerOrden(int idOrdenDeCompra)
+        {
+            SubirFacturaVM model = new SubirFacturaVM
+            {
+                ordenDeCompra = _ordenDeCompraService.SelectOrdenDeCompra(idOrdenDeCompra),
+                productosOrdenar = _ordenDeCompraService.SelectProductosOrdenarSelected(idOrdenDeCompra)
+            };
+
+            return PartialView("~/Views/Ingresos/IngresoForm.cshtml", model);
+        }
+
+
 
 
     }
