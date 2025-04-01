@@ -77,8 +77,9 @@
                 return;
             }
             event.preventDefault();
+
             var dataform = $("#lista");
-            var serialNumber = dataform.find("input[name='almacen.SerialNumber']").val();
+            var serialNumber = $(this).val();
             //alert(serialNumber)
             //alert(dataform.serialize());
             $.ajax({
@@ -87,6 +88,7 @@
                 data: dataform.serialize(),
                 success: function (data) {
                     $("#ListaDeProductos").html(data);
+                    $("input[name='almacen.SerialNumber']").val("");
                 }
             });
         });

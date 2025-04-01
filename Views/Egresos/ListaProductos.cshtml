@@ -77,6 +77,8 @@
                 return;
             }
             event.preventDefault();
+
+
             var dataform = $("#lista");
             //alert(dataform.serialize());
             $.ajax({
@@ -85,6 +87,7 @@
                 data: dataform.serialize(),
                 success: function (data) {
                     $("#ListaDeProductos").html(data);
+                    $("input[name='almacen.SerialNumber']").val("");
                 }
             });
         });

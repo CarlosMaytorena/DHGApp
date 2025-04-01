@@ -109,6 +109,7 @@ namespace AgricolaDH_GApp.Controllers
 
                 model.almacenLista.Add(a);
             }
+            model.almacen.SerialNumber = String.Empty;
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 
