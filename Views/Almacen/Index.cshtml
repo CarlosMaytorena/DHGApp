@@ -1,14 +1,15 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
+
 <div class="text-center">
 
-    <div class="row top-row-spacer">
+<div class="row top-row-spacer">
         <div class="col-md-6">
             <h4 class="page-title">Almacen</h4>
         </div>
         <div class="col-md-2">
         </div>
         <div class="col-md-2">
-            <button id="ingresoAlmacen" class="btn btn-block secondary-background-color" style="color: white">
+            <button id="entradaAlmacen" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-plus"></i>
                   Entrada
             </button>
@@ -44,82 +45,26 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Producto #</th>
+                                <th>ID</th>
                                 <th>Producto</th>
-                                <th>Descripción</th>
-                                <th>Disponible</th>
-                                <th>En Uso</th>
-                                <th>Terminados</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var almacen in Model.almacenList)
-                            {
-                                <tr>
-                                    <td>@almacen.ProductBarcodeID</td>
-                                    <td>@almacen.NombreProducto</td>
-                                    <td>@almacen.Descripcion</td>
-                                    <td>@almacen.Disponible</td>
-                                    <td>@almacen.EnUso</td>
-                                    <td>@almacen.Terminados</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Movimientos</h3>
-
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Movimiento #</th>
-                                <th>Producto</th>
-                                <th>Tipo de Movimiento</th>
-                                <th>Motivo</th>
-                                <th>Uso</th>
-                                <th>Cantidad</th>
+                                <th>Movimiento</th>
+                                <th>Almacenista</th>
                                 <th>Solicitante</th>
-                                <th>Aprobado Por</th>
+                                <th>Estatus</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var movimiento in Model.movimientosList)
+                            @foreach (var a in Model.almacenLista)
                             {
                                 <tr>
-                                    <td>@movimiento.IdMovimiento</td>
-                                    <td>@movimiento.Producto</td>
-                                    <td>@movimiento.TipoMovimiento</td>
-                                    <td>@movimiento.Motivo</td>
-                                    <td>@movimiento.Uso</td>
-                                    <td>@movimiento.Cantidad</td>
-                                    <td>@movimiento.Solicitante</td>
-                                    <td>@movimiento.AprobadoPor</td>
-                                    <td>@movimiento.Fecha</td>
+                                    <td>@a.SerialNumber</td>
+                                    <td>@a.NombreProducto</td>
+                                    <td>@a.Movimiento</td>
+                                    <td>@a.Almacenista</td>
+                                    <td>@a.Solicitante</td>
+                                    <td>@a.Estatus</td>
+                                    <td>@a.Fecha</td>
                                 </tr>
                             }
                         </tbody>
@@ -129,14 +74,12 @@
             </div>
             <!-- /.card -->
         </div>
-    </div>
-
+    </div>    
 </div>
-
 <script>
     $(document).ready(function () {
 
-        $("#ingresoAlmacen").click(function () {
+        $("#entradaAlmacen").click(function () {
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Entrada", "Almacen")',
@@ -159,7 +102,6 @@
                 }
             });
         });
-
     });
 </script>
 

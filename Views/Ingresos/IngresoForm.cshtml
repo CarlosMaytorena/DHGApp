@@ -6,17 +6,11 @@
         <div class="col-md-5">
             <h4 class="page-title">Ingresar</h4>
         </div>
-        <div class="col-md-3"></div>
+        <div class="col-md-5"></div>
         <div class="col-md-2">
             <button id="realizarIngresoConfirm" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-right"></i>
                 Recibir
-            </button>
-        </div>
-        <div class="col-md-2">
-            <button id="imprimirEtiquetas" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-print"></i>
-                Imprimir Etiquetas
             </button>
         </div>
     </div>
@@ -48,6 +42,7 @@
                         <div class="col-md-4">
                             <label style="font-weight: normal; text-align: left; float: left">Producto</label>
                             <input class="form-control" value="@product.Producto" readonly />
+                            <input type="hidden" class="product-id" value="@product.IdProductoOrdenar" />
                             <input type="hidden" class="product-barcode" data-barcode-value="" />
                         </div>
                         <div class="col-md-2">
@@ -56,11 +51,11 @@
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Restante</label>
-                            <input type="number" class="form-control cantidad-restante" placeholder="Restante" />
+                            <input type="number" class="form-control cantidad-restante" value="@product.PorRecibir" readonly />
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Recibida</label>
-                            <input type="number" class="form-control cantidad-recibida" placeholder="Recibida" />
+                            <input type="number" class="form-control cantidad-recibida" placeholder="Recibida" min="0" />
                         </div>
                         <div class="col-md-2">
                             <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
@@ -94,7 +89,20 @@
 </div>
 
 <script type="module">
-    import { openPrintWindow } from "/js/labelPrinter.js";
+
+    function updateRestante(input) {
+        const $row = $(input).closest(".product-row");
+        const cantidadEsperada = parseInt($row.find(".cantidad-restante").val(), 10) || 0;
+        const cantidadRecibida = parseInt($row.find(".cantidad-recibida").val(), 10) || 0;
+
+        let newRestante = Math.max(cantidadEsperada - cantidadRecibida, 0);
+        $row.find(".cantidad-restante").val(newRestante);
+    }
+    window.updateRestante = updateRestante;
+
+
+    import { openPrintWindow, triggerLabelPrinting } from "/js/labelPrinter.js";
+    window.triggerLabelPrinting = triggerLabelPrinting; // 
 
     $(document).ready(function () {
         // Fetch barcodes for all products on page load
@@ -122,33 +130,83 @@
             }
         });
 
-        // Event handler for "Imprimir Etiquetas"
-        $("#imprimirEtiquetas").click(function () {
-            const orderNumber = $("#orderNumber").val(); // Get the order number from the updated ID
-            const labels = [];
+        $("#realizarIngresoConfirm").click(function () {
+            let receivedProducts = [];
+            let labelsToPrint = [];
 
             $(".product-row").each(function () {
                 const $row = $(this);
-                const productName = $row.find("input[readonly]").val(); // Get product name
-                const productBarcodeID = $row.find(".product-barcode").data("barcode-value"); // Get barcode value
+                let productId = $row.find(".product-id").val();
+                let productName = $row.find("input[readonly]").val();
+                let productBarcodeID = $row.find(".product-barcode").data("barcode-value"); // Part Number
+                let workOrderNumber = $("#orderNumber").val(); // Use Order ID as Work Order
+                let recibida = parseInt($row.find(".cantidad-recibida").val()) || 0;
+                let restante = parseInt($row.find(".cantidad-restante").val()) || 0;
 
-                if (productName && productBarcodeID) {
-                    // Generate label HTML
-                    labels.push(`
-                            <div class="label">
-                                <h4>Orden: ${orderNumber}</h4>
-                                <h4>Producto: ${productName}</h4>
-                                <svg class="barcode" data-barcode-value="${productBarcodeID}"></svg>
-                            </div>
-                        `);
+                if (restante === 0) {
+                    console.warn(`No more stock for ${productName}. Skipping label printing.`);
+                    return;
+                }
+
+                if (recibida > restante) {
+                    alert(`No puedes recibir más de lo que queda en Restante para: ${productName}`);
+                    return;
+                }
+
+                if (recibida > 0) {
+                    let newRestante = Math.max(restante - recibida, 0);
+                    $row.find(".cantidad-restante").val(newRestante); // UI update
+
+                    receivedProducts.push({
+                        IdProductoOrdenar: productId,
+                        Recibida: recibida,
+                        PorRecibir: newRestante
+                    });
+
+                    // Generate labels based on Recibida count with correct format
+                    for (let i = 1; i <= recibida; i++) {
+                        let serialNumber = `${productBarcodeID}-${workOrderNumber}-${String(i).padStart(2, '0')}`;
+
+                        labelsToPrint.push(`
+                        <div class="label">
+                            <h4>Orden: ${workOrderNumber}</h4>
+                            <h4>Producto: ${productName}</h4>
+                            <h4>Serial: ${serialNumber}</h4>
+                            <svg class="barcode" data-barcode-value="${serialNumber}"></svg>
+                        </div>
+                    `);
+                    }
                 }
             });
 
-            if (labels.length > 0) {
-                openPrintWindow(labels.join(''), orderNumber); // Pass both labels and order number
-            } else {
-                alert("No hay datos para imprimir etiquetas.");
+            if (receivedProducts.length === 0) {
+                alert("No se han ingresado productos válidos.");
+                return;
             }
+
+            // Send AJAX request to update database
+            $.ajax({
+                type: "POST",
+                url: "/Ingresos/ActualizarPorRecibir",
+                data: JSON.stringify(receivedProducts),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.success) {
+                        alert("Ingreso registrado correctamente.");
+                        if (labelsToPrint.length > 0) {
+                            openPrintWindow(labelsToPrint.join(''), $("#orderNumber").val()); // Print only received products
+                        }
+                    } else {
+                        alert("Hubo un error al actualizar los datos.");
+                    }
+                },
+                error: function () {
+                    alert("Error al enviar la solicitud.");
+                }
+            });
         });
+
+
+
     });
 </script>

@@ -4,7 +4,9 @@ using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -21,134 +23,94 @@ namespace AgricolaDH_GApp.Services.Admin
         /// Mostrar datos de tabla principal de Almacen
         /// </summary>
         /// <returns></returns>
-        public List<AlmacenView> SelectAlmacen()
+        public List<Almacen> SelectAlmacen()
         {
-            List<AlmacenView> almacenList;
+            List<Almacen> almacenList;
             try
             {
-                almacenList = context.AlmacenView.FromSqlRaw("exec SP_JoinAlmacen").ToList();
+                almacenList = context.Almacen.ToList();
+                foreach (Almacen a in almacenList)
+                {
+                    Producto p = context.Productos.Single(x => x.IdProducto.Equals(a.IdProducto));
+                    Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
+                    a.Estatus = estatus.NombreEstatus;
+                    switch (a.Estatus)
+                    {
+                        case "Ingreso":
+                            a.Almacenista = "N/A";
+                            a.Solicitante = "N/A";
+                            break;
+
+                        default:
+                            Usuario almacenista = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdAlmacenista));
+                            Usuario solicitante = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdSolicitante));
+                            a.Almacenista = almacenista.Username;
+                            a.Solicitante = solicitante.Username;
+                            break;
+                    }
+                    a.NombreProducto = p.NombreProducto;
+                    a.Descripcion = p.Descripcion;
+                }
+                context.SaveChanges();
             }
             catch
             {
-                almacenList = new List<AlmacenView>();
+                almacenList = new List<Almacen>();
             }
             return almacenList;
         }
 
-        public List<Producto> SelectProductos()
+        public void Entrada(AlmacenVM model)
         {
-            List<Producto> productoList;
             try
             {
-                productoList = context.Productos.ToList();
+                if (model.almacenLista.Any(x => x.Estatus.Equals("Almacen")) )
+                {
+                    throw new Exception();
+                }
+                DateTime fecha = DateTime.Now;
+                foreach (Almacen a in model.almacenLista)
+                {
+
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 2; //Almacen
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Entrada";
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
+                }
+                context.SaveChanges();
             }
             catch
             {
-                productoList = new List<Producto>();
+                throw;
             }
-            return productoList;
         }
-        /// <summary>
-        /// Actualizar nuevo registro en tabla Almacen
-        /// </summary>
-        /// <returns></returns>
-        public int Entrada(AlmacenDTO registro)
+
+        public void Salida(AlmacenVM model)
         {
-            if (registro == null)
-            {
-                return -1;
-            }
             try
             {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                if (registroProducto == null | (registroAlmacen == null && registro.Motivo == 2))
+                if (model.almacenLista.Any(x => !x.Estatus.Equals("Almacen")))
                 {
-                    return -1;
+                    throw new Exception();
                 }
-                
-                if (registroAlmacen == null && registro.Motivo == 1)
+                DateTime fecha = DateTime.Now;
+                foreach (Almacen a in model.almacenLista)
                 {
-                    //Insert
-                    context.Almacen.Add(registro.Almacen);
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 3; //Fuera
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Salida";
+                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
                 }
-                if (registroAlmacen != null && registro.Motivo == 1)
-                {
-                    //Update
-                    registroAlmacen.Disponible += registro.Almacen.Disponible;
-                }
-                if(registroAlmacen != null && registro.Motivo == 2)
-                {
-                    //Update
-                    int validacion = registroAlmacen.EnUso - registro.Almacen.Disponible;
-                    if (validacion < 0)
-                    {
-                        return -1;
-                    }
-                    registroAlmacen.Disponible += registro.Almacen.Disponible;
-                    registroAlmacen.EnUso -= registro.Almacen.Disponible;
-                }
-                return context.SaveChanges();
+                context.SaveChanges();
             }
             catch
             {
-                return -1;
+                throw;
             }
-        }
-
-        public int Salida(AlmacenDTO registro)
-        {
-            if (registro == null)
-            {
-                return -1;
-            }
-            try
-            {
-                var registroAlmacen = context.Almacen.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                var registroProducto = context.Productos.SingleOrDefault(a => a.IdProducto == registro.Almacen.IdProducto);
-                if (registroProducto == null | registroAlmacen == null)
-                {
-                    return -1;
-                }
-                int dec = registroAlmacen.Disponible - registro.Almacen.Disponible;
-                if (dec < 0)
-                {
-                    return -1;
-                }
-                registroAlmacen.Disponible -= registro.Almacen.Disponible;
-                if (registro.Motivo == 1)
-                {
-                    registroAlmacen.EnUso += registro.Almacen.Disponible;
-                }
-                if (registro.Motivo == 2)
-                {
-
-                    registroAlmacen.Terminados += registro.Almacen.Disponible;
-                }
-                return context.SaveChanges();
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
-        public Producto SelectProductoByBarcode(Producto registro)
-        {
-            Producto registroTable = new Producto();
-            try
-            {
-                registroTable = context.Productos.SingleOrDefault(a => a.ProductBarcodeID == registro.ProductBarcodeID);
-            }
-            catch
-            {
-            }
-            return registroTable;
-        }
-
-        private int JsonResult(object value)
-        {
-            throw new NotImplementedException();
         }
     }
 }

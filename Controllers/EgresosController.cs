@@ -47,7 +47,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpGet]
 		public IActionResult Index()
 		{
-			model.egresosList = egresoService.SelectEgresos();
+			model.egresosLista = egresoService.SelectEgresos();
 			return PartialView("~/Views/Egresos/Index.cshtml", model);
 		}
 		[HttpGet]
@@ -55,32 +55,27 @@ namespace AgricolaDH_GApp.Controllers
         {
 			model.productosList = productoService.SelectProductos();
 			model.usuariosList = usuarioService.SelectUsuarios();
-			model.almacenList = almacenService.SelectAlmacen();
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]
-        public async Task<IActionResult> GenerarEgreso(EgresoDTO registro)
+        public async Task<IActionResult> GenerarEgreso(EgresosVM model)
         {
 			try
 			{
-                //------------------------------ Arreglo temporal ---------------------------
-                model.producto = almacenService.SelectProductoByBarcode(registro.Producto);
-                registro.Producto = model.producto;
-                //---------------------------------------------------------------------------
+                context.Evidencia.Add(new Evidencia());
+                context.SaveChanges();
+                model.egreso.IdEvidencia = context.Evidencia.OrderByDescending(e => e.IdEvidencia).FirstOrDefault().IdEvidencia;
 
-                egresoService.Generar(registro.Egreso);
-                registro.Egreso.EvidenciaAntesPath = egresoService.UploadFile(registro.Egreso, "Antes");
-                registro.Egreso.EvidenciaDespuesPath = egresoService.UploadFile(registro.Egreso, "Despues");
-				context.Egresos.Update(registro.Egreso);
-				context.SaveChanges();
-                model.egresosList = egresoService.SelectEgresos();
+                model.egreso.PathAntes = egresoService.UploadFile(model, "Antes");
+                model.egreso.PathDespues = egresoService.UploadFile(model, "Despues");
+                egresoService.Generar(model);
 				int res = 1;
-                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+                return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", this.model) });
             }
 			catch
 			{
                 int res = -1;
-                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+                return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", this.model) });
             }
 
         }
@@ -109,6 +104,36 @@ namespace AgricolaDH_GApp.Controllers
                 int res = -1;
                 return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
             }
+        }
+
+        [HttpPost]
+        public IActionResult AgregarProductoLista(EgresosVM model)
+        {
+            // TODO: Primer escaneo no se agrega a la lista
+            if (model.almacen == null)
+                return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
+
+            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            if (cond1 && cond2)
+            {
+                Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+                a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
+                a.Descripcion = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).Descripcion;
+                Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
+                a.Estatus = estatus.NombreEstatus;
+
+                model.almacenLista.Add(a);
+            }
+            return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
+        }
+
+        [HttpPost]
+        public IActionResult EliminarProductoLista(EgresosVM model)
+        {
+            if (model.almacenLista.Count > 0)
+                model.almacenLista.RemoveAt(model.almacenLista.Count - 1);
+            return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
         }
 
         public IActionResult Privacy()

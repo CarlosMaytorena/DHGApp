@@ -1,0 +1,90 @@
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+
+<div class="text-center">
+    <div class="row top-row-spacer">
+        <div class="col-md-8">
+            <h4 class="page-title">Reimprimir Etiquetas</h4>
+        </div>
+        <div class="col-md-4 text-right">
+            <button id="printLabels" class="btn btn-primary">
+                <i class="nav-icon fas fa-print"></i> Imprimir Etiquetas
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <div class="row card-row-spacer">
+            <div class="col-md-8">
+                <label>Orden de compra</label>
+                <input class="form-control" value="@Model.ordenDeCompra.IdOrdenDeCompra" readonly />
+            </div>
+        </div>
+
+        <div class="row card-row-spacer">
+            <label>Productos</label>
+        </div>
+
+        <div id="productContainer">
+            @if (Model.productosOrdenar != null && Model.productosOrdenar.Any())
+            {
+                @foreach (var product in Model.productosOrdenar)
+                {
+                    <div class="row card-row-spacer product-row">
+                        <div class="col-md-4">
+                            <label>Producto</label>
+                            <input class="form-control" value="@product.Producto" readonly />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Número de Parte</label>
+                            <input type="text" class="form-control" value="PN@product.IdProductoOrdenar.ToString(" D5")" readonly />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Orden de Trabajo</label>
+                            <input type="text" class="form-control" value="@Model.ordenDeCompra.IdOrdenDeCompra.ToString("D4")" readonly />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Series</label>
+                            <input type="text" class="form-control series-input" placeholder="Ej. 01,02,03..." />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#printLabels").click(function () {
+            let orderNumber = "@Model.ordenDeCompra.IdOrdenDeCompra";
+            let labels = [];
+
+            $(".product-row").each(function () {
+                let $row = $(this);
+                let productName = $row.find("input[readonly]").val();
+                let partNumber = $row.find("input[readonly]").eq(1).val();
+                let workOrder = $row.find("input[readonly]").eq(2).val();
+                let series = $row.find(".series-input").val().split(",");
+
+                if (series.length > 0 && series[0] !== "") {
+                    series.forEach(serial => {
+                        labels.push(`
+                                <div class="label">
+                                    <h4>Orden: ${orderNumber}</h4>
+                                    <h4>Producto: ${productName}</h4>
+                                    <h4>Serial: ${partNumber}-${workOrder}-${serial.trim()}</h4>
+                                    <svg class="barcode" data-barcode-value="${partNumber}-${workOrder}-${serial.trim()}"></svg>
+                                </div>
+                            `);
+                    });
+                }
+            });
+
+            if (labels.length > 0) {
+                openPrintWindow(labels.join(''), orderNumber);
+            } else {
+                alert("No se han ingresado series para imprimir.");
+            }
+        });
+    });
+</script>

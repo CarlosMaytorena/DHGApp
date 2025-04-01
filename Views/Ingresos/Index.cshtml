@@ -1,7 +1,6 @@
 @model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="text-center">
-
     <div class="row top-row-spacer">
         <div class="col-md-6">
             <h4 class="page-title">Ingresos</h4>
@@ -12,34 +11,23 @@
         </div>
         <div class="col-md-2">
             <button id="searchIngreso" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-search"></i>
-                Buscar
+                <i class="nav-icon fas fa-search"></i> Buscar
             </button>
         </div>
     </div>
 
+    <!-- Open Orders -->
     <div class="row">
         <div class="col-12">
             <div class="card card-margin">
                 <div class="card-header">
                     <h3 class="card-title">Ordenes para Recibo</h3>
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <!-- /.card-header -->
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Acción</th>
+                                <th>Recibir</th>
                                 <th># Orden</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
@@ -74,12 +62,59 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- /.card-body -->
             </div>
-            <!-- /.card -->
         </div>
     </div>
 
+    <!-- Closed Orders -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Ordenes Cerradas</h3>
+                </div>
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Ver</th>
+                                <th># Orden</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Proveedor</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                <th>Temporada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.ordenesCerradas)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" class="verOrdenCerrada" data-id="@order.IdOrdenDeCompra" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                    <td>@order.IdOrdenDeCompra</td>
+                                    <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
+                                    <td>@order.Solicitante</td>
+                                    <td>@order.Proveedor</td>
+                                    <td>@order.Area</td>
+                                    <td>@order.Cultivo</td>
+                                    <td>@order.Rancho</td>
+                                    <td>@order.Etapa</td>
+                                    <td>@order.Temporada</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -99,9 +134,24 @@
             });
         });
 
-        $("#searchIngreso").click(function () {
-            // Implement search functionality if needed
-            alert("Search functionality not implemented yet.");
+        $(".verOrdenCerrada").click(function () {
+            var idOrden = $(this).data("id");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("VerOrden", "Ingresos")',
+                data: { idOrdenDeCompra: idOrden },
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                },
+                error: function () {
+                    alert("No se pudo cargar la orden.");
+                }
+            });
         });
-    });
+
+        $("#searchIngreso").click(function () {
+            alert("Search functionality not implemented yet.");
+            });
+        });
 </script>

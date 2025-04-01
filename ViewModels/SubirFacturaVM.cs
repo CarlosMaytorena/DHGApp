@@ -8,6 +8,8 @@ namespace AgricolaDH_GApp.ViewModels
         public List<OrdenDeCompraTable> subirFacturaList { get; set; }
         public OrdenDeCompraTable ordenDeCompra { get; set; }
         public List<ProductoOrdenarSelected> productosOrdenar { get; set; }
+        public List<OrdenDeCompraTable> ordenesCerradas { get; set; }  // Closed (status 5)
+
 
 
         public SubirFacturaVM()

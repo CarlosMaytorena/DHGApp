@@ -1,0 +1,107 @@
+<div class="text-center">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-10">
+            <h4 class="page-title">Reimpresión de Etiquetas</h4>
+        </div>
+        <div class="col-md-2">
+            <button id="btnReimprimir" class="btn btn-block btn-primary">
+                <i class="fas fa-print"></i>
+                Imprimir Etiquetas
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+
+        <!-- Order and Product Section -->
+        <div class="row card-row-spacer">
+            <div class="col-md-6">
+                <label style="font-weight: normal; float: left">Orden de compra</label>
+                <input id="ordenDeCompraInput" class="form-control" placeholder="Ingrese número de orden" />
+            </div>
+            <div class="col-md-6">
+                <label style="font-weight: normal; float: left">Producto</label>
+                <input id="productoInput" class="form-control" placeholder="Ingrese el numero de parte" />
+            </div>
+        </div>
+
+        <!-- Series Section -->
+        <div class="row card-row-spacer mb-4">
+            <div class="col-md-12">
+                <label style="font-weight: normal; float: left">Series</label>
+                <input id="seriesInput" class="form-control" placeholder="Ej. 1,2,3..." />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { openPrintWindow } from "/js/labelPrinter.js";
+
+    $(document).ready(function () {
+        $("#btnReimprimir").click(function () {
+            const orden = $("#ordenDeCompraInput").val().trim();
+            const producto = $("#productoInput").val().trim();
+            const seriesInput = $("#seriesInput").val().trim();
+
+            if (!orden || !producto || !seriesInput) {
+                alert("Por favor llene todos los campos.");
+                return;
+            }
+
+            $.ajax({
+                url: "/Reimpresion/ValidarOrdenYProducto",
+                type: "GET",
+                data: {
+                    ordenDeCompra: orden,
+                    nombreProducto: producto
+                },
+                success: function (response) {
+                    if (!response.success) {
+                        alert(response.message);
+                        return;
+                    }
+
+                    const productBarcodeID = response.productBarcodeID;
+
+                    const seriesRaw = seriesInput
+                    .split(",")
+                    .map(s => s.trim())
+                    .filter(s => s !== "");
+
+                    const duplicates = seriesRaw.filter((item, index) => seriesRaw.indexOf(item) !== index);
+                    if (duplicates.length > 0) {
+                        alert(`Las siguientes series están duplicadas: ${[...new Set(duplicates)].join(", ")}`);
+                        return;
+                    }
+
+                    const series = seriesRaw.map(s => s.padStart(2, '0'));
+
+
+
+                    if (series.length === 0) {
+                        alert("Debe ingresar al menos una serie.");
+                        return;
+                    }
+
+                    // Build labels and trigger printing
+                    const labels = series.map(serie => `
+                        <div class="label">
+                            <h4>Orden: ${orden}</h4>
+                            <h4>Producto: ${producto}</h4>
+                            <h4>Serial: ${productBarcodeID}-${orden}-${serie}</h4>
+                            <svg class="barcode" data-barcode-value="${productBarcodeID}-${orden}-${serie}"></svg>
+                        </div>
+                    `);
+
+                    openPrintWindow(labels.join(""), orden);
+                },
+                error: function () {
+                    alert("Error al validar datos.");
+                }
+            });
+        });
+    });
+</script>
+

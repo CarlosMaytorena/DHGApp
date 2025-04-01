@@ -1,7 +1,5 @@
 ﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
 
-<div class="text-center">
-
     <div class="row top-row-spacer">
         <div class="col-md-5">
             <h4 class="page-title">Egresos</h4>
@@ -9,13 +7,13 @@
         <div class="col-md-5">
         </div>
         <div class="col-md-2">
-            <button id="crear-egreso" class="btn btn-block secondary-background-color" style="color: white">
-                Crear Egreso
+            <button class="btn btn-block secondary-background-color crearEgreso" style="color: white">
+                <i class="nav-icon fas fa-plus"></i>
+                Egreso
             </button>
         </div>
     </div>
 
-    <!-- Movements Table Section -->
     <div class="row">
         <div class="col-12">
             <div class="card card-margin">
@@ -23,7 +21,6 @@
                     <h3 class="card-title"></h3>
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            
                             <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-default">
@@ -34,23 +31,21 @@
                         </div>
                     </div>
                 </div>
-                <!-- /.card-header -->
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
-                            <tr>    
+                            <tr>
                                 <th></th>
-                                <th>Egreso #</th>
+                                <th>Producto ID</th>
                                 <th>Producto</th>
-                                <th>Cantidad</th>
                                 <th>Solicitante</th>
-                                <th>Aprobado Por</th>
-                                <th>Comentarios</th>
+                                <th>Evidencia Antes</th>
+                                <th>Evidencia Despues</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var egreso in Model.egresosList)
+                            @foreach (var egreso in Model.egresosLista)
                             {
                                 <tr>
                                     <td>
@@ -58,12 +53,11 @@
                                             <i class="nav-icon fas fa-search"></i>
                                         </button>
                                     </td>
-                                    <td>@egreso.IdEgreso</td>
+                                    <td>@egreso.SerialNumber</td>
                                     <td>@egreso.Producto</td>
-                                    <td>@egreso.Cantidad</td>
                                     <td>@egreso.Solicitante</td>
-                                    <td>@egreso.AprobadoPor</td>
-                                    <td>@egreso.Comentarios</td>
+                                    <td>@egreso.PathAntes</td>
+                                    <td>@egreso.PathDespues</td>
                                     <td>@egreso.Fecha</td>
                                 </tr>
                             }
@@ -98,7 +92,7 @@
         <div class="row card-row-spacer">
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" readonly/>
+                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" readonly />
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
@@ -106,7 +100,7 @@
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input id="Solicitante" type="text" class="form-control" readonly/>
+                <input id="Solicitante" type="text" class="form-control" readonly />
             </div>
         </div>
         <div class="row card-row-spacer">
@@ -144,31 +138,32 @@
         <br />
     </div>
 
-    <div class="modal fade" id="modal-success">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Confirmacion</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-editar-body">
-                    <p style="margin-left: 10px">Egreso generado existosamente.</p>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
-                </div>
+
+<div class="modal fade" id="modal-success">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmacion</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <!-- /.modal-content -->
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">Egreso generado existosamente.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button id="aceptar" type="button" class="btn btn-primary">Aceptar</button>
+            </div>
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
+    <!-- /.modal-dialog -->
+</div>
 
 
 <script>
     $(document).ready(function () {
-        $("#crear-egreso").click(function () {
+        $(".crearEgreso").click(function () {
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("EgresoForm", "Egresos")',
@@ -181,9 +176,6 @@
         });
 
         $(".btn.btn-default.button-plus").click(function () {
-            //Mostrar datos en el forms
-            var IdEgreso = parseInt($(this).attr("id"));
-            //alert(IdEgreso);
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("DetallesEgreso", "Egresos")',
@@ -191,31 +183,6 @@
                 data: JSON.stringify(IdEgreso),
                 success: function (response) {
                     //alert(JSON.stringify(response));
-                    var producto = response.model.producto;
-                    var egreso = response.model.egreso;
-
-                    let fecha = new Date(egreso.fecha);        
-                    let options = {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                    };
-                    let formattedFecha = fecha.toLocaleString('en-CA', options); // 'en-CA' for yyyy-MM-dd HH:mm format
-                    
-                    if (response !== null) {
-                        $("#ProductBarcodeID").val(producto.productBarcodeID);
-                        $("#Producto").val(egreso.producto);
-                        $("#Fecha").val(formattedFecha);
-                        $("#Cantidad").val(egreso.cantidad);
-                        $("#AprobadoPor").val(egreso.aprobadoPor);
-                        $("#Solicitante").val(egreso.solicitante);
-                        $("#Comentarios").val(egreso.comentarios);
-                        $("#SubirArchivoAntes").val(egreso.evidenciaAntesPath);
-                        $("#SubirArchivoDespues").val(egreso.evidenciaDespuesPath);
-                    }
                 }
             });
         });
@@ -236,7 +203,7 @@
                     if (response.res == 1){
                         $("#modal-confirmacion").modal("show");
                     }
-                    if (response.res==-1){
+                    if (response.res == -1){
                             $("#modal-warning").modal("show");
                     }
                 }
