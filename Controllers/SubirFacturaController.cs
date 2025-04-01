@@ -119,6 +119,8 @@ namespace AgricolaDH_GApp.Controllers
                 {
                     string descripcion = item.GetAttribute("Descripcion").ToLower();
 
+                    var trasladoAttributes = item.FirstChild.FirstChild.FirstChild.Attributes[2];
+
                     RegexOptions options = RegexOptions.None;
                     Regex regex = new Regex("[ ]{2,}", options);
                     descripcion = regex.Replace(descripcion, " ");
