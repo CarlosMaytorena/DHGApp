@@ -72,7 +72,11 @@
 
 <script>
     $(document).ready(function () {
-        $('.escanear').on('change', function () {
+        $('.escanear').on('keypress', function (event) {
+            if (event.which !== 13) {
+                return;
+            }
+            event.preventDefault();
             var dataform = $("#lista");
             //alert(dataform.serialize());
             $.ajax({
