@@ -130,7 +130,7 @@ namespace AgricolaDH_GApp.Services.Admin
                     file = model.egreso.FileDespues;
 
                 filename = $"{e.IdEvidencia}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{tipo}.jpg";
-                //_blobStorageService.UploadFileAsync(file, filename);
+                _blobStorageService.UploadFileAsync(file, filename);
                 
                 return filename;
             }
