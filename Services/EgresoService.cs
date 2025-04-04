@@ -99,12 +99,12 @@ namespace AgricolaDH_GApp.Services.Admin
             return egreso;
         }
 
-        public Producto SelectProductoByName(Egreso egreso)
+        public Producto SelectProductoByName(string nombre)
         {
             Producto producto;
             try
             {
-                //producto = context.Productos.SingleOrDefault(a => a.NombreProducto == egreso.Producto);
+                producto = context.Productos.SingleOrDefault(a => a.NombreProducto == nombre);
 
             }
             catch

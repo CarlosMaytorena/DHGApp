@@ -60,8 +60,9 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpPost]
         public async Task<IActionResult> GenerarEgreso(EgresosVM model)
         {
-			try
-			{
+            int res = 1;
+            try
+            {
                 context.Evidencia.Add(new Evidencia());
                 context.SaveChanges();
                 model.egreso.IdEvidencia = context.Evidencia.OrderByDescending(e => e.IdEvidencia).FirstOrDefault().IdEvidencia;
@@ -69,23 +70,25 @@ namespace AgricolaDH_GApp.Controllers
                 model.egreso.PathAntes = egresoService.UploadFile(model, "Antes");
                 model.egreso.PathDespues = egresoService.UploadFile(model, "Despues");
                 egresoService.Generar(model);
-				int res = 1;
-                return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", this.model) });
             }
 			catch
 			{
-                int res = -1;
-                return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", this.model) });
+                res = -1;
             }
+            return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> DetallesEgreso([FromBody] int IdEgreso)
+        public IActionResult Detalles([FromBody] int IdEgreso)
         {
             model.egreso = egresoService.SelectEgreso(IdEgreso);
-			model.producto = egresoService.SelectProductoByName(model.egreso);
-            return Json(new { model });
+			model.egreso.Producto = productoService.SelectProducto(model.egreso.IdProducto).NombreProducto;
+            model.egreso.Solicitante = context.Usuarios.Find(model.egreso.IdSolicitante).Username;
+            model.egreso.PathAntes = context.Evidencia.Find(model.egreso.IdEvidencia).PathAntes;
+            model.egreso.PathDespues = context.Evidencia.Find(model.egreso.IdEvidencia).PathDespues;
+            model.egreso.Fecha.ToString();
+            return PartialView("~/Views/Egresos/Detalles.cshtml", model);
         }
 
         [HttpPost]

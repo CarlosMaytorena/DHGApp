@@ -124,11 +124,9 @@
                 formData.append(input.name, input.value);
             });
 
-            //var dataform = $("#egreso-form").serialize() + '&' + $("#lista").serialize();
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GenerarEgreso", "Egresos")',
-                //contentType: "application/json; charset=utf-8",
                 data: formData,
                 processData: false, // Important: Prevent jQuery from processing the data
                 contentType: false, // Important: Prevent jQuery from overriding the Content-Type

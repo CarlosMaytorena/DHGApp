@@ -49,7 +49,7 @@
                             {
                                 <tr>
                                     <td>
-                                        <button href="#" id="@egreso.IdEgreso" class="btn btn-default button-plus">
+                                        <button href="#" id="@egreso.IdEgreso" class="btn btn-default button-plus buscar">
                                             <i class="nav-icon fas fa-search"></i>
                                         </button>
                                     </td>
@@ -69,75 +69,6 @@
             <!-- /.card -->
         </div>
     </div>
-
-    <div class="card card-margin">
-        <div class="card-header">
-            <h3 class="card-title">Detalles</h3>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
-                <input id="ProductBarcodeID" type="text" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                <input id="Producto" type="text" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
-                <input id="Fecha" type="text" class="form-control" readonly />
-            </div>
-        </div>
-
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
-                <input id="Cantidad" type="number" min="0" max="99999" step="1" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Aprobado Por</label>
-                <input id="AprobadoPor" type="text" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                <input id="Solicitante" type="text" class="form-control" readonly />
-            </div>
-        </div>
-        <div class="row card-row-spacer">
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Comentarios</label>
-                <textarea id="Comentarios" class="form-control" readonly></textarea>
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
-                <div id="GrupoAntes" class="input-group">
-                    <div class="custom-file">
-                        <input id="SubirArchivoAntes" type="text" class="form-control" readonly>
-                    </div>
-                    <div class="input-group-append">
-                        <button id="EvidenciaAntes" class="input-group-text" data-target="#SubirArchivoAntes">
-                            <i class="nav-icon fas fa-arrow-circle-down"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
-                <div id="GrupoEvidenciaDespues" class="input-group">
-                    <div class="custom-file">
-                        <input id="SubirArchivoDespues" type="text" class="form-control" readonly>
-                    </div>
-                    <div class="input-group-append">
-                        <button id="EvidenciaDespues" class="input-group-text" data-target="#SubirArchivoDespues">
-                            <i class="nav-icon fas fa-arrow-circle-down"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br />
-    </div>
-
 
 <div class="modal fade" id="modal-success">
     <div class="modal-dialog">
@@ -175,14 +106,19 @@
             });
         });
 
-        $(".btn.btn-default.button-plus").click(function () {
+        $(".buscar").click(function () {
+            var IdEgreso = JSON.stringify(parseInt($(this).attr("id")));
+            console.log(IdEgreso);
+
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("DetallesEgreso", "Egresos")',
+                url: '@Url.Action("Detalles", "Egresos")',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(IdEgreso),
-                success: function (response) {
-                    //alert(JSON.stringify(response));
+                data: IdEgreso,
+                success: function (data) {
+                    console.log(data);
+                    $("#HtmlBody").html(data);
+
                 }
             });
         });

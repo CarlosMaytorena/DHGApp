@@ -1,0 +1,95 @@
+﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
+
+    <div class="row top-row-spacer">
+        <div class="col-md-5">
+            <h4 class="page-title">Egresos</h4>
+        </div>
+        <div class="col-md-5">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-block secondary-background-color index" style="color: white">
+                <i class="nav-icon fas fa-arrow-left"></i>
+                Regresar
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                @Html.HiddenFor(m => m.egreso.IdEgreso)
+                <label style="font-weight: normal; text-align: left; float: left">Numero de Serie</label>
+                @Html.EditorFor(m => m.egreso.SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+                @Html.EditorFor(m => m.egreso.Producto, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Fecha</label>
+                @Html.EditorFor(m => m.egreso.Fecha, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly", @type="text" } })
+            </div>
+        </div>
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Generado Por</label>
+                @Html.EditorFor(m => m.egreso.Solicitante, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
+                <div id="GrupoAntes" class="input-group">
+                    <div class="custom-file">
+                    @Html.EditorFor(m => m.egreso.PathAntes, new { htmlAttributes = new { @class = "form-control input-focus descargar", @readonly = "readonly", @type = "text" } })
+                    </div>
+                    <div class="input-group-append">
+                        <button class="input-group-text">
+                            <i class="nav-icon fas fa-arrow-circle-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                    @Html.EditorFor(m => m.egreso.PathDespues, new { htmlAttributes = new { @class = "form-control input-focus descargar", @readonly = "readonly", @type = "text" } })
+                    </div>
+                    <div class="input-group-append">
+                        <button class="input-group-text">
+                            <i class="nav-icon fas fa-arrow-circle-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+
+<script>
+    $(document).ready(function () {
+        $(".index").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".descargar").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Index", "Egresos")',
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                }
+            });
+        });
+    });
+</script>
+
