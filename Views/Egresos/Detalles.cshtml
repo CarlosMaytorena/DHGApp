@@ -37,13 +37,13 @@
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
-                <div id="GrupoAntes" class="input-group">
+                <div class="input-group">
                     <div class="custom-file">
-                    @Html.EditorFor(m => m.egreso.PathAntes, new { htmlAttributes = new { @class = "form-control input-focus descargar", @readonly = "readonly", @type = "text" } })
+                        @Html.EditorFor(m => m.egreso.PathAntes, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly", @type = "text" } })
                     </div>
                     <div class="input-group-append">
                         <button class="input-group-text">
-                            <i class="nav-icon fas fa-arrow-circle-down"></i>
+                            <i class="nav-icon fas fa-arrow-circle-down descargar"></i>
                         </button>
                     </div>
                 </div>
@@ -52,10 +52,10 @@
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
                 <div class="input-group">
                     <div class="custom-file">
-                    @Html.EditorFor(m => m.egreso.PathDespues, new { htmlAttributes = new { @class = "form-control input-focus descargar", @readonly = "readonly", @type = "text" } })
+                        @Html.EditorFor(m => m.egreso.PathDespues, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly", @type = "text" } })
                     </div>
                     <div class="input-group-append">
-                        <button class="input-group-text">
+                        <button class="input-group-text descargar">
                             <i class="nav-icon fas fa-arrow-circle-down"></i>
                         </button>
                     </div>
@@ -79,14 +79,17 @@
             });
         });
 
-        $(".descargar").click(function () {
+        $(".descargar").click(function (event) {
+            event.preventDefault();
+            var filename = $(this).closest('.input-group').find('input').val(); 
+            console.log(filename);
             $.ajax({
-                type: "GET",
-                url: '@Url.Action("Index", "Egresos")',
+                type: "POST",
+                url: '@Url.Action("DescargarArchivo", "Egresos")',
                 contentType: "application/json; charset=utf-8",
-                data: {},
+                data: JSON.stringify(filename),
                 success: function (data) {
-                    $("#HtmlBody").html(data);
+                    $("#HtmlBody").html(data.url);
                 }
             });
         });

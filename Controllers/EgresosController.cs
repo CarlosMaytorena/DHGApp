@@ -94,19 +94,18 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DescargarArchivo([FromBody] string filename)
         {
-			try
-			{
+            int res = 1;
+            try
+            {
 				if (filename.IsNullOrEmpty())
 					throw new Exception();
 				blobStorageService.DownloadFileAsync(filename);
-				int res = 1;
-                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
             }
             catch
 			{
-                int res = -1;
-                return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+                res = -1;
             }
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
         }
 
         [HttpPost]

@@ -42,7 +42,9 @@ namespace AgricolaDH_GApp.Services.Admin
                 {
                     item.Producto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(item.IdProducto)).NombreProducto;
                     item.Solicitante = context.Usuarios.FirstOrDefault(x => x.IdUsuario.Equals(item.IdSolicitante)).Username;
-                    item.SerialNumber = context.Almacen.FirstOrDefault(x => x.IdAlmacen.Equals(item.IdAlmacen)).SerialNumber; 
+                    item.SerialNumber = context.Almacen.FirstOrDefault(x => x.IdAlmacen.Equals(item.IdAlmacen)).SerialNumber;
+                    item.PathAntes = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(item.IdEvidencia)).PathAntes;
+                    item.PathDespues = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(item.IdEvidencia)).PathDespues;
                 }
             }
             catch

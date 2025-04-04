@@ -20,9 +20,10 @@ namespace AgricolaDH_GApp.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
         public int IdEvidencia { get; set; }
+        [NotMapped]
         public string? PathAntes { get; set; }
+        [NotMapped]
         public string? PathDespues { get; set; }
-        
         [NotMapped]
         public IFormFile FileAntes { get; set; }
         [NotMapped]

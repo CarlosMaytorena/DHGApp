@@ -31,10 +31,9 @@ public class BlobStorageService
         }
         catch 
         {
-            return;
+            throw new Exception();
         }
     }
-    //"https://dhgagricola.blob.core.windows.net/egresos/EgresoId12_20250215_003336_EvidenciaAntes.jpg"
     public async Task DownloadFileAsync(string blobName)
     {
         string downloadFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Downloads",blobName); 
@@ -54,7 +53,7 @@ public class BlobStorageService
         }
         catch
         {
-            return;
+            throw new Exception();
         }
     }
 }
