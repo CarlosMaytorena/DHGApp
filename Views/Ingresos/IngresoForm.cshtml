@@ -100,18 +100,16 @@
     }
     window.updateRestante = updateRestante;
 
-
     import { openPrintWindow, triggerLabelPrinting } from "/js/labelPrinter.js";
-    window.triggerLabelPrinting = triggerLabelPrinting; // 
+    window.triggerLabelPrinting = triggerLabelPrinting;
 
     $(document).ready(function () {
         // Fetch barcodes for all products on page load
         $(".product-row").each(function () {
             const $row = $(this);
-            const productName = $row.find("input[readonly]").val(); // Get the product name
+            const productName = $row.find("input[readonly]").val();
 
             if (productName) {
-                // Make AJAX request to fetch the barcode
                 $.ajax({
                     url: '/Ingresos/GetProductBarcodeID',
                     type: 'GET',
@@ -138,8 +136,8 @@
                 const $row = $(this);
                 let productId = $row.find(".product-id").val();
                 let productName = $row.find("input[readonly]").val();
-                let productBarcodeID = $row.find(".product-barcode").data("barcode-value"); // Part Number
-                let workOrderNumber = $("#orderNumber").val(); // Use Order ID as Work Order
+                let productBarcodeID = $row.find(".product-barcode").data("barcode-value");
+                let workOrderNumber = $("#orderNumber").val();
                 let recibida = parseInt($row.find(".cantidad-recibida").val()) || 0;
                 let restante = parseInt($row.find(".cantidad-restante").val()) || 0;
 
@@ -155,27 +153,34 @@
 
                 if (recibida > 0) {
                     let newRestante = Math.max(restante - recibida, 0);
-                    $row.find(".cantidad-restante").val(newRestante); // UI update
+                    $row.find(".cantidad-restante").val(newRestante);
+
+                    let cantidadEsperada = parseInt($row.find("input[readonly]").eq(1).val()) || 0;
+                    let yaRecibido = cantidadEsperada - restante;
+
+                    let serials = [];
+
+                    for (let i = 1; i <= recibida; i++) {
+                        let serialIndex = yaRecibido + i;
+                        let serialNumber = `${productBarcodeID}-${workOrderNumber}-${String(serialIndex).padStart(2, '0')}`;
+                        serials.push(serialNumber);
+
+                        labelsToPrint.push(`
+                            <div class="label">
+                                <h4>Orden: ${workOrderNumber}</h4>
+                                <h4>Producto: ${productName}</h4>
+                                <h4>Serial: ${serialNumber}</h4>
+                                <svg class="barcode" data-barcode-value="${serialNumber}"></svg>
+                            </div>
+                        `);
+                    }
 
                     receivedProducts.push({
                         IdProductoOrdenar: productId,
                         Recibida: recibida,
-                        PorRecibir: newRestante
+                        PorRecibir: newRestante,
+                        Seriales: serials
                     });
-
-                    // Generate labels based on Recibida count with correct format
-                    for (let i = 1; i <= recibida; i++) {
-                        let serialNumber = `${productBarcodeID}-${workOrderNumber}-${String(i).padStart(2, '0')}`;
-
-                        labelsToPrint.push(`
-                        <div class="label">
-                            <h4>Orden: ${workOrderNumber}</h4>
-                            <h4>Producto: ${productName}</h4>
-                            <h4>Serial: ${serialNumber}</h4>
-                            <svg class="barcode" data-barcode-value="${serialNumber}"></svg>
-                        </div>
-                    `);
-                    }
                 }
             });
 
@@ -184,7 +189,6 @@
                 return;
             }
 
-            // Send AJAX request to update database
             $.ajax({
                 type: "POST",
                 url: "/Ingresos/ActualizarPorRecibir",
@@ -194,7 +198,7 @@
                     if (response.success) {
                         alert("Ingreso registrado correctamente.");
                         if (labelsToPrint.length > 0) {
-                            openPrintWindow(labelsToPrint.join(''), $("#orderNumber").val()); // Print only received products
+                            openPrintWindow(labelsToPrint.join(''), $("#orderNumber").val());
                         }
                     } else {
                         alert("Hubo un error al actualizar los datos.");
@@ -205,8 +209,6 @@
                 }
             });
         });
-
-
-
     });
 </script>
+

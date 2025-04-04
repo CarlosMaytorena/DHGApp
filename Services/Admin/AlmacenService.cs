@@ -112,5 +112,27 @@ namespace AgricolaDH_GApp.Services.Admin
                 throw;
             }
         }
+        // Entrada de Ingreso a Almacen
+        public void GuardarEnAlmacen(int idProducto, string serial)
+        {
+            Almacen nuevoIngreso = new Almacen
+            {
+                IdProducto = idProducto,
+                IdAlmacenista = 0,
+                IdSolicitante = 0,
+                Movimiento = "Ingreso",
+                Fecha = DateTime.Now,
+                SerialNumber = serial,
+                IdEstatus = 1 // Estatus de Ingreso
+            };
+
+            context.Almacen.Add(nuevoIngreso);
+            context.SaveChanges();
+        }
+
+        public int ContarSerialesPorProductoOrden(string pn, int ordenId)
+        {
+            return context.Almacen.Count(a => a.SerialNumber.StartsWith($"{pn}-{ordenId}-"));
+        }
     }
 }

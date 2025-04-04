@@ -11,11 +11,15 @@ namespace AgricolaDH_GApp.Controllers
     {
         private readonly ILogger<IngresosController> _logger;
         private readonly OrdenDeCompraService _ordenDeCompraService;
+        private readonly AlmacenService _almacenService;
+        private readonly ProductoService _productoService;
 
-        public IngresosController(ILogger<IngresosController> logger, OrdenDeCompraService ordenDeCompraService)
+        public IngresosController(ILogger<IngresosController> logger, OrdenDeCompraService ordenDeCompraService, AlmacenService almacenService, ProductoService productoService)
         {
             _logger = logger;
             _ordenDeCompraService = ordenDeCompraService;
+            _almacenService = almacenService;
+            _productoService = productoService;
         }
 
         [HttpGet]
@@ -70,39 +74,50 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult ActualizarPorRecibir([FromBody] List<ProductoOrdenar> receivedProducts)
+        public IActionResult ActualizarPorRecibir([FromBody] List<ProductoRecibidoDTO> receivedProducts)
         {
             int res = 0;
 
             if (receivedProducts == null || receivedProducts.Count == 0)
                 return Json(new { success = false });
 
-            // Get the order ID from one of the product entries
             int idOrdenDeCompra = _ordenDeCompraService
                 .SelectProductoOrdenar(receivedProducts[0].IdProductoOrdenar)?.IdOrdenDeCompra ?? 0;
 
             foreach (var item in receivedProducts)
             {
                 var productoOrdenar = _ordenDeCompraService.SelectProductoOrdenar(item.IdProductoOrdenar);
+
                 if (productoOrdenar != null)
                 {
                     productoOrdenar.PorRecibir = item.PorRecibir;
                     res = _ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
+
+                    //Get IdProducto to store in Almacen
+                    var producto = _productoService.SelectProducto(productoOrdenar.IdProducto);
+
+                    if (producto != null && item.Seriales != null)
+                    {
+                        foreach (var serial in item.Seriales)
+                        {
+                            _almacenService.GuardarEnAlmacen(producto.IdProducto, serial);
+                        }
+                    }
                 }
             }
 
-            // Check if all products in the order have been received
             var productosOrden = _ordenDeCompraService.SelectProductosOrdenarSelected(idOrdenDeCompra);
             bool allReceived = productosOrden.All(p => p.PorRecibir == 0);
 
             if (allReceived)
             {
-                // Update only the order status
-                _ordenDeCompraService.UpdateOrdenDeCompraStatus(idOrdenDeCompra, 5); // 5 = Closed
+                res = _ordenDeCompraService.UpdateOrdenDeCompraStatus(idOrdenDeCompra, 5);
             }
 
             return Json(new { success = (res == 0) });
         }
+
+
 
         [HttpPost]
         public IActionResult VerOrden(int idOrdenDeCompra)

@@ -12,9 +12,6 @@ namespace AgricolaDH_GApp.Models
         public decimal? Total { get; set; }
         public decimal? Impuesto { get; set; }
         public int PorRecibir { get; set; }
-
-
-
     }
 
     public class ProductoOrdenarSelected
@@ -29,8 +26,13 @@ namespace AgricolaDH_GApp.Models
         public decimal? Descuento { get; set; }
         public int PorRecibir { get; set; }
 
+    }
 
-
-
+    public class ProductoRecibidoDTO
+    {
+        public int IdProductoOrdenar { get; set; }
+        public int Recibida { get; set; }
+        public int PorRecibir { get; set; }
+        public List<string> Seriales { get; set; }
     }
 }
