@@ -1,15 +1,23 @@
-name: Deploy App to Azure
+name: Deploy App to Azure Web App
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
-  
+    inputs:
+      azure_env:
+        type: choice
+        description: Environment
+        required: true
+        default: 'dev'
+        options: 
+          - dev
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{github.event.inputs.azure_env}}
 
     steps:
     - name: Checkout code
@@ -18,7 +26,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '7.0'  # Change to your .NET version
+        dotnet-version: '8.0'  # Change to your .NET version
 
     - name: Restore dependencies
       run: dotnet restore
@@ -29,10 +37,20 @@ jobs:
     - name: Publish
       run: dotnet publish --configuration Release --output ./output
 
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUSCRIPTION_ID }}
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-        slot-name: 'development'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: ./output
+        connection-strings: |
+          AzureBlobStorage=${{ secrets.BLOB_STORAGE_CONN_STRING }}
+          DbConnection=${{ secrets.DB_CONN_STRING }}
