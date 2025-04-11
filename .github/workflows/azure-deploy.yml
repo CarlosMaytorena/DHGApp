@@ -6,6 +6,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{github.event.inputs.gcp_env}}
 
     steps:
     - name: Checkout code
