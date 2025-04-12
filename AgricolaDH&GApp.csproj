@@ -17,11 +17,11 @@
     <None Remove="Views\NewFolder\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\css\adminlte.min.css" />
-    <Content Remove="wwwroot\css\adminlte.min.css.map" />
-    <Content Remove="wwwroot\css\all.min.css" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- <Content Remove="wwwroot\css\adminlte.min.css" /> -->
+		<!-- <Content Remove="wwwroot\css\adminlte.min.css.map" /> -->
+		<!-- <Content Remove="wwwroot\css\all.min.css" /> -->
+	</ItemGroup>
 
   <ItemGroup>
     <None Include="wwwroot\css\adminlte.min.css" />
