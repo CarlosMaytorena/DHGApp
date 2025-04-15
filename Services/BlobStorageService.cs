@@ -23,7 +23,7 @@ public class BlobStorageService
 
             var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = blobContainerClient.GetBlobClient(fileName);
-            using FileStream stream = File.OpenRead(fileName);
+            using FileStream stream = File.OpenRead(file.Name);
             await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = file.ContentType });
         }
         catch 
