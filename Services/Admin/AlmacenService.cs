@@ -71,13 +71,14 @@ namespace AgricolaDH_GApp.Services.Admin
                 DateTime fecha = DateTime.Now;
                 foreach (Almacen a in model.almacenLista)
                 {
-
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 2; //Almacen
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Entrada";
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
+                    Almacen dbRow = context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen));
+                    dbRow.IdEstatus = 2; //Almacen
+                    dbRow.IdAlmacenista = model.almacen.IdAlmacenista;
+                    dbRow.IdSolicitante = model.almacen.IdSolicitante;
+                    dbRow.RazonUso = model.almacen.RazonUso;
+                    dbRow.Movimiento = "Entrada";
+                    dbRow.Fecha = fecha;
+                    context.Almacen.Update(dbRow);
                 }
                 context.SaveChanges();
             }
@@ -98,12 +99,14 @@ namespace AgricolaDH_GApp.Services.Admin
                 DateTime fecha = DateTime.Now;
                 foreach (Almacen a in model.almacenLista)
                 {
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdEstatus = 3; //Fuera
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdAlmacenista = model.almacen.IdAlmacenista;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).IdSolicitante = model.almacen.IdSolicitante;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).RazonUso = model.almacen.RazonUso;
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Movimiento = "Salida";
-                    context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen)).Fecha = fecha;
+                    Almacen dbRow = context.Almacen.Single(x => x.IdAlmacen.Equals(a.IdAlmacen));
+                    dbRow.IdEstatus = 3; //Fuera
+                    dbRow.IdAlmacenista = model.almacen.IdAlmacenista;
+                    dbRow.IdSolicitante = model.almacen.IdSolicitante;
+                    dbRow.RazonUso = model.almacen.RazonUso;
+                    dbRow.Movimiento = "Salida";
+                    dbRow.Fecha = fecha;
+                    context.Almacen.Update(dbRow);
                 }
                 context.SaveChanges();
             }

@@ -25,17 +25,14 @@
                     </button>
                 </div>
                 <div class="row card-row-spacer">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label style="font-weight: normal; text-align: left; float: left">Producto ID</label>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label style="font-weight: normal; text-align: left; float: left">Producto</label>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
-                    </div>
-                    <div class="col-md-3">
-                        <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
                     </div>
                 </div>
 
@@ -46,17 +43,14 @@
                         @Html.HiddenFor(m => m.almacenLista[i].IdProducto)
                         @Html.HiddenFor(m => m.almacenLista[i].IdEstatus)
                         @Html.HiddenFor(m => m.almacenLista[i].Estatus)
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             @Html.EditorFor(m => m.almacenLista[i].SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             @Html.EditorFor(m => m.almacenLista[i].NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             @Html.EditorFor(m => m.almacenLista[i].Descripcion, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
-                        </div>
-                        <div class="col-md-3">
-                            @Html.EditorFor(m => m.almacenLista[i].Unidades, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
                         </div>
                     </div>
                 }

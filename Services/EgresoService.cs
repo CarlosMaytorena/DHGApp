@@ -60,17 +60,16 @@ namespace AgricolaDH_GApp.Services.Admin
             {
                 foreach (Almacen a in model.almacenLista)
                 {
-                    Egreso e = new Egreso();
-                    e.IdAlmacen = a.IdAlmacen;
-                    e.IdProducto = a.IdProducto;
-                    e.Fecha = DateTime.Now;
-                    e.SerialNumber = a.SerialNumber;
-                    
-                    e.IdEvidencia = model.egreso.IdEvidencia;
-
-                    e.IdSolicitante = model.egreso.IdSolicitante;
-                    e.PathAntes = model.egreso.PathAntes;
-                    e.PathDespues = model.egreso.PathDespues;
+                    Egreso e = new Egreso {
+                        IdAlmacen = a.IdAlmacen,
+                        IdProducto = a.IdProducto,
+                        Fecha = DateTime.Now,
+                        SerialNumber = a.SerialNumber,
+                        IdEvidencia = model.egreso.IdEvidencia,
+                        IdSolicitante = model.egreso.IdSolicitante,
+                        PathAntes = model.egreso.PathAntes,
+                        PathDespues = model.egreso.PathDespues
+                    };
                     context.Egresos.Add(e);
                 }
 
@@ -129,7 +128,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 if (tipo.Equals("Despues"))
                     file = model.egreso.FileDespues;
 
-                filename = $"{e.IdEvidencia}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{tipo}.jpg";
+                filename = $"{e.IdEvidencia}_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{tipo}{Path.GetExtension(file.FileName)}";
                 _blobStorageService.UploadFileAsync(file, filename);
                 
                 return filename;

@@ -111,13 +111,13 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(EgresosVM model)
         {
-            // TODO: Primer escaneo no se agrega a la lista
             if (model.almacen == null)
                 return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
 
             bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            if (cond1 && cond2)
+            bool cond3 = model.almacenLista.Any(x => !context.Egresos.Any(item => item.SerialNumber.Equals(x.SerialNumber)));
+            if (cond1 && cond2 && cond3)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;

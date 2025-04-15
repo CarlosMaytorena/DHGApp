@@ -96,9 +96,8 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model)
         {
-            // TODO: Primer escaneo no se agrega a la lista
-            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados Almacen
+            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados en ListaProductos
             if (cond1 && cond2)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
@@ -109,7 +108,6 @@ namespace AgricolaDH_GApp.Controllers
 
                 model.almacenLista.Add(a);
             }
-            model.almacen.SerialNumber = String.Empty;
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 
