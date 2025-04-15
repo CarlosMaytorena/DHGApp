@@ -79,9 +79,7 @@
             event.preventDefault();
 
             var dataform = $("#lista");
-            var serialNumber = $(this).val();
-            //alert(serialNumber)
-            //alert(dataform.serialize());
+
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("AgregarProductoLista", "Almacen")',
