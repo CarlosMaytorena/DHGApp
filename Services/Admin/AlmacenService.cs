@@ -133,9 +133,19 @@ namespace AgricolaDH_GApp.Services.Admin
             context.SaveChanges();
         }
 
+        public List<string> ObtenerSerialesValidos(List<string> seriales)
+        {
+            return context.Almacen
+                .Where(a => seriales.Contains(a.SerialNumber))
+                .Select(a => a.SerialNumber)
+                .ToList();
+        }
+
         public int ContarSerialesPorProductoOrden(string pn, int ordenId)
         {
             return context.Almacen.Count(a => a.SerialNumber.StartsWith($"{pn}-{ordenId}-"));
         }
+
+
     }
 }

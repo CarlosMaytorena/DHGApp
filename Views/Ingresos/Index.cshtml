@@ -1,18 +1,19 @@
 @model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="text-center">
-    <div class="row top-row-spacer">
-        <div class="col-md-6">
+    <div class="row top-row-spacer align-items-center mb-2">
+        <div class="col-md-8">
             <h4 class="page-title">Ingresos</h4>
         </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-2">
-            <input type="text" class="form-control" placeholder="# Orden" id="searchOrder" />
-        </div>
-        <div class="col-md-2">
-            <button id="searchIngreso" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-search"></i> Buscar
-            </button>
+        <div class="col-md-4">
+            <div class="input-group float-right" style="max-width: 250px; margin-left: auto;">
+                <input type="text" id="searchOpenOrdersInput" class="form-control" placeholder="# Orden Abierta" />
+                <div class="input-group-append">
+                    <button id="searchOpenOrdersBtn" class="btn btn-secondary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -24,7 +25,7 @@
                     <h3 class="card-title">Ordenes para Recibo</h3>
                 </div>
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table id="openOrdersTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
                                 <th>Recibir</th>
@@ -66,6 +67,14 @@
         </div>
     </div>
 
+    <div class="col-md-12 d-flex justify-content-end align-items-center mb-2">
+        <div class="input-group" style="width: 250px;">
+            <input type="text" id="searchClosedOrdersInput" class="form-control" placeholder="# Orden Cerrada" />
+            <div class="input-group-append">
+                <button id="searchClosedOrdersBtn" class="btn btn-secondary"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
     <!-- Closed Orders -->
     <div class="row mt-4">
         <div class="col-12">
@@ -74,7 +83,7 @@
                     <h3 class="card-title">Ordenes Cerradas</h3>
                 </div>
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table id="closedOrdersTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
                                 <th>Ver</th>
@@ -150,8 +159,49 @@
             });
         });
 
-        $("#searchIngreso").click(function () {
-            alert("Search functionality not implemented yet.");
+        function searchOpenOrders() {
+            let query = $("#searchOpenOrdersInput").val().toLowerCase();
+            $("#openOrdersTable tbody tr").each(function () {
+                let orderId = $(this).find("td:eq(1)").text();
+                $(this).toggle(orderId.includes(query));
             });
+        }
+
+        function searchClosedOrders() {
+            let query = $("#searchClosedOrdersInput").val().toLowerCase();
+            $("#closedOrdersTable tbody tr").each(function () {
+                let orderId = $(this).find("td:eq(1)").text();
+                $(this).toggle(orderId.includes(query));
+            });
+        }
+
+        // Buscar con el botón
+        $("#searchOpenOrdersBtn").click(searchOpenOrders);
+        $("#searchClosedOrdersBtn").click(searchClosedOrders);
+
+        // Buscar con tecla Enter
+        $("#searchOpenOrdersInput").keypress(function (e) {
+            if (e.which === 13) searchOpenOrders();
         });
+        $("#searchClosedOrdersInput").keypress(function (e) {
+            if (e.which === 13) searchClosedOrders();
+        });
+
+        // 🔽 Auto-filtrar órdenes cerradas de la semana pasada
+        (function filterClosedOrdersByLastWeek() {
+            const now = new Date();
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+
+            $("#closedOrdersTable tbody tr").each(function () {
+                const fechaTexto = $(this).find("td:eq(2)").text();
+                const fechaOrden = new Date(fechaTexto);
+                if (fechaOrden >= oneWeekAgo && fechaOrden <= now) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        })();
+    });
 </script>

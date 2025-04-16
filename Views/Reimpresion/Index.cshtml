@@ -5,7 +5,7 @@
             <h4 class="page-title">Reimpresión de Etiquetas</h4>
         </div>
         <div class="col-md-2">
-            <button id="btnReimprimir" class="btn btn-block btn-primary">
+            <button id="btnReimprimir" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="fas fa-print"></i>
                 Imprimir Etiquetas
             </button>
@@ -50,50 +50,47 @@
                 return;
             }
 
+            const seriesRaw = seriesInput
+                .split(",")
+                .map(s => s.trim())
+                .filter(s => s !== "");
+
+            const duplicates = seriesRaw.filter((item, index) => seriesRaw.indexOf(item) !== index);
+            if (duplicates.length > 0) {
+                alert(`Las siguientes series están duplicadas: ${[...new Set(duplicates)].join(", ")}`);
+                return;
+            }
+
+            const series = seriesRaw.map(s => s.padStart(2, '0'));
+            const serialesCompletos = series.map(s => `${producto}-${orden}-${s}`);
+
+            // Validar seriales en backend
             $.ajax({
-                url: "/Reimpresion/ValidarOrdenYProducto",
-                type: "GET",
-                data: {
-                    ordenDeCompra: orden,
-                    nombreProducto: producto
-                },
+                url: "/Reimpresion/ValidarSeriales",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(serialesCompletos),
                 success: function (response) {
-                    if (!response.success) {
-                        alert(response.message);
+                    if (!response.success || !response.seriales || response.seriales.length === 0) {
+                        alert("No se encontraron seriales válidos en el sistema.");
                         return;
                     }
 
-                    const productBarcodeID = response.productBarcodeID;
+                    // Generar etiquetas solo para los seriales válidos
+                    const labels = response.seriales.map(serial => {
+                        const parts = serial.split("-");
+                        const ordenValidada = parts[1];
+                        const productoValidado = producto;
 
-                    const seriesRaw = seriesInput
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(s => s !== "");
-
-                    const duplicates = seriesRaw.filter((item, index) => seriesRaw.indexOf(item) !== index);
-                    if (duplicates.length > 0) {
-                        alert(`Las siguientes series están duplicadas: ${[...new Set(duplicates)].join(", ")}`);
-                        return;
-                    }
-
-                    const series = seriesRaw.map(s => s.padStart(2, '0'));
-
-
-
-                    if (series.length === 0) {
-                        alert("Debe ingresar al menos una serie.");
-                        return;
-                    }
-
-                    // Build labels and trigger printing
-                    const labels = series.map(serie => `
-                        <div class="label">
-                            <h4>Orden: ${orden}</h4>
-                            <h4>Producto: ${producto}</h4>
-                            <h4>Serial: ${productBarcodeID}-${orden}-${serie}</h4>
-                            <svg class="barcode" data-barcode-value="${productBarcodeID}-${orden}-${serie}"></svg>
-                        </div>
-                    `);
+                        return `
+                                <div class="label">
+                                    <h4>Orden: ${ordenValidada}</h4>
+                                    <h4>Producto: ${productoValidado}</h4>
+                                    <h4>Serial: ${serial}</h4>
+                                    <svg class="barcode" data-barcode-value="${serial}"></svg>
+                                </div>
+                            `;
+                    });
 
                     openPrintWindow(labels.join(""), orden);
                 },
@@ -104,4 +101,3 @@
         });
     });
 </script>
-

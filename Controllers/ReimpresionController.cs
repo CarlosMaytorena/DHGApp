@@ -10,13 +10,12 @@ namespace AgricolaDH_GApp.Controllers
 
     public class ReimpresionController : Controller
     {
-        private readonly OrdenDeCompraService _ordenDeCompraService;
-        private readonly ProductoService _productoService;
+        private readonly AlmacenService _almacenService;
 
-        public ReimpresionController(OrdenDeCompraService ordenDeCompraService, ProductoService productoService)
+
+        public ReimpresionController(AlmacenService almacenService)
         {
-            _ordenDeCompraService = ordenDeCompraService;
-            _productoService = productoService;
+            _almacenService = almacenService;
         }
 
         [HttpGet]
@@ -24,27 +23,28 @@ namespace AgricolaDH_GApp.Controllers
         {
             return PartialView("~/Views/Reimpresion/Index.cshtml");
         }
-        [HttpGet]
-        public JsonResult ValidarOrdenYProducto(int ordenDeCompra, string nombreProducto)
+
+        [HttpPost]
+        public IActionResult ValidarSeriales([FromBody] List<string> seriales)
         {
-            var orden = _ordenDeCompraService.SelectOrdenDeCompra(ordenDeCompra);
-            if (orden == null)
+            try
             {
-                return Json(new { success = false, message = "Orden de compra no encontrada." });
-            }
+                var serialesValidos = _almacenService.ObtenerSerialesValidos(seriales);
 
-            var dbProducto = _productoService.SelectProductoByBarcodeID(nombreProducto);
-            if (dbProducto == null)
-            {
-                return Json(new { success = false, message = "Producto no encontrado." });
+                return Json(new
+                {
+                    success = true,
+                    seriales = serialesValidos
+                });
             }
-
-            return Json(new
+            catch (Exception ex)
             {
-                success = true,
-                productName = dbProducto.NombreProducto,
-                productBarcodeID = dbProducto.PN
-            });
+                return Json(new
+                {
+                    success = false,
+                    message = "Error interno: " + ex.Message
+                });
+            }
         }
 
 

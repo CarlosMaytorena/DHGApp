@@ -3,14 +3,17 @@
 <div class="text-center">
 
     <div class="row top-row-spacer">
-        <div class="col-md-5">
+        <div class="col-md-8">
             <h4 class="page-title">Ingresar</h4>
         </div>
-        <div class="col-md-5"></div>
+        <div class="col-md-2">
+            <button id="volverAIndex" class="btn btn-block btn-secondary">
+                Regresar
+            </button>
+        </div>
         <div class="col-md-2">
             <button id="realizarIngresoConfirm" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-right"></i>
-                Recibir
+                <i class="nav-icon fas fa-arrow-right"></i> Recibir
             </button>
         </div>
     </div>
@@ -104,6 +107,20 @@
     window.triggerLabelPrinting = triggerLabelPrinting;
 
     $(document).ready(function () {
+
+        $("#volverAIndex").click(function () {
+            $.ajax({
+                url: '@Url.Action("Index", "Ingresos")',
+                type: 'GET',
+                success: function (data) {
+                    $("#HtmlBody").html(data);
+                },
+                error: function () {
+                    alert("Error al regresar al listado de órdenes.");
+                }
+            });
+        });
+
         // Fetch barcodes for all products on page load
         $(".product-row").each(function () {
             const $row = $(this);
