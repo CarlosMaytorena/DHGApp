@@ -116,7 +116,7 @@ namespace AgricolaDH_GApp.Controllers
 
             bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool cond3 = model.almacenLista.Any(x => !context.Egresos.Any(item => item.SerialNumber.Equals(x.SerialNumber)));
+            bool cond3 = context.Egresos.Any(x => !x.SerialNumber.Equals(model.almacen.SerialNumber));
             if (cond1 && cond2 && cond3)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
