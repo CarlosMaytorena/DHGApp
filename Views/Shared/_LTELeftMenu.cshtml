@@ -17,16 +17,19 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-                <li class="nav-item">
-                    <a href="#" id="dashboard" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-th"></i>
-                        <p>
-                            Dashboard
-                        </p>
-                    </a>
-                </li>
+                @if (Model.IdRol == RolEnumerators.Administrador)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="dashboard" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-th"></i>
+                            <p>
+                                Dashboard
+                            </p>
+                        </a>
+                    </li>                    
+                }                
 
-                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Ingeniero)
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Ingeniero || Model.IdRol == RolEnumerators.Contabilidad)
                 {
                     <li class="nav-item">
                         <a href="#" id="requisicion" class="nav-link" style="color: #2E2E2E">
@@ -38,105 +41,131 @@
                     </li>
                 }
 
-                <li class="nav-item">
-                    <a href="#" id="subirFactura" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-upload"></i>
-                        <p>
-                            Subir Factura
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" id="ingresos" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-list"></i>
-                        <p>
-                            Ingresos
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" id="almacen" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-industry"></i>
-                        <p>
-                            Almacen
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" id="egresos" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-arrow-down"></i>
-                        <p>
-                            Egresos
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" id="reimpresion" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-print"></i>
-                        <p>
-                            Reimpresión
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item menu-closed">
-                    <a href="#" class="nav-link" style="color: #2E2E2E">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>
-                            Admin
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" id="usuarios" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Usuarios</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="areas" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Áreas</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="cultivos" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Cultivos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="etapas" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Etapas</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="proveedores" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Proveedores</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="productos" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Productos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="ranchos" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Ranchos</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" id="temporadas" class="nav-link" style="color: #2E2E2E">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Temporadas</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Ingeniero || Model.IdRol == RolEnumerators.Contabilidad || Model.IdRol == RolEnumerators.Ingreso)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="subirFactura" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-upload"></i>
+                            <p>
+                                Subir Factura
+                            </p>
+                        </a>
+                    </li>                    
+                }               
+
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Ingreso)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="ingresos" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>
+                                Ingresos
+                            </p>
+                        </a>
+                    </li>
+                    
+                }
+
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Almacen || Model.IdRol==RolEnumerators.Egreso)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="almacen" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-industry"></i>
+                            <p>
+                                Almacen
+                            </p>
+                        </a>
+                    </li>
+                    
+                }
+
+                @if (Model.IdRol == RolEnumerators.Administrador || Model.IdRol == RolEnumerators.Egreso)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="egresos" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-arrow-down"></i>
+                            <p>
+                                Egresos
+                            </p>
+                        </a>
+                    </li>
+                    
+                }
+
+                @if (Model.IdRol == RolEnumerators.Administrador)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="reimpresion" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-print"></i>
+                            <p>
+                                Reimpresión
+                            </p>
+                        </a>
+                    </li>
+                }
+
+                @if (Model.IdRol == RolEnumerators.Administrador)
+                {
+                    <li class="nav-item menu-closed">
+                        <a href="#" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                Admin
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="#" id="usuarios" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Usuarios</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="areas" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Áreas</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="cultivos" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Cultivos</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="etapas" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Etapas</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="proveedores" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Proveedores</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="productos" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Productos</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="ranchos" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Ranchos</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" id="temporadas" class="nav-link" style="color: #2E2E2E">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Temporadas</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>                    
+                }                
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
