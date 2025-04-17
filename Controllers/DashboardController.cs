@@ -1,4 +1,5 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace AgricolaDH_GApp.Controllers
 {
     public class DashboardController : Controller
 	{
-		private readonly AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public DashboardController(ILogger<DashboardController> logger, AppDbContext context)
         {
@@ -22,7 +23,7 @@ namespace AgricolaDH_GApp.Controllers
         {
             // Group by ProductBarCodeID and count items
             var data = await _context.Productos
-                .GroupBy(p => p.ProductBarcodeID)
+                .GroupBy(p => p.PN)
                 .Select(g => new
                 {
                     ProductBarCodeID = g.Key, // Group key
