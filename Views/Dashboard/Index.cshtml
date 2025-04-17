@@ -1,119 +1,386 @@
-﻿<div class="row top-row-spacer" style="margin-bottom: 5vh">
+﻿<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row top-row-spacer" style="margin-bottom: 5vh">
     <div class="col-md-6">
         <h4 class="page-title">Dashboard</h4>
     </div>
 </div>
 
+
 <div class="text-center">
-
-    <div class="row" style="margin-bottom: 4vh;">
-        <div class="col-3 dashboard-container">
-            <div class="dashboard-kpi-card">
-                <i class="nav-icon fas fa-cube" aria-hidden="true" style="font-size: 2.3em; color: #f97e15;"></i>
-                <div>
-                    <h6 style="color: gray">KPI1</h6>
-                    <h2 style="color:#2add2a;">100</h2>
+    
+    <div class="row" style="margin-bottom: 3vh;">
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-kpi-card" style="background-color: #5a8f7b">
+                <div class="dashboard-kpi-card-title-filter">
+                    <h6 style="color: white">Porcentaje de venta por rancho</h6>
+                    <select id="ranchoSelect" onchange="ventaPorRancho()" style="color: white; background-color: #5a8f7b">
+                        <option value="">Rancho</option>
+                    </select>
+                </div>
+                <div class="dashboard-kpi-card-value">
+                    <span id="porcentajeVenta" style="font-size: 2em; color: white;"></span>
                 </div>
             </div>
         </div>
 
-        <div class="col-3 dashboard-container">
-            <div class="dashboard-kpi-card">
-                <i class="nav-icon fas fa-truck" aria-hidden="true" style="font-size: 2.3em; color:#2ab92a;"></i>
-                <div>
-                    <h6 style="color: gray">KPI1</h6>
-                    <h2 style="color:#d91313;">100</h2>
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-kpi-card" style="background-color: #5a8f7b">
+                <div class="dashboard-kpi-card-title-filter">
+                    <h6 style="color: white">Cantidad de ordenes por status</h6>
+                    <select id="statusSelect" onchange="ordenesDeCompraPorStatus()" style="color: white; background-color: #5a8f7b">
+                        <option value="">Status</option>
+                    </select>
+                </div>
+                <div class="dashboard-kpi-card-value">
+                    <span id="cantidadOrdenes" style="font-size: 2em; color: white;"></span>
                 </div>
             </div>
-        </div>
-
-        <div class="col-3 dashboard-container">
-            <div class="dashboard-kpi-card">
-                <i class="nav-icon fas fa-cubes" aria-hidden="true" style="font-size: 2.3em; color: #d30000;"></i>
-                <div>
-                    <h6 style="color: gray">KPI1</h6>
-                    <h2>50%</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-3 dashboard-container">
-            <div class="dashboard-kpi-card">
-                <i class="nav-icon fas fa-barcode" aria-hidden="true" style="font-size: 2.3em"></i>
-                <div>
-                    <h6 style="color: gray">KPI1</h6>
-                    <h2 style="color: #d91313;">0%</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row" style="margin-bottom: 4vh;">
-        <div class="col-8 dashboard-container">
-            <div class="dashboard-report-card"></div>
         </div>
         <div class="col-4 dashboard-container">
-            <div class="dashboard-report-card"></div>
+            <div class="dashboard-kpi-card" style="background-color: #5a8f7b">
+                <div class="dashboard-kpi-card-title-filter">
+                    <h6 style="color: white">Cantidad en almacen por tipo de movimiento</h6>
+                    <select id="movimientoSelect" onchange="almacenPorMovimiento()" style="color: white; background-color: #5a8f7b">
+                        <option value="">Movimiento</option>
+                    </select>
+                </div>
+                <div class="dashboard-kpi-card-value">
+                    <span id="almacenPorMovimiento" style="font-size: 2em; color: white;"></span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="row" style="margin-bottom: 4vh;">
-        <div class="col-5 dashboard-container">
-            <div class="dashboard-report-card"></div>
-        </div>
-        <div class="col-7 dashboard-container">
-            <div class="dashboard-report-card"></div>
-        </div>
-    </div>
-
 </div>
 
+    <div class="row" style="margin-bottom: 3vh;">
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-report-card">
+                <div class="dashboard-chart-title">
+                    <h6>Ingresos Por Mes</h6>
+                </div>
+                <hr style="width: 95%; height: 2px; color: gray;">
+                <div class="dashboard-canvas-container">
+                <canvas id="ingresosEgresosPorMes" style="width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-report-card">
+                <div class="dashboard-chart-title">
+                    <h6>Ingresos Por Dia</h6>
+                </div>
+                <hr style="width: 95%; height: 2px; color: gray;">
+            <canvas id="ingresosEgresosPorDia" style="width: 100%;"></canvas>
+            </div>
+        </div>
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-report-card">
+                <div class="dashboard-chart-title">
+                    <h6>Ingresos por mes</h6>
+                </div>
+                <hr style="width: 95%; height: 2px; color: gray;">
+            <canvas id="ingresosPorMes" style="width: 100%;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4 dashboard-container">
+            <div class="dashboard-report-card">
+                <div class="dashboard-chart-title">
+                    <h6>Ordenes por proveedor</h6>
+                </div>
+                <hr style="width: 90%; height: 2px; color: gray;">
+            <canvas id="ordenesPorProveedor" style="width: 100%; height: 100%; max-height: 250px;"></canvas>
+            </div>
+        </div>
+        <div class="col-8 dashboard-container">
+            <div class="dashboard-report-card">
+                <div class="dashboard-chart-title">
+                    <h6>Ordenes por producto</h6>
+                </div>
+                <hr style="width: 95%; height: 2px; color: gray;">
+            <canvas id="totalPorProducto" style="width: 100%; height: 100%;"></canvas>
+            </div>
+        </div>
+    </div>
+
 <script>
-    $(document).ready(function () {
 
-        $(".editarProveedor").click(function () {
+    async function IngresosEgresosPorMes(){
 
-            var IdProveedor = $(this).attr("id");
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("EditarProveedor", "Proveedores")',
-                data: { IdProveedor: IdProveedor },
-                success: function (data) {
+        const response = await fetch('/Dashboard/IngresosEgresosPorMes');
+        const data = await response.json();
 
-                    $("#proveedorForm").html(data);
+        // Extract labels (IdProducto) and values (Total)
+        const labels = data.map(item => item.month);
+        const values = data.map(item => item.total);
 
-                }
-            });
+        var ctx = document.getElementById('ingresosEgresosPorMes').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ingresos por Mes',
+                    data: values,
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
+                }]
+            },
+            options: {
+                responsive: true
+            }
         });
+    }
 
-        $(".borrarProveedor").click(function () {
+    async function IngresosEgresosPorDia(){
 
-            $("#IdProveedorBorrar").val($(this).attr("id"));
-            $("#modal-borrar").modal("show");
+        const response = await fetch('/Dashboard/IngresosEgresosPorDia');
+        const data = await response.json();
 
+        // Extract labels (IdProducto) and values (Total)
+        const labels = data.map(item => item.month);
+        const values = data.map(item => item.total);
+
+        var ctx = document.getElementById('ingresosEgresosPorDia').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ingresos por Dia',
+                    data: values,
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
+                }]
+            },
+            options: {
+                responsive: true
+            }
         });
+    }
 
-        $("#modal-borrar-btn").click(function () {
+    async function TotalPorProducto(){
 
-            $("#modal-borrar").modal("hide");
-            var IdProveedor = $("#IdProveedorBorrar").val();
+        const response = await fetch('/Dashboard/TotalPorProducto');
+        const data = await response.json();
 
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("BorrarProveedor", "Proveedores")',
-                data: { IdProveedor: IdProveedor },
-                success: function (data) {
+        // Extract labels (IdProducto) and values (Total)
+        const labels = data.map(item => item.producto);
+        const values = data.map(item => item.cantidad);
 
-                    if (data.res == 0) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                    else {
-                        $("#modal-warning").modal("show");
-                    }
-                }
-            });
+        var ctx = document.getElementById('totalPorProducto').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total por producto',
+                    data: values,
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
+                }]
+            },
+            options: {
+                responsive: true
+            }
         });
+    }
 
-    });
+    async function ingresosPorMes(){
+
+        const response = await fetch('/Dashboard/ingresosPorMes'); // Fetch from C# API
+        const data = await response.json();
+
+        // Extract labels (dates) and values (income)
+        var labels = data.map(item => item.fechaOrden);
+        var values = data.map(item => item.ingreso);
+
+        var ctx = document.getElementById('ingresosPorMes').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ingresos por Fecha',
+                    data: values,
+                    backgroundColor: '#86c5a6',
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+
+    async function ordenesPorProveedor(){
+
+        const response = await fetch('/Dashboard/ordenesPorProveedor'); // Adjust endpoint if needed
+        const data = await response.json();
+
+        // Extract labels (supplier names) and values (order counts)
+        var labels = data.map(item => item.proveedor);
+        var values = data.map(item => item.cantidad);
+
+        var ctx = document.getElementById('ordenesPorProveedor').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Órdenes por Proveedor',
+                    data: values,
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4', '#ffcc00', '#ff6666'],
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+
+    async function ventaPorRancho(){
+        // Get the selected IdRancho from the dropdown
+        const ranchoName = document.getElementById('ranchoSelect').value;
+
+        // Prepare the URL with the IdRancho query parameter
+        let url = '/Dashboard/ventaPorRancho';
+        if (ranchoName) {
+            url += `?ranchoName=${ranchoName}`;
+        }
+
+        // Fetch data from the server
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.length > 0) {
+            var porcentaje = (data[0].porcentaje * 100).toFixed(1);
+            document.getElementById("porcentajeVenta").textContent = porcentaje > 0 ? porcentaje + "%" : "0%";
+        } else {
+            document.getElementById("porcentajeVenta").textContent = "-";
+        }
+
+    }
+
+    async function opcionesRancho() {
+        const response = await fetch('/Dashboard/opcionesRancho');
+        const ranchos = await response.json();
+
+        const ranchoSelect = document.getElementById('ranchoSelect');
+
+        // Clear existing options
+        ranchoSelect.innerHTML = '<option value="">Rancho</option>';
+
+        // Add each rancho as an option
+        ranchos.forEach(rancho => {
+            const option = document.createElement('option');
+            option.value = rancho;
+            option.textContent = `${rancho}`;
+            ranchoSelect.appendChild(option);
+        });
+    }
+
+    async function ordenesDeCompraPorStatus(){
+            // Get the selected status from the dropdown
+        const descripcionStatus = document.getElementById('statusSelect').value;
+
+        // Prepare the URL with the descripcionEstatus query parameter
+        let url = '/Dashboard/ordenDeCompraPorStatus';
+        if (descripcionStatus) {
+            url += `?descripcionStatus=${encodeURIComponent(descripcionStatus)}`;
+        }
+
+        // Fetch data from the server
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if(data.length > 0){
+            data.forEach(opcionStatus => {
+            if(opcionStatus.status == descripcionStatus){
+                count = opcionStatus.cantidad;
+                document.getElementById("cantidadOrdenes").textContent = count > 0 ? count : "0";
+            }
+        })
+        }else {
+            document.getElementById("cantidadOrdenes").textContent = "-";
+        }
+
+    }
+
+    async function opcionesStatus() {
+        const response = await fetch('/Dashboard/opcionesStatus');
+        const status = await response.json();
+
+        statusSelect.innerHTML = '<option value="">Status</option>';
+
+        status.forEach(status => {
+            const option = document.createElement('option');
+            option.value = status;
+            option.textContent = `${status}`;
+            statusSelect.appendChild(option);
+        });
+    }
+
+        async function almacenPorMovimiento(){
+            // Get the selected status from the dropdown
+        const descripcionMovimiento = document.getElementById('movimientoSelect').value;
+
+        // Prepare the URL with the descripcionEstatus query parameter
+        let url = '/Dashboard/almacenPorMovimiento';
+        if (descripcionMovimiento) {
+            url += `?descripcionMovimiento=${encodeURIComponent(descripcionMovimiento)}`;
+        }
+
+        // Fetch data from the server
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if(data.length > 0){
+            data.forEach(opcionMovimiento => {
+            if(opcionMovimiento.movimiento == descripcionMovimiento){
+                count = opcionMovimiento.cantidad;
+                document.getElementById("almacenPorMovimiento").textContent = count > 0 ? count : "0";
+            }
+        })
+        }else {
+            document.getElementById("almacenPorMovimiento").textContent = "-";
+        }
+
+    }
+
+    async function opcionesMovimiento() {
+        const response = await fetch('/Dashboard/opcionesMovimiento');
+        const movimiento = await response.json();
+
+        movimientoSelect.innerHTML = '<option value="">Movimiento</option>';
+
+        movimiento.forEach(movimiento => {
+            const option = document.createElement('option');
+            option.value = movimiento;
+            option.textContent = `${movimiento}`;
+            movimientoSelect.appendChild(option);
+        });
+    }
+
+    // Call the function to render the chart
+    IngresosEgresosPorMes();
+
+    IngresosEgresosPorDia();
+
+    ordenesPorProveedor();
+
+    TotalPorProducto();
+
+    ingresosPorMes();
+
+    ventaPorRancho();
+
+    opcionesRancho();
+
+    ordenesDeCompraPorStatus();
+
+    opcionesStatus();
+
+    almacenPorMovimiento();
+
+    opcionesMovimiento();
 </script>
-
