@@ -1,60 +1,72 @@
 ﻿@model AgricolaDH_GApp.Models.Login
 @{
     Layout = "";
+    ViewData["Title"] = "Login";
 }
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>@ViewData["Title"] - AgricolaDH_GApp</title>
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/AgricolaDH_GApp.styles.css" asp-append-version="true" />
-    </head>
-    <body>
-        <div class="login-container">
-            <div class="login-container-square">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AgricolaDH_GApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AgricolaDH_GApp.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-container-square">
+            <div class="login-image-container">
+                <img src="~/images/DHG.jpeg" alt="Company Logo" />
+            </div>
 
-                <div class="login-image-container">
-                    <img src="~/images/DHG.jpeg" alt="Alternate Text" />
-                </div>
-                <div class="login-fields-container">
-                    <form asp-action="Login" method="post">
-                        <div class="login-page-title">
-                            DH&G Agriculture
-                        </div>
-                        <div class="login-page-inputs">
-                            <span>
-                                <input asp-for="Username" type="text" maxlength="100" class="text-input" placeholder="User" />
-                            </span>
-                            <span>
-                                <input asp-for="Password" type="text" maxlength="100" class="text-input" placeholder="Password" />
-                            </span>
-                        </div>
+            <div class="login-fields-container">
+                <div class="login-page-title">DH&G Agriculture</div>
 
-                        <div class="login-page-rememberme">
-                            <span class="login-page-rememberme-text">
-                                <input type="checkbox" />
-                                <span>Remember Me</span>
-                            </span>
-                            <span class="login-page-forgotpassword">
-                                Forgot password?
-                            </span>
+                <form asp-controller="Login" asp-action="Authenticate" method="post">
+                    @* Display validation summary *@
+                    <div class="text-danger">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    </div>
+                    @if (TempData["LoginError"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["LoginError"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                    }
 
-                        <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 2vh; padding: 0px 40px;">
-                            @* <input type="button" value="Login" class="login-page-button" /> *@
-                            <button type="submit" class="login-page-button">Login</button>
-                        </div>
 
-                        <div class="login-fields-footer">
-                            Developed by PolarTech ©
-                        </div>
-                    </form>                    
+                    <div class="login-page-inputs">
+                        <span>
+                            <input asp-for="Username" type="text" maxlength="100" class="text-input" placeholder="User" />
+                            <span class="text-danger">@Html.ValidationMessageFor(m => m.Username)</span>
+                        </span>
+                        <span>
+                            <input asp-for="Password" type="password" maxlength="100" class="text-input" placeholder="Password" />
+                            <span class="text-danger">@Html.ValidationMessageFor(m => m.Password)</span>
+                        </span>
+                    </div>
+
+                    <div class="login-page-rememberme">
+                        <span class="login-page-rememberme-text">
+                            <input type="checkbox" />
+                            <span>Remember Me</span>
+                        </span>
+                        <span class="login-page-forgotpassword">Forgot password?</span>
+                    </div>
+
+                    <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 2vh; padding: 0px 40px;">
+                        <button type="submit" class="login-page-button">Login</button>
+                    </div>
+                </form>
+                <div class="login-fields-footer">
+                    Developed by PolarTech ©
                 </div>
             </div>
-            <p></p>
         </div>
-    </body>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>

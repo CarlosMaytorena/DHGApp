@@ -1,10 +1,11 @@
 ﻿using AgricolaDH_GApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
-	public class DashboardController : Controller
+    public class DashboardController : Controller
 	{
 		private readonly ILogger<DashboardController> _logger;
 
