@@ -17,6 +17,7 @@ namespace AgricolaDH_GApp.Models
         public int? IdAlmacenista { get; set; }
         public string? Movimiento { get; set; }
         public string? RazonUso { get; set; }
+        public bool Uso { get; set; }
 
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]

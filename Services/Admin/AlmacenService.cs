@@ -106,6 +106,7 @@ namespace AgricolaDH_GApp.Services.Admin
                     dbRow.RazonUso = model.almacen.RazonUso;
                     dbRow.Movimiento = "Salida";
                     dbRow.Fecha = fecha;
+                    dbRow.Uso = true;
                     context.Almacen.Update(dbRow);
                 }
                 context.SaveChanges();
@@ -126,7 +127,8 @@ namespace AgricolaDH_GApp.Services.Admin
                 Movimiento = "Ingreso",
                 Fecha = DateTime.Now,
                 SerialNumber = serial,
-                IdEstatus = 1 // Estatus de Ingreso
+                IdEstatus = 1, // Estatus de Ingreso
+                Uso = false
             };
 
             context.Almacen.Add(nuevoIngreso);
