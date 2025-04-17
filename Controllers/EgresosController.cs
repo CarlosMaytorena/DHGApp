@@ -114,10 +114,11 @@ namespace AgricolaDH_GApp.Controllers
             if (model.almacen == null)
                 return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
 
-            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool cond3 = context.Egresos.Any(x => !x.SerialNumber.Equals(model.almacen.SerialNumber));
-            if (cond1 && cond2 && cond3)
+            bool existeAlmacen = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool dupliLista = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool noExisteEgreso = context.Egresos.Any(x => !x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool usado = context.Almacen.SingleOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber)).Uso;
+            if (existeAlmacen && dupliLista && noExisteEgreso && usado)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
