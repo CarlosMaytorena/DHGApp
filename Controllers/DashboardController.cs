@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
+    [Authorize(Roles ="1")]
     public class DashboardController : Controller
 	{
         private readonly AppDbContext _context;

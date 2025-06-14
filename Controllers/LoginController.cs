@@ -4,21 +4,34 @@ using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Services.Admin;
 using Microsoft.Ajax.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using AgricolaDH_GApp.ViewModels;
 
 namespace AgricolaDH_GApp.Controllers
 {
     public class LoginController : Controller
     {
+
         private readonly ILogger<LoginController> _logger;
         private readonly AppDbContext _context;
         private UsuarioService usuarioService;
+        private readonly OrdenDeCompraService _ordenDeCompraService;
 
 
-        public LoginController(ILogger<LoginController> logger, AppDbContext _ctx, UsuarioService _usuarioService)
+
+
+        public LoginController(
+            ILogger<LoginController> logger,
+            AppDbContext _ctx,
+            UsuarioService _usuarioService,
+            OrdenDeCompraService ordenDeCompraService)
         {
             _logger = logger;
             _context = _ctx;
             usuarioService = _usuarioService;
+            _ordenDeCompraService = ordenDeCompraService;
+
         }
 
         // Show the login form (GET)
@@ -26,23 +39,6 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-
-        // Handle form submission (POST)
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Login(Login model)
-        {
-            if (ModelState.IsValid)
-            {
-                // TODO: Add login logic here (e.g., check credentials)
-
-                // Redirect to the home page after successful login
-                return RedirectToAction("Index", "Dashboard");  // This sends the user to '/'
-            }
-
-            // If model is invalid, re-show the form with validation messages
-            return RedirectToAction("Index", "Home");  // This sends the user to '/'
         }
 
         [HttpPost]
@@ -61,18 +57,54 @@ namespace AgricolaDH_GApp.Controllers
                     Usuario user = new Usuario();
                     user = usuarioService.UsuarioLogin(model.Username, model.Password);
 
-                    return View("~/Views/Dashboard/Index.cshtml", user);
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim("UserId", user.IdUsuario.ToString()),
+                        new Claim(ClaimTypes.Role, user.IdRol.ToString())
+                    };
+
+                    var identity = new ClaimsIdentity(claims, "CookieAuth");
+                    var principal = new ClaimsPrincipal(identity);
+
+                    HttpContext.SignInAsync("CookieAuth", principal);
+
+                    if (user.IdRol == RolEnumerators.Administrador)
+                    {
+                        return View("~/Views/Home/Index.cshtml");
+                    }
+                    else if (user.IdRol == RolEnumerators.Ingeniero)
+                    {
+                        return View("~/Views/Dashboard/Index.cshtml", user);
+
+                    }
+                    else
+                    {
+                        return View("~/Views/Dashboard/Index.cshtml", user);
+                    }
+
+
                 }
                 else
                 {
                     TempData["LoginError"] = "Invalid login.";
-                    return RedirectToAction("Index", "Home");  // This sends the user to '/'
+                    return View("Index");
                 }
             }
 
             // If we got this far, something failed; redisplay form
-            return RedirectToAction("Index", "Home");  // This sends the user to '/'
+        return RedirectToAction("Login", "Home");  // This sends the user to '/'
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("CookieAuth");
+            return View("Index");
+
+            //return RedirectToAction("Login", "Home");  // This sends the user to '/'
+        }
+
 
 
     }

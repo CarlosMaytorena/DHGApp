@@ -27,28 +27,34 @@ namespace AgricolaDH_GApp.Controllers
 
 		public IActionResult Index()
 		{
-            //CAMBIO
 			Login model = new Login();
 
             return View("~/Views/Login/Index.cshtml", model);
 
 		}
 
-        public IActionResult Login(Login model)
+        public IActionResult Login()
         {
-			//CAMBIO
-			Usuario user = new Usuario();
-			user = usuarioService.UsuarioLogin(model.Username, model.Password);
+            Login model = new Login();
 
-			if (user == null) 
-			{
-                return View("~/Views/Login/Index.cshtml", model);
-            }
+            return View("~/Views/Login/Index.cshtml", model);
 
-			HttpContext.Session.SetString("s_SessionUser", JsonConvert.SerializeObject(user));
-
-            return View("~/Views/Dashboard/Index.cshtml", user);
         }
+
+        //     public IActionResult Login(Login model)
+        //     {
+        //Usuario user = new Usuario();
+        //user = usuarioService.UsuarioLogin(model.Username, model.Password);
+
+        //if (user == null) 
+        //{
+        //             return View("~/Views/Login/Index.cshtml", model);
+        //         }
+
+        //HttpContext.Session.SetString("s_SessionUser", JsonConvert.SerializeObject(user));
+
+        //         return View("~/Views/Dashboard/Index.cshtml", user);
+        //     }
 
         public IActionResult Privacy()
 		{

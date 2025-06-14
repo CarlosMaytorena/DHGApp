@@ -46,6 +46,13 @@ builder.Services.AddScoped<ViewRenderService>();
 
 builder.Services.AddSingleton<Email>();
 builder.Services.AddSession();
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Login"; // Change if your login URL is different
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -62,8 +69,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
 	name: "default",

@@ -1,17 +1,24 @@
-﻿<script type="text/javascript">
+﻿<div class="row top-row-spacer" style="margin-bottom: 5vh">
+    <div class="col-md-6">
+        <h4 class="page-title">Home</h4>
+    </div>
+</div>
+
+
+@* <script type="text/javascript"> *@
 	
-	$(document).ready(function () {
-		$.ajaxSetup({ cache: false });
+@* 	$(document).ready(function () { *@
+@* 		$.ajaxSetup({ cache: false }); *@
 
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("Index", "Dashboard")',
-            contentType: "application/json; charset=utf-8",
-            data: {},
-            success: function (data) {
-                $("#HtmlBody").html(data);
-            }
-        });
-	})
+@*         $.ajax({ *@
+@*             type: "GET", *@
+@*             url: '@Url.Action("Index", "Dashboard")', *@
+@*             contentType: "application/json; charset=utf-8", *@
+@*             data: {}, *@
+@*             success: function (data) { *@
+@*                 $("#HtmlBody").html(data); *@
+@*             } *@
+@*         }); *@
+@* 	}) *@
 
-</script>
+@* </script> *@

@@ -2,7 +2,7 @@
 
 
 @using System.Web.Optimization
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #AAD9BB;">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #AAD9BB; height:100vh;">
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
@@ -165,7 +165,17 @@
                             </li>
                         </ul>
                     </li>                    
-                }                
+                }   
+                <li class="nav-item" style="margin-top:100%;">
+                    <form method="post" asp-controller="Login" asp-action="Logout" id="logoutForm" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn nav-link" style="background:none; border:none; padding:0; color:#2E2E2E; cursor:pointer; width:100%; text-align:left;">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

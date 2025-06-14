@@ -17,6 +17,7 @@ namespace AgricolaDH_GApp.ViewModels
             subirFacturaList = new List<OrdenDeCompraTable>();
             ordenDeCompra = new OrdenDeCompraTable();
             productosOrdenar = new List<ProductoOrdenarSelected>();
+            ordenesCerradas = new List<OrdenDeCompraTable>();
         }        
     }
 }
