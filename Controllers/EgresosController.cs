@@ -105,7 +105,7 @@ namespace AgricolaDH_GApp.Controllers
 			{
                 res = -1;
             }
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
+            return Json(new { res});
         }
 
         [HttpPost]
@@ -116,9 +116,9 @@ namespace AgricolaDH_GApp.Controllers
 
             bool existeAlmacen = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool dupliLista = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool noExisteEgreso = context.Egresos.Any(x => !x.SerialNumber.Equals(model.almacen.SerialNumber));
+            bool existeEgreso = context.Egresos.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool usado = context.Almacen.SingleOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber)).Uso;
-            if (existeAlmacen && dupliLista && noExisteEgreso && usado)
+            if (existeAlmacen && dupliLista && !existeEgreso && usado)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;

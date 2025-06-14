@@ -42,8 +42,8 @@
                         @Html.EditorFor(m => m.egreso.PathAntes, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly", @type = "text" } })
                     </div>
                     <div class="input-group-append">
-                        <button class="input-group-text">
-                            <i class="nav-icon fas fa-arrow-circle-down descargar"></i>
+                    <button class="input-group-text descargar">
+                            <i class="nav-icon fas fa-arrow-circle-down"></i>
                         </button>
                     </div>
                 </div>
@@ -82,14 +82,13 @@
         $(".descargar").click(function (event) {
             event.preventDefault();
             var filename = $(this).closest('.input-group').find('input').val(); 
-            console.log(filename);
+            //console.log(filename);
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("DescargarArchivo", "Egresos")',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(filename),
                 success: function (data) {
-                    $(".index").click();
                 }
             });
         });

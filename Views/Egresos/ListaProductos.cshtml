@@ -81,7 +81,7 @@
                 data: dataform.serialize(),
                 success: function (data) {
                     $("#ListaDeProductos").html(data);
-                    $("input[name='almacen.SerialNumber']").val("");
+                    $("input[name='almacen.SerialNumber']").val("").focus(); // Limpia y vuelve a enfocar para el siguiente escaneo
                 }
             });
         });

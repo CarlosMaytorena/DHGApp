@@ -54,3 +54,7 @@ jobs:
         connection-strings: |
           AzureBlobStorage=${{ secrets.BLOB_STORAGE_CONN_STRING }}
           DbConnection=${{ secrets.DB_CONN_STRING }}
+        app-settings: |
+          AzureAD__TenantId=${{ secrets.AAD_TENANT_ID }}
+          AzureAD__ClientId=${{ secrets.AAD_CLIENT_ID }}
+          AzureAD__ClientSecret=${{ secrets.AAD_CLIENT_SECRET }}

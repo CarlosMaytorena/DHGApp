@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers.Admin
@@ -65,7 +66,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         public async Task<IActionResult> InsertUsuario(UsuariosVM model)
         {
             int res = usuarioService.InsertUsuario(model.usuario);
-
+            res += await usuarioService.AddToActiveDirectory(model.usuario);
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
@@ -76,8 +77,9 @@ namespace AgricolaDH_GApp.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> UpdateUsuario(UsuariosVM model)
         {
-            int res = usuarioService.UpdateUsuario(model.usuario);
-
+            Usuario old = context.Usuarios.AsNoTracking().FirstOrDefault(u => u.IdUsuario == model.usuario.IdUsuario);
+            int res = await usuarioService.UpdateActiveDirectory(old, model.usuario);
+            res += usuarioService.UpdateUsuario(model.usuario);
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
@@ -89,9 +91,10 @@ namespace AgricolaDH_GApp.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> BorrarUsuario(int IdUsuario)
         {
-
-            int res = usuarioService.DeleteUsuario(IdUsuario);
-
+            Usuario u = context.Usuarios.AsNoTracking().FirstOrDefault(a => a.IdUsuario == IdUsuario);
+            int res = await usuarioService.DropActiveDirectory(u);
+            res += usuarioService.DeleteUsuario(IdUsuario);
+            
             UsuariosVM model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
