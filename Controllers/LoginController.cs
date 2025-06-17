@@ -68,22 +68,9 @@ namespace AgricolaDH_GApp.Controllers
                     var principal = new ClaimsPrincipal(identity);
 
                     HttpContext.SignInAsync("CookieAuth", principal);
+                    return View("~/Views/Home/Index.cshtml", user);
 
-                    if (user.IdRol == RolEnumerators.Administrador)
-                    {
-                        return View("~/Views/Home/Index.cshtml");
-                    }
-                    else if (user.IdRol == RolEnumerators.Ingeniero)
-                    {
-                        return View("~/Views/Dashboard/Index.cshtml", user);
-
-                    }
-                    else
-                    {
-                        return View("~/Views/Dashboard/Index.cshtml", user);
-                    }
-
-
+                    //return View("~/Views/Home/Index.cshtml", user);
                 }
                 else
                 {
@@ -93,16 +80,17 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             // If we got this far, something failed; redisplay form
-        return RedirectToAction("Login", "Home");  // This sends the user to '/'
+            Login loginModel = new Login();
+
+            return View("~/Views/Login/Index.cshtml", loginModel);
+            //return RedirectToAction("Login", "Home");  // This sends the user to '/'
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("CookieAuth");
-            return View("Index");
-
-            //return RedirectToAction("Login", "Home");  // This sends the user to '/'
+            return RedirectToAction("Login", "Home");  // This sends the user to '/'
         }
 
 

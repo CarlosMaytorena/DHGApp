@@ -27,10 +27,7 @@ namespace AgricolaDH_GApp.Controllers
 
 		public IActionResult Index()
 		{
-			Login model = new Login();
-
-            return View("~/Views/Login/Index.cshtml", model);
-
+            return PartialView("~/Views/Home/Index.cshtml");
 		}
 
         public IActionResult Login()

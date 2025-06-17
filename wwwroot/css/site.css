@@ -271,6 +271,48 @@ body {
     margin-top: 32px;
 }
 
+.homepage-main {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    padding-top: 15vh;
+
+    height: 100%;
+    width: 100%;
+}
+
+.homepage-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.homepage-container-square {
+    display: flex;
+    flex-direction: row;
+
+    overflow: hidden;
+    width: 60%;
+    height: 100%;
+}
+
+.homepage-text-container {
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+
+    flex-direction: column;
+}
+
+.homepage-image-container {
+    display: flex;
+    height: 100%;
+    width: 50%;
+    object-fit: cover;
+}
+
 .dashboard-container {
     display: flex;
     justify-content: center;
