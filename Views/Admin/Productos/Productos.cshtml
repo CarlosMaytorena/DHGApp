@@ -1,90 +1,130 @@
 ﻿@model AgricolaDH_GApp.ViewModels.ProductosVM
 
-
-<form id="dataform">
-    @Html.HiddenFor(m => m.producto.IdProducto)
-    @Html.HiddenFor(m => m.producto.PN)
-
-
-    <div class="row align-items-end top-row-spacer">
-        <div class="col-md-3">
-            <label style="font-weight: normal; text-align: left; float: left">Nombre de Producto</label>
-            @Html.EditorFor(m => m.producto.NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" } })
-        </div>
-        <div class="col-md-5">
-            <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
-            @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus notNull" } })
+<div class="text-center">
+    <div class="row top-row-spacer">
+        <div class="col-md-8">
         </div>
         <div class="col-md-2">
-            <button type="button" id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
+            <button id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
                 Cancelar
             </button>
         </div>
         <div class="col-md-2">
             @if (Model.producto.IdProducto != null && Model.producto.IdProducto != 0)
             {
-                <button type="button" id="editarProducto" class="btn btn-block secondary-background-color" style="color: white">
+                <button id="editarProducto" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-pen"></i>
                     Editar Producto
                 </button>
             }
             else
             {
-                <button type="button" id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
+                <button id="crearProducto" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-plus"></i>
-                    Agregar Producto
+                    Crear Producto
                 </button>
             }
         </div>
     </div>
-</form>
+
+    <form id="dataform">
+        @Html.HiddenFor(m => m.producto.IdProducto)
+        @Html.HiddenFor(m => m.producto.PN)
+        <div class="card card-margin">
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Clave de Proveedor</label>
+                    @Html.EditorFor(m => m.producto.ClaveProveedor, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Nombre de Producto</label>
+                    @Html.EditorFor(m => m.producto.NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Unidad de Venta</label>
+                    @Html.EditorFor(m => m.producto.UnidadDeVenta, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Unidad de SKU</label>
+                    @Html.EditorFor(m => m.producto.UnidadDeSKU, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Contenido</label>
+                    @Html.EditorFor(m => m.producto.Contenido, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Nombre Interno</label>
+                    @Html.EditorFor(m => m.producto.NombreInterno, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Compañía</label>
+                    @Html.EditorFor(m => m.producto.Compania, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">SKU Interno</label>
+                    @Html.EditorFor(m => m.producto.SKUInterno, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-6">
+                    <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
+                    @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus notNull" } })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+            </div>
+        </div>        
+    </form>
 
 
-<div class="row card-row-spacer">
-</div>
-
-<div class="modal fade" id="modal-crear">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Agregar Producto</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-crear-body">
-                <p style="margin-left: 10px">¿Seguro que desea agregar este producto?</p>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="crearProductoConfirm" type="button" class="btn btn-primary">Crear</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
+    <div class="row card-row-spacer">
     </div>
-    <!-- /.modal-dialog -->
-</div>
 
-<div class="modal fade" id="modal-editar">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Editar Producto</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <div class="modal fade" id="modal-crear">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Agregar Producto</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-crear-body">
+                    <p style="margin-left: 10px">¿Seguro que desea agregar este producto?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="crearProductoConfirm" type="button" class="btn btn-primary">Crear</button>
+                </div>
             </div>
-            <div class="modal-editar-body">
-                <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al producto?</p>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="editarProductoConfirm" type="button" class="btn btn-primary">Editar</button>
-            </div>
+            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-content -->
+        <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
+
+    <div class="modal fade" id="modal-editar">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Editar Producto</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-editar-body">
+                    <p style="margin-left: 10px">¿Seguro que desea guardar los cambios realizados al producto?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="editarProductoConfirm" type="button" class="btn btn-primary">Editar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 </div>
 
 <script>
@@ -168,11 +208,59 @@
             
             $("#producto_NombreProducto").css("border-color", "");
             $("#producto_Descripcion").css("border-color", "");
+            $("#producto_ClaveProveedor").css("border-color", "");
+            $("#producto_UnidadDeVenta").css("border-color", "");
+            $("#producto_UnidadDeSKU").css("border-color", "");
+            $("#producto_Contenido").css("border-color", "");
+            $("#producto_NombreInterno").css("border-color", "");
+            $("#producto_Compania").css("border-color", "");
+            $("#producto_SKUInterno").css("border-color", "");
+            $("#producto_Descripcion").css("border-color", "");
            
             var validation = true
 
             if ($("#producto_NombreProducto").val() == null || $("#producto_NombreProducto").val() == "") {
                 $("#producto_NombreProducto").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Descripcion").val() == null || $("#producto_Descripcion").val() == "") {
+                $("#producto_Descripcion").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_ClaveProveedor").val() == null || $("#producto_ClaveProveedor").val() == 0) {
+                $("#producto_ClaveProveedor").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_UnidadDeVenta").val() == null || $("#producto_UnidadDeVenta").val() == "") {
+                $("#producto_UnidadDeVenta").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_UnidadDeSKU").val() == null || $("#producto_UnidadDeSKU").val() == "") {
+                $("#producto_UnidadDeSKU").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Contenido").val() == null || $("#producto_Contenido").val() == 0) {
+                $("#producto_Contenido").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_NombreInterno").val() == null || $("#producto_NombreInterno").val() == "") {
+                $("#producto_NombreInterno").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_Compania").val() == null || $("#producto_Compania").val() == "") {
+                $("#producto_Compania").css("border-color", "red");
+                validation = false;
+            }
+
+            if ($("#producto_SKUInterno").val() == null || $("#producto_SKUInterno").val() == "") {
+                $("#producto_SKUInterno").css("border-color", "red");
                 validation = false;
             }
 

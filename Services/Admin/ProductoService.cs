@@ -58,6 +58,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 {
                     // Check if a product with the same name already exists
                     bool exists = context.Productos.Any(p => p.NombreProducto == producto.NombreProducto);
+                    exists = context.Productos.Any(p => p.ClaveProveedor == producto.ClaveProveedor);
                     if (exists)
                     {
                         // Return a specific code indicating a duplicate name

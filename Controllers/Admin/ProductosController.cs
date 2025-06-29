@@ -63,7 +63,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             if (res == -2)
             {
-                return Json(new { res, message = "El nombre del producto ya existe. Por favor, elija un nombre diferente." });
+                return Json(new { res, message = "La clave de proveedor o nombre del producto ya existe. Por favor, elija un nombre diferente." });
             }
             else if (res == -1)
             {
@@ -82,12 +82,10 @@ namespace AgricolaDH_GApp.Controllers.Admin
         {
             int res = productoService.UpdateProducto(model.producto);
 
-
             model = new ProductosVM();
             model.productoList = productoService.SelectProductos();
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
-
         }
 
         [HttpPost]
