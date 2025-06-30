@@ -123,13 +123,20 @@ namespace AgricolaDH_GApp.Controllers
                     Regex regex = new Regex("[ ]{2,}", options);
                     descripcion = regex.Replace(descripcion, " ");
 
-                    if (descripcion != null && productosOrdenarName.Contains(descripcion)) 
+                    int i = 0;
+                    foreach(var productoOrdenar in productosOrdenarName)
                     {
-                        int index = productosOrdenarName.FindIndex(m => m.Contains(descripcion));
-                        model.productosOrdenar[index].Cantidad = Convert.ToInt32(Convert.ToDouble(item.GetAttribute("Cantidad")));
-                        model.productosOrdenar[index].Total = Convert.ToDecimal(item.GetAttribute("Importe"));
-                        model.productosOrdenar[index].Unidad = model.productosOrdenar[index].Total / model.productosOrdenar[index].Cantidad;
+                        var productoOrdenarName = (regex.Replace(productoOrdenar, " ")).ToLower();
+                        if (descripcion != null && productoOrdenarName == descripcion)
+                        {
+                            model.productosOrdenar[i].Cantidad = Convert.ToInt32(Convert.ToDouble(item.GetAttribute("Cantidad")));
+                            model.productosOrdenar[i].Total = Convert.ToDecimal(item.GetAttribute("Importe"));
+                            model.productosOrdenar[i].Unidad = model.productosOrdenar[i].Total / model.productosOrdenar[i].Cantidad;
+                        }
+                        i++;
                     }
+
+
                 }
 
                 foreach(var productoOrdenar in model.productosOrdenar)
