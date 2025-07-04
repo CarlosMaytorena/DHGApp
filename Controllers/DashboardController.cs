@@ -36,94 +36,123 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> IngresosEgresosPorMes()
+        public async Task<IActionResult> ordenesPorArea()
         {
-            var data = await _context.OrdenesDeCompra
-        .Where(o => o.FechaOrdenDeCompra.HasValue && o.FechaOrdenDeCompra.Value.Year == DateTime.Now.Year)
-        .Join(
-            _context.ProductosOrdenar,
-            o => o.IdOrdenDeCompra,
-            p => p.IdOrdenDeCompra,
-            (o, p) => new { o.FechaOrdenDeCompra, p.Total }
-        )
-        .GroupBy(g => g.FechaOrdenDeCompra.HasValue ? g.FechaOrdenDeCompra.Value.Month : 0)
-        .Select(g => new
-        {
-            Month = g.Key,  // Mes de la orden de compra
-            Total = g.Sum(x => x.Total) // Suma del total de productos ordenados
-        })
-        .ToListAsync();
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Areas,
+                      oc => oc.IdArea,
+                      a => a.IdArea,
+                      (oc, a) => new { a.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Area = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
 
             return Json(data);
         }
 
         [HttpGet]
-        public async Task<IActionResult> IngresosEgresosPorDia()
+        public async Task<IActionResult> ordenesPorCultivo()
         {
-            var data = await _context.OrdenesDeCompra
-        .Where(o => o.FechaOrdenDeCompra.HasValue && o.FechaOrdenDeCompra.Value.Month == DateTime.Now.Month && o.FechaOrdenDeCompra.Value.Year == DateTime.Now.Year)
-        .Join(
-            _context.ProductosOrdenar,
-            o => o.IdOrdenDeCompra,
-            p => p.IdOrdenDeCompra,
-            (o, p) => new { o.FechaOrdenDeCompra, p.Total }
-        )
-        .GroupBy(g => g.FechaOrdenDeCompra.HasValue ? g.FechaOrdenDeCompra.Value.Day : 0)
-        .Select(g => new
-        {
-            Month = g.Key,  // Mes de la orden de compra
-            Total = g.Sum(x => x.Total) // Suma del total de productos ordenados
-        })
-        .ToListAsync();
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Cultivos,
+                      oc => oc.IdCultivo,
+                      c => c.IdCultivo,
+                      (oc, c) => new { c.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Cultivo = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
 
             return Json(data);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ordenesPorEtapa()
+        {
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Etapas,
+                      oc => oc.IdEtapa,
+                      e => e.IdEtapa,
+                      (oc, e) => new { e.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Etapa = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> TotalPorProducto()
         {
             var query = _context.OrdenesDeCompra
-            .Join(_context.ProductosOrdenar,
-                  oc => oc.IdOrdenDeCompra,
-                  po => po.IdOrdenDeCompra,
-                  (oc, po) => new { oc.FechaOrdenDeCompra, po.IdProducto })
-            .Join(_context.Productos,
-                  temp => temp.IdProducto,
-                  p => p.IdProducto,
-                  (temp, p) => new { temp.FechaOrdenDeCompra, p.Descripcion })
-            .Where(x => x.FechaOrdenDeCompra.HasValue && x.FechaOrdenDeCompra.Value.Month == DateTime.Now.Month) // Filtra por el mes actual
-            .GroupBy(x => x.Descripcion) // Agrupa por descripción del producto
-            .Select(g => new
-            {
-                Producto = g.Key,
-                Cantidad = g.Count() // Cuenta el número de órdenes de compra
-            });
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.ProductosOrdenar,
+                      oc => oc.IdOrdenDeCompra,
+                      po => po.IdOrdenDeCompra,
+                      (oc, po) => new { po.IdProducto, po.Cantidad })
+                .Join(_context.Productos,
+                      temp => temp.IdProducto,
+                      p => p.IdProducto,
+                      (temp, p) => new { p.NombreProducto, temp.Cantidad })
+                .GroupBy(x => x.NombreProducto)
+                .Select(g => new
+                {
+                    Producto = g.Key,
+                    Cantidad = g.Sum(x => x.Cantidad)
+                });
 
             var data = await query.ToListAsync();
 
             return Json(data);
         }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> ordenesPorProveedor()
         {
             var query = _context.OrdenesDeCompra
-            .Join(_context.Proveedores,
-                  oc => oc.IdProveedor,
-                  p => p.IdProveedor,
-                  (oc, p) => new { oc.FechaOrdenDeCompra, p.Nombre })
-            .Where(x => x.FechaOrdenDeCompra.HasValue && x.FechaOrdenDeCompra.Value.Month == DateTime.Now.Month) // Filter by current month
-            .GroupBy(x => x.Nombre) // Group by supplier name
-            .Select(g => new
-            {
-                Proveedor = g.Key,
-                Cantidad = g.Count() // Count the number of orders
-            });
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Proveedores,
+                      oc => oc.IdProveedor,
+                      p => p.IdProveedor,
+                      (oc, p) => new { p.Nombre, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Nombre)
+                .Select(g => new
+                {
+                    Proveedor = g.Key,
+                    Cantidad = g.Count()
+                });
 
             var data = await query.ToListAsync();
 
             return Json(data);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> ingresosPorMes()
@@ -147,37 +176,41 @@ namespace AgricolaDH_GApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ventaPorRancho(string? ranchoName)
         {
-            // Calculate total sum from ProductosOrdenar
+            // Calcular total general como decimal
             var totalGeneral = await _context.ProductosOrdenar.SumAsync(p => p.Total);
 
             var query = _context.ProductosOrdenar
-            .Join(
-                _context.OrdenesDeCompra,
-                po => po.IdOrdenDeCompra,
-                oc => oc.IdOrdenDeCompra,
-                (po, oc) => new { po.Total, oc.IdRancho }
-            )
-            .Join(
-                _context.Ranchos,
-                temp => temp.IdRancho,
-                r => r.IdRancho,
-                (temp, r) => new { temp.Total, r.Descripcion });
+                .Join(
+                    _context.OrdenesDeCompra,
+                    po => po.IdOrdenDeCompra,
+                    oc => oc.IdOrdenDeCompra,
+                    (po, oc) => new { po.Total, oc.IdRancho }
+                )
+                .Join(
+                    _context.Ranchos,
+                    temp => temp.IdRancho,
+                    r => r.IdRancho,
+                    (temp, r) => new { temp.Total, r.Descripcion });
 
-            // If an idRancho is provided, filter by that IdRancho
-            query = query.Where(r => r.Descripcion == ranchoName);
+            if (!string.IsNullOrEmpty(ranchoName))
+            {
+                query = query.Where(r => r.Descripcion == ranchoName);
+            }
 
             var data = await query
                 .GroupBy(x => x.Descripcion)
                 .Select(g => new
                 {
                     Rancho = g.Key,
-                    Porcentaje = totalGeneral == 0 ? 0 : g.Sum(x => x.Total) / totalGeneral
+                    Porcentaje = totalGeneral == 0
+                        ? 0
+                        : Math.Round((decimal)g.Sum(x => x.Total) / (decimal)totalGeneral, 4) // <-- Forzar decimal y redondear
                 })
                 .ToListAsync();
 
-            return Json(data); // Return JSON response
-
+            return Json(data);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> opcionesRancho()

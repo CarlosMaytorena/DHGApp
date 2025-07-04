@@ -57,30 +57,28 @@
         <div class="col-4 dashboard-container">
             <div class="dashboard-report-card">
                 <div class="dashboard-chart-title">
-                    <h6>Ingresos Por Mes</h6>
+                    <h6>Ordenes por area</h6>
                 </div>
-                <hr style="width: 95%; height: 2px; color: gray;">
-                <div class="dashboard-canvas-container">
-                <canvas id="ingresosEgresosPorMes" style="width: 100%;"></canvas>
-                </div>
+                <hr style="width: 90%; height: 2px; color: gray;">
+            <canvas id="ordenesPorArea" style="width: 100%; height: 100%; max-height: 250px;"></canvas>
             </div>
         </div>
         <div class="col-4 dashboard-container">
             <div class="dashboard-report-card">
                 <div class="dashboard-chart-title">
-                    <h6>Ingresos Por Dia</h6>
+                    <h6>Ordenes por cultivo</h6>
                 </div>
-                <hr style="width: 95%; height: 2px; color: gray;">
-            <canvas id="ingresosEgresosPorDia" style="width: 100%;"></canvas>
+                <hr style="width: 90%; height: 2px; color: gray;">
+                <canvas id="ordenesPorCultivo" style="width: 100%; height: 100%; max-height: 250px;"></canvas>
             </div>
         </div>
         <div class="col-4 dashboard-container">
             <div class="dashboard-report-card">
                 <div class="dashboard-chart-title">
-                    <h6>Ingresos por mes</h6>
+                    <h6>Ordenes por etapa</h6>
                 </div>
-                <hr style="width: 95%; height: 2px; color: gray;">
-            <canvas id="ingresosPorMes" style="width: 100%;"></canvas>
+                <hr style="width: 90%; height: 2px; color: gray;">
+                <canvas id="ordenesPorEtapa" style="width: 100%; height: 100%; max-height: 250px;"></canvas>
             </div>
         </div>
     </div>
@@ -108,24 +106,24 @@
 
 <script>
 
-    async function IngresosEgresosPorMes(){
+    async function ordenesPorArea(){
 
-        const response = await fetch('/Dashboard/IngresosEgresosPorMes');
+        const response = await fetch('/Dashboard/ordenesPorArea'); // Adjust endpoint if needed
         const data = await response.json();
 
-        // Extract labels (IdProducto) and values (Total)
-        const labels = data.map(item => item.month);
-        const values = data.map(item => item.total);
+        // Extract labels (supplier names) and values (order counts)
+        var labels = data.map(item => item.area);
+        var values = data.map(item => item.cantidad);
 
-        var ctx = document.getElementById('ingresosEgresosPorMes').getContext('2d');
+        var ctx = document.getElementById('ordenesPorArea').getContext('2d');
         new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Ingresos por Mes',
+                    label: 'Órdenes por Area',
                     data: values,
-                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4', '#a3c9b4', '#6b9984', '#c7ded4', '#4f7a6a',  '#b0d1bf' ],
                 }]
             },
             options: {
@@ -134,24 +132,50 @@
         });
     }
 
-    async function IngresosEgresosPorDia(){
+    async function ordenesPorCultivo(){
 
-        const response = await fetch('/Dashboard/IngresosEgresosPorDia');
+        const response = await fetch('/Dashboard/ordenesPorCultivo'); // Adjust endpoint if needed
         const data = await response.json();
 
-        // Extract labels (IdProducto) and values (Total)
-        const labels = data.map(item => item.month);
-        const values = data.map(item => item.total);
+        // Extract labels (supplier names) and values (order counts)
+        var labels = data.map(item => item.cultivo);
+        var values = data.map(item => item.cantidad);
 
-        var ctx = document.getElementById('ingresosEgresosPorDia').getContext('2d');
+        var ctx = document.getElementById('ordenesPorCultivo').getContext('2d');
         new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Ingresos por Dia',
+                    label: 'Órdenes por Cultivo',
                     data: values,
-                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4', '#a3c9b4', '#6b9984', '#c7ded4', '#4f7a6a',  '#b0d1bf' ],
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+
+    async function ordenesPorEtapa(){
+
+        const response = await fetch('/Dashboard/ordenesPorEtapa'); // Adjust endpoint if needed
+        const data = await response.json();
+
+        // Extract labels (supplier names) and values (order counts)
+        var labels = data.map(item => item.etapa);
+        var values = data.map(item => item.cantidad);
+
+        var ctx = document.getElementById('ordenesPorEtapa').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Órdenes por Etapa',
+                    data: values,
+                    backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4', '#a3c9b4', '#6b9984', '#c7ded4', '#4f7a6a',  '#b0d1bf' ],
                 }]
             },
             options: {
@@ -178,32 +202,6 @@
                     label: 'Total por producto',
                     data: values,
                     backgroundColor: ['#86c5a6', '#5a8f7b', '#f4f4f4'],
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    }
-
-    async function ingresosPorMes(){
-
-        const response = await fetch('/Dashboard/ingresosPorMes'); // Fetch from C# API
-        const data = await response.json();
-
-        // Extract labels (dates) and values (income)
-        var labels = data.map(item => item.fechaOrden);
-        var values = data.map(item => item.ingreso);
-
-        var ctx = document.getElementById('ingresosPorMes').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Ingresos por Fecha',
-                    data: values,
-                    backgroundColor: '#86c5a6',
                 }]
             },
             options: {
@@ -362,15 +360,15 @@
     }
 
     // Call the function to render the chart
-    IngresosEgresosPorMes();
+    ordenesPorArea();
 
-    IngresosEgresosPorDia();
+    ordenesPorCultivo();
+
+    ordenesPorEtapa();
 
     ordenesPorProveedor();
 
     TotalPorProducto();
-
-    ingresosPorMes();
 
     ventaPorRancho();
 
