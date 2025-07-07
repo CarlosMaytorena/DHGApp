@@ -25,40 +25,37 @@ namespace AgricolaDH_GApp.Services.Admin
         /// <returns></returns>
         public List<Almacen> SelectAlmacen()
         {
-            List<Almacen> almacenList;
+            List<Almacen> almacenList = new();
+
             try
             {
                 almacenList = context.Almacen.ToList();
+
                 foreach (Almacen a in almacenList)
                 {
-                    Producto p = context.Productos.Single(x => x.IdProducto.Equals(a.IdProducto));
-                    Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
-                    a.Estatus = estatus.NombreEstatus;
-                    switch (a.Estatus)
-                    {
-                        case "Ingreso":
-                            a.Almacenista = "N/A";
-                            a.Solicitante = "N/A";
-                            break;
+                    var producto = context.Productos.FirstOrDefault(x => x.IdProducto == a.IdProducto);
+                    var estatus = context.Estatus.FirstOrDefault(x => x.IdEstatus == a.IdEstatus);
 
-                        default:
-                            Usuario almacenista = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdAlmacenista));
-                            Usuario solicitante = context.Usuarios.Single(x => x.IdUsuario.Equals(a.IdSolicitante));
-                            a.Almacenista = almacenista.Username;
-                            a.Solicitante = solicitante.Username;
-                            break;
-                    }
-                    a.NombreProducto = p.NombreProducto;
-                    a.Descripcion = p.Descripcion;
+                    a.Estatus = estatus?.NombreEstatus ?? "Desconocido";
+
+                    var almacenista = context.Usuarios.FirstOrDefault(x => x.IdUsuario == a.IdAlmacenista);
+                    var solicitante = context.Usuarios.FirstOrDefault(x => x.IdUsuario == a.IdSolicitante);
+
+                    a.Almacenista = almacenista?.Username ?? "N/A";
+                    a.Solicitante = solicitante?.Username ?? "N/A";
+
+                    a.NombreProducto = producto?.NombreProducto ?? "Producto desconocido";
+                    a.Descripcion = producto?.Descripcion ?? "-";
                 }
-                context.SaveChanges();
             }
             catch
             {
                 almacenList = new List<Almacen>();
             }
+
             return almacenList;
         }
+
 
         public void Entrada(AlmacenVM model)
         {
@@ -127,7 +124,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 Movimiento = "Ingreso",
                 Fecha = DateTime.Now,
                 SerialNumber = serial,
-                IdEstatus = 1, // Estatus de Ingreso
+                IdEstatus = 2, // Estatus de ENTRADA
                 Uso = false
             };
 
