@@ -129,40 +129,7 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById("btnEnviarCorreo").addEventListener("click", function () {
-            const correo = document.getElementById("correoRecuperacion").value;
 
-            if (!correo) {
-                alert("Por favor ingresa un correo.");
-                return;
-            }
-
-            // Llamada al backend para verificar si el correo existe
-            fetch('/Login/VerificarCorreo', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                },
-                body: JSON.stringify({ correo: correo })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.existe) {
-                    // Mostrar la parte del código
-                    document.getElementById("stepCorreo").style.display = "none";
-                    document.getElementById("stepCodigo").style.display = "block";
-                } else {
-                    alert("Este correo no está registrado.");
-                }
-            })
-            .catch(error => {
-                console.error("Error verificando el correo:", error);
-                alert("Ocurrió un error al verificar el correo.");
-            });
-        });
-    </script>
     <script>
         let codigoGenerado = ""; // se llenará al verificar el correo
         let correoActual = "";

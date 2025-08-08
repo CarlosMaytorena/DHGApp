@@ -73,6 +73,46 @@ namespace AgricolaDH_GApp.Helper
             return body;
         }
 
+        public async void SendForgotPasswordMail(string SendgridKey, string defaultEmailFrom, string recipient, string token)
+        {
+
+            try
+            {
+                var apiKey = SendgridKey;
+                var client = new SendGridClient(apiKey);
+
+                var from = new EmailAddress(defaultEmailFrom, "DH&G Agrícola");
+
+                var subject = "DH&G - Reset password";
+                var to = new EmailAddress(recipient);
+
+                var htmlContent = CreateForgotPasswordEmailBody(token, @"/wwwroot/Email/RecuperarPassword.html");
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+                var response = await client.SendEmailAsync(msg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("No se pudo enviar el email: " + e);
+            }
+        }
+
+        private static string CreateForgotPasswordEmailBody(string token, string templateRoute)
+        {
+            string body = string.Empty;
+            string path = Directory.GetCurrentDirectory();
+            string route = path + templateRoute;
+            string rows = string.Empty;
+            string detail = string.Empty;
+
+            using (StreamReader reader = File.OpenText(route))
+            {
+                body = reader.ReadToEnd();
+            }
+
+            body = body.Replace("[Codigo]", token);
+
+            return body;
+        }
 
 
     }

@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using AgricolaDH_GApp.ViewModels;
 using System.Text.Json;
+using AgricolaDH_GApp.Helper;
+
+
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -18,20 +21,23 @@ namespace AgricolaDH_GApp.Controllers
         private readonly AppDbContext _context;
         private UsuarioService usuarioService;
         private readonly OrdenDeCompraService _ordenDeCompraService;
-
-
-
+        private ConstanteService constanteService;
+        private Email email;
 
         public LoginController(
             ILogger<LoginController> logger,
             AppDbContext _ctx,
             UsuarioService _usuarioService,
-            OrdenDeCompraService ordenDeCompraService)
+            OrdenDeCompraService ordenDeCompraService,
+            ConstanteService _constanteService,
+            Email _email)
         {
             _logger = logger;
             _context = _ctx;
             usuarioService = _usuarioService;
             _ordenDeCompraService = ordenDeCompraService;
+            constanteService = _constanteService;
+            email = _email;
 
         }
 
@@ -122,6 +128,12 @@ namespace AgricolaDH_GApp.Controllers
                 // Guardar en la base de datos
                 usuario.ResetPasswordToken = codigo;
                 _context.SaveChanges();
+
+                // Enviar correo
+                string sendgridKey = constanteService.SelectConstante("SendgridKey").Valor;
+                string defaultEmailFrom = constanteService.SelectConstante("DefaultEmailFrom").Valor;
+                email.SendForgotPasswordMail(sendgridKey, defaultEmailFrom, correo, codigo);
+
 
                 return Json(new { existe = true, codigo });
             }
