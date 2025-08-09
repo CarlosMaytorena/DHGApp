@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using AgricolaDH_GApp.ViewModels;
+using System.Text.Json;
+using AgricolaDH_GApp.Helper;
+
+
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -17,20 +21,23 @@ namespace AgricolaDH_GApp.Controllers
         private readonly AppDbContext _context;
         private UsuarioService usuarioService;
         private readonly OrdenDeCompraService _ordenDeCompraService;
-
-
-
+        private ConstanteService constanteService;
+        private Email email;
 
         public LoginController(
             ILogger<LoginController> logger,
             AppDbContext _ctx,
             UsuarioService _usuarioService,
-            OrdenDeCompraService ordenDeCompraService)
+            OrdenDeCompraService ordenDeCompraService,
+            ConstanteService _constanteService,
+            Email _email)
         {
             _logger = logger;
             _context = _ctx;
             usuarioService = _usuarioService;
             _ordenDeCompraService = ordenDeCompraService;
+            constanteService = _constanteService;
+            email = _email;
 
         }
 
@@ -93,6 +100,75 @@ namespace AgricolaDH_GApp.Controllers
             return RedirectToAction("Login", "Home");  // This sends the user to '/'
         }
 
+        [HttpPost]
+        public ActionResult EnviarLinkRecuperacion(string correo)
+        {
+            // Solo imprimir el correo recibido en consola
+            System.Diagnostics.Debug.WriteLine("Correo recibido: " + correo);
+
+            // Puedes usar esto para dar feedback en pantalla si quieres
+            TempData["LoginError"] = "Correo recibido, revisa la consola del servidor.";
+
+            return View("Login");
+        }
+
+        [HttpPost]
+        public JsonResult VerificarCorreo([FromBody] JsonElement data)
+        {
+            string correo = data.GetProperty("correo").GetString();
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == correo);
+
+            if (usuario != null)
+            {
+                // Generar código de 4 dígitos (ej. "0042", "9999")
+                Random random = new Random();
+                int numero = random.Next(1, 10000);
+                string codigo = numero.ToString("D4");
+
+                // Guardar en la base de datos
+                usuario.ResetPasswordToken = codigo;
+                _context.SaveChanges();
+
+                // Enviar correo
+                string sendgridKey = constanteService.SelectConstante("SendgridKey").Valor;
+                string defaultEmailFrom = constanteService.SelectConstante("DefaultEmailFrom").Valor;
+                email.SendForgotPasswordMail(sendgridKey, defaultEmailFrom, correo, codigo);
+
+
+                return Json(new { existe = true, codigo });
+            }
+
+            return Json(new { existe = false });
+        }
+
+        [HttpPost]
+        public JsonResult CambiarPassword([FromBody] JsonElement data)
+        {
+            try
+            {
+                string correo = data.GetProperty("correo").GetString();
+                string nuevaPassword = data.GetProperty("nuevaPassword").GetString();
+
+                var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == correo);
+
+                if (usuario == null)
+                {
+                    return Json(new { success = false, message = "Usuario no encontrado" });
+                }
+
+                // Aquí podrías hashear la contraseña si tu app lo requiere.
+                usuario.Password = nuevaPassword;
+                usuario.ResetPasswordToken = null;
+
+                _context.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
     }
