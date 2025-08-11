@@ -12,7 +12,7 @@
         </button>
     </div>
     <div class="col-md-2">
-        <button type="button" class="btn btn-block btn-danger egreso" style="color: white">
+        <button class="btn btn-block btn-danger egreso" style="color: white">
             <i class="nav-icon fas fa-ban"></i>
             Cancelar
         </button>
@@ -30,11 +30,11 @@
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
                 <div class="input-group">
                     <div class="custom-file">
-                        @Html.EditorFor(m => m.egreso.FileAntes, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = ".png, .jpg, .jpeg" } })
-                        @Html.Label("", "", new { @class = "custom-file-label validarArchivo", @style = "text-align: left"})
+                        @Html.EditorFor(m => m.egreso.FileAntes, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = "image/*", @capture = "environment" } })
+                        @Html.Label("", "", new { @class = "custom-file-label validarArchivo", @style = "text-align: left" })
                     </div>
                     <div class="input-group-append">
-                        <button id="EvidenciaAntes" class="input-group-text camara">
+                        <button type="button" id="EvidenciaAntes" class="input-group-text camara">
                             <i class="nav-icon fas fa-ban fa-camera"></i>
                         </button>
                     </div>
@@ -44,11 +44,11 @@
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Despues</label>
                 <div class="input-group">
                     <div class="custom-file">
-                        @Html.EditorFor(m => m.egreso.FileDespues, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = ".png, .jpg, .jpeg" } })
+                        @Html.EditorFor(m => m.egreso.FileDespues, new { htmlAttributes = new { @class = "form-control custom-file-input", @type = "file", @accept = "image/*", @capture = "environment" } })
                         @Html.Label("", "", new { @class = "custom-file-label validarArchivo", @style = "text-align: left" })
                     </div>
                     <div class="input-group-append">
-                        <button id="EvidenciaAntes" class="input-group-text camara">
+                        <button type="button" id="EvidenciaAntes" class="input-group-text camara">
                             <i class="nav-icon fas fa-ban fa-camera"></i>
                         </button>
                     </div>
@@ -105,17 +105,6 @@
     <!-- /.modal-dialog -->
 </div>
 
-<!-- Camera Modal -->
-<div id="cameraModal" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:20px; border-radius:8px; margin:auto; display:flex; flex-direction:column; align-items:center;">
-        <video id="video" width="320" height="240" autoplay style="border:1px solid #ccc;"></video>
-        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-        <div class="mt-2">
-            <button type="button" class="btn btn-success" id="capturar">Capturar</button>
-            <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
-        </div>
-    </div>
-</div>
 
 <script>
     $(document).ready(function () {
@@ -208,52 +197,9 @@
             }
         });
 
-        $(".camara").click(function () {
-            alert('Usando camara');
+        $(".camara").click(function (event) {
             event.preventDefault();
-            currentInput = $(this).closest('.input-group').find('.custom-file-input');
-            $('#cameraModal').css('display', 'flex');
-            navigator.mediaDevices.getUserMedia({ video: true }).then(function (mediaStream) {
-                stream = mediaStream;
-                $('#video')[0].srcObject = stream;
-            });
+            var fileInput = $(this).closest('.input-group').find('.custom-file-input');
+            fileInput.trigger('click');
         });
-
-        $('#capturar').on('click', function () {
-            alert('hola')
-            var video = $('#video')[0];
-            var canvas = $('#canvas')[0];
-            var context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob(function (blob) {
-                var file = new File([blob], "captura.png", { type: "image/png" });
-                var dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                if (currentInput) {
-                    currentInput[0].files = dataTransfer.files;
-                    // Update the label
-                    currentInput.next('.custom-file-label').text(file.name);
-                }
-                closeCameraModal();
-            }, 'image/png');
-        });
-
-        $('#cancelBtn').on('click', function () {
-            closeCameraModal();
-        });
-
-        function closeCameraModal() {
-            $('#cameraModal').hide();
-            if (stream) {
-                stream.getTracks().forEach(function (track) { track.stop(); });
-            }
-        }
-
-        // Optional: Close modal when clicking outside
-        $(window).on('click', function (event) {
-            if (event.target === $('#cameraModal')[0]) {
-                closeCameraModal();
-            }
-        });
-    });
 </script>
