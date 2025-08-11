@@ -34,8 +34,10 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
-			SubirFacturaVM model = new SubirFacturaVM();
-			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado);
+            int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
+
+            SubirFacturaVM model = new SubirFacturaVM();
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
 
 			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
@@ -54,6 +56,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public async Task<IActionResult> SubirFacturaUpdate(SubirFacturaVM model)
         {
+            int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
 
             int res = 0;
             bool allZero = true;
@@ -84,7 +87,7 @@ namespace AgricolaDH_GApp.Controllers
             }
 
             model = new SubirFacturaVM();
-            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado);
+            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", model) });
 

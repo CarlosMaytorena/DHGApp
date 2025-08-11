@@ -9,6 +9,8 @@ using System.Security.Claims;
 using AgricolaDH_GApp.ViewModels;
 using System.Text.Json;
 using AgricolaDH_GApp.Helper;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 
 
@@ -75,6 +77,11 @@ namespace AgricolaDH_GApp.Controllers
                     var principal = new ClaimsPrincipal(identity);
 
                     HttpContext.SignInAsync("CookieAuth", principal);
+
+                    HttpContext.Session.SetString("Correo", user.Correo);
+                    HttpContext.Session.SetInt32("IdUsuario", user.IdUsuario);
+                    HttpContext.Session.SetInt32("IdRol", user.IdRol);
+
                     return View("~/Views/Home/Index.cshtml", user);
 
                     //return View("~/Views/Home/Index.cshtml", user);

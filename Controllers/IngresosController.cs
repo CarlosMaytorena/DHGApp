@@ -25,10 +25,12 @@ namespace AgricolaDH_GApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
+
             SubirFacturaVM model = new SubirFacturaVM
             {
-                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4), // Status 4 for Ingresos
-                ordenesCerradas = _ordenDeCompraService.SelectOrdenDeCompraTableList(5)  // Status 5: Closed
+                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4, idUsuario), // Status 4 for Ingresos
+                ordenesCerradas = _ordenDeCompraService.SelectOrdenDeCompraTableList(5, idUsuario)  // Status 5: Closed
 
             };
             return PartialView("~/Views/Ingresos/Index.cshtml", model);

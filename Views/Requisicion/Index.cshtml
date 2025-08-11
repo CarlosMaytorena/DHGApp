@@ -77,6 +77,124 @@
                 <!-- /.card-body -->
             </div>
             <!-- /.card -->
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Requisiciones Aceptadas</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th style="width:30px">Acción</th>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Status</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                <th>Temporada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.requisicionAceptadaList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@Model.requisicionAceptadaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Model.requisicionAceptadaList[i].IdOrdenDeCompra</td>
+                                    <td>@Model.requisicionAceptadaList[i].FechaRequisicion.ToShortDateString()</td>
+                                    <td>@Model.requisicionAceptadaList[i].Solicitante</td>
+                                    <td>@Model.requisicionAceptadaList[i].Proveedor</td>
+                                    <td>@Model.requisicionAceptadaList[i].Area</td>
+                                    <td>@Model.requisicionAceptadaList[i].Cultivo</td>
+                                    <td>@Model.requisicionAceptadaList[i].Rancho</td>
+                                    <td>@Model.requisicionAceptadaList[i].Etapa</td>
+                                    <td>@Model.requisicionAceptadaList[i].Temporada</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div class="card card-margin">
+                <div class="card-header">
+                    <h3 class="card-title">Requisiciones Rechazadas</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th style="width:30px">Acción</th>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Status</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                <th>Temporada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.requisicionRechazadaList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@Model.requisicionRechazadaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Model.requisicionRechazadaList[i].IdOrdenDeCompra</td>
+                                    <td>@Model.requisicionRechazadaList[i].FechaRequisicion.ToShortDateString()</td>
+                                    <td>@Model.requisicionRechazadaList[i].Solicitante</td>
+                                    <td>@Model.requisicionRechazadaList[i].Proveedor</td>
+                                    <td>@Model.requisicionRechazadaList[i].Area</td>
+                                    <td>@Model.requisicionRechazadaList[i].Cultivo</td>
+                                    <td>@Model.requisicionRechazadaList[i].Rancho</td>
+                                    <td>@Model.requisicionRechazadaList[i].Etapa</td>
+                                    <td>@Model.requisicionRechazadaList[i].Temporada</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
         </div>
     </div>
 

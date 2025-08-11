@@ -34,15 +34,17 @@ namespace AgricolaDH_GApp.Services.Admin
             return requisicionList;
         }
 
-        public List<OrdenDeCompraTable> SelectOrdenDeCompraTableList(int IdOrdenDeCompraStatus)
+        public List<OrdenDeCompraTable> SelectOrdenDeCompraTableList(int IdOrdenDeCompraStatus, int IdUsuario, int LimiteDeSemanas = 0)
         {
             List<OrdenDeCompraTable> ordenDeCompraList;
 
             try
             {
-
-                ordenDeCompraList = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTable @IdOrdenDeCompraStatus",
-                    new SqlParameter("@IdOrdenDeCompraStatus", IdOrdenDeCompraStatus)).ToList();
+                ordenDeCompraList = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTable @IdOrdenDeCompraStatus, @IdUsuario, @LimiteDeSemanas",
+                    new SqlParameter("@IdOrdenDeCompraStatus", IdOrdenDeCompraStatus),
+                    new SqlParameter("@IdUsuario", IdUsuario),
+                    new SqlParameter("@LimiteDeSemanas", LimiteDeSemanas)
+                    ).ToList();
 
             }
             catch

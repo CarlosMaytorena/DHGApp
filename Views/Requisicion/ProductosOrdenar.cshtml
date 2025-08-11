@@ -6,10 +6,14 @@
     &nbsp;
     &nbsp;
     &nbsp;
-    <button type="button" id="agregarProductoOrdenar" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
+    @if ((Model.esAutorizado || Model.requisicion.IdOrdenDeCompra == 0) && Model.requisicion.IdOrdenDeCompraStatus <= OrdenDeCompraStatusEnumerators.Enviado)
+    {
+        <button type="button" id="agregarProductoOrdenar" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-plus"></i></button>
+    }
+    
     &nbsp;
     &nbsp;
-    @if (Model.productosOrdenar.Count > 1)
+    @if ((Model.esAutorizado || Model.requisicion.IdOrdenDeCompra == 0) && Model.productosOrdenar.Count > 1 && Model.requisicion.IdOrdenDeCompraStatus <= OrdenDeCompraStatusEnumerators.Enviado)
     {
         <button type="button" id="eliminarProductoOrdenar" class="btn-sm secondary-background-color" style="color: white; border: 0px"><i class="nav-icon fas fa-minus"></i></button>
     }

@@ -29,7 +29,7 @@
                     </button>
                 </div>
             }
-            else
+            else if (Model.esAutorizado && Model.requisicion.IdOrdenDeCompraStatus <= OrdenDeCompraStatusEnumerators.Enviado)
             {
                 <div class="col-md-2">
                 </div>
@@ -58,7 +58,15 @@
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion" })
+                    @if(Model.esAutorizado)
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion" })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(m => m.requisicion.IdSolicitante)
+                        @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
+                    }
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
