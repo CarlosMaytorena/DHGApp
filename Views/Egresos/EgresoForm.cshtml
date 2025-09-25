@@ -7,12 +7,12 @@
     <div class="col-md-3">
     </div>
     <div class="col-md-2">
-        <button class="btn btn-block secondary-background-color validacion" style="color: white">
+        <button type="button" class="btn btn-block secondary-background-color validacion" style="color: white">
             Aceptar
         </button>
     </div>
     <div class="col-md-2">
-        <button class="btn btn-block btn-danger egreso" style="color: white">
+        <button type="button" class="btn btn-block btn-danger egreso cancelar" style="color: white">
             <i class="nav-icon fas fa-ban"></i>
             Cancelar
         </button>
@@ -110,14 +110,18 @@
     $(document).ready(function () {
         $(".egreso").click(function () {
             $("#modal-success").modal("hide");
-
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("Index", "Egresos")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
+                    console.log("AJAX Success Response:", data);
                     $("#HtmlBody").html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error, xhr.responseText);
+                    alert("Error loading content. Please try again.");
                 }
             });
         });
@@ -135,7 +139,7 @@
             var listaProductos = $("#lista")[0].querySelectorAll('input, select, textarea');
             var formData = new FormData(egresoForm);
 
-            listaProductos.forEach(function (input) {               
+            listaProductos.forEach(function (input) {
                 formData.append(input.name, input.value);
             });
 
@@ -155,7 +159,7 @@
                     }
                 }
             });
-        }); 
+        });
 
         function Validation() {
             var validation = true;
@@ -190,7 +194,7 @@
 
             if (fileInput[0].files.length > 0) {
                 var fileName = fileInput[0].files[0].name;
-                label.text(fileName); 
+                label.text(fileName);
                 yourQueryFunction(fileInput[0].files[0]);
             } else {
                 label.text("No file chosen");
@@ -202,4 +206,5 @@
             var fileInput = $(this).closest('.input-group').find('.custom-file-input');
             fileInput.trigger('click');
         });
+    });
 </script>
