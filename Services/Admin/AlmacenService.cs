@@ -114,22 +114,45 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
         // Entrada de Ingreso a Almacen
-        public void GuardarEnAlmacen(int idProducto, string serial)
+        public int GuardarEnAlmacen(int idProducto, string serial)
         {
-            Almacen nuevoIngreso = new Almacen
+            try
             {
-                IdProducto = idProducto,
-                IdAlmacenista = 0,
-                IdSolicitante = 0,
-                Movimiento = "Ingreso",
-                Fecha = DateTime.Now,
-                SerialNumber = serial,
-                IdEstatus = 2, // Estatus de ENTRADA
-                Uso = false
-            };
+                var now = DateTime.Now;
 
-            context.Almacen.Add(nuevoIngreso);
-            context.SaveChanges();
+                var existente = context.Almacen.SingleOrDefault(a => a.SerialNumber == serial);
+                if (existente == null)
+                {
+                    context.Almacen.Add(new Almacen
+                    {
+                        IdProducto = idProducto,
+                        SerialNumber = serial,
+                        Movimiento = "Entrada",
+                        IdEstatus = 2,     // <-- Almacén
+                        Uso = false,
+                        IdAlmacenista = 0,
+                        IdSolicitante = 0,
+                        Fecha = now
+                    });
+                }
+                else
+                {
+                    existente.IdProducto = idProducto;
+                    existente.Movimiento = "Entrada";
+                    existente.IdEstatus = 2;   // <-- Almacén
+                    existente.Uso = false;
+                    existente.Fecha = now;
+
+                    context.Almacen.Update(existente);
+                }
+
+                context.SaveChanges();
+                return 0;
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
         public List<string> ObtenerSerialesValidos(List<string> seriales)

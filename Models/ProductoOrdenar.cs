@@ -34,5 +34,7 @@ namespace AgricolaDH_GApp.Models
         public int Recibida { get; set; }
         public int PorRecibir { get; set; }
         public List<string> Seriales { get; set; }
+        public List<string>? SerialesCortos { get; set; } // NEW: the short serials to persist
+
     }
 }

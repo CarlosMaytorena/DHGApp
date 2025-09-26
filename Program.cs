@@ -38,6 +38,7 @@ builder.Services.AddScoped<AlmacenService>();
 builder.Services.AddScoped<EgresoService>();
 builder.Services.AddScoped<ConstanteService>();
 
+builder.Services.AddScoped<SerialMapService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

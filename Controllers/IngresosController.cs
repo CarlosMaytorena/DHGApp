@@ -13,13 +13,20 @@ namespace AgricolaDH_GApp.Controllers
         private readonly OrdenDeCompraService _ordenDeCompraService;
         private readonly AlmacenService _almacenService;
         private readonly ProductoService _productoService;
+        private readonly SerialMapService _serialMapService;
 
-        public IngresosController(ILogger<IngresosController> logger, OrdenDeCompraService ordenDeCompraService, AlmacenService almacenService, ProductoService productoService)
+        public IngresosController(
+            ILogger<IngresosController> logger,
+            OrdenDeCompraService ordenDeCompraService,
+            AlmacenService almacenService,
+            ProductoService productoService,
+            SerialMapService serialMapService)
         {
             _logger = logger;
             _ordenDeCompraService = ordenDeCompraService;
             _almacenService = almacenService;
             _productoService = productoService;
+            _serialMapService = serialMapService;
         }
 
         [HttpGet]
@@ -62,16 +69,11 @@ namespace AgricolaDH_GApp.Controllers
         [HttpGet]
         public JsonResult GetProductBarcodeID(string nombreProducto, [FromServices] ProductoService productoService)
         {
-            // Use the service to retrieve the product
             var producto = productoService.SelectProductoByName(nombreProducto);
 
             if (producto != null)
-            {
-                // Return the barcode if the product is found
                 return Json(new { success = true, barcodeID = producto.PN });
-            }
 
-            // Return an error message if the product is not found
             return Json(new { success = false, message = "Producto no encontrado." });
         }
 
@@ -79,38 +81,65 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult ActualizarPorRecibir([FromBody] List<ProductoRecibidoDTO> receivedProducts)
         {
             int res = 0;
-
             if (receivedProducts == null || receivedProducts.Count == 0)
                 return Json(new { success = false });
 
+            // Get the purchase order and its order number (adjust if you use a different field)
             int idOrdenDeCompra = _ordenDeCompraService
                 .SelectProductoOrdenar(receivedProducts[0].IdProductoOrdenar)?.IdOrdenDeCompra ?? 0;
+
+            var orden = _ordenDeCompraService.SelectOrdenDeCompra(idOrdenDeCompra);
+            var orderNumber = orden?.IdOrdenDeCompra.ToString() ?? string.Empty;
 
             foreach (var item in receivedProducts)
             {
                 var productoOrdenar = _ordenDeCompraService.SelectProductoOrdenar(item.IdProductoOrdenar);
+                if (productoOrdenar == null) continue;
 
-                if (productoOrdenar != null)
+                // Update PorRecibir
+                productoOrdenar.PorRecibir = item.PorRecibir;
+                res = _ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
+
+                // Get PN for SerialMap insert
+                var producto = _productoService.SelectProducto(productoOrdenar.IdProducto);
+                if (producto == null) continue;
+
+                // Save the short 12-char serials to SerialMap
+                if (item.SerialesCortos != null)
                 {
-                    productoOrdenar.PorRecibir = item.PorRecibir;
-                    res = _ordenDeCompraService.UpdateProductoOrdenar(productoOrdenar);
-
-                    //Get IdProducto to store in Almacen
-                    var producto = _productoService.SelectProducto(productoOrdenar.IdProducto);
-
-                    if (producto != null && item.Seriales != null)
+                    foreach (var serial in item.SerialesCortos)
                     {
-                        foreach (var serial in item.Seriales)
+                        try
                         {
+                            _serialMapService.InsertSerial(
+                                serialKey: (serial ?? string.Empty).ToUpperInvariant(),
+                                orderNumber: orderNumber,
+                                partNumber: producto.PN ?? string.Empty
+                            );
                             _almacenService.GuardarEnAlmacen(producto.IdProducto, serial);
+
+                        }
+                        catch (System.Exception ex)
+                        {
+                            // Ignore duplicates or log as needed
+                            _logger.LogWarning(ex, "SerialMap insert failed for {SerialKey}", serial);
                         }
                     }
                 }
+
+                // If you still want to store the long serials in Almacén, keep this block.
+                // (Otherwise you can remove it.)
+                // if (item.Seriales != null)
+                // {
+                //     foreach (var longSerial in item.Seriales)
+                //     {
+                //         _almacenService.GuardarEnAlmacen(producto.IdProducto, longSerial);
+                //     }
+                // }
             }
 
             var productosOrden = _ordenDeCompraService.SelectProductosOrdenarSelected(idOrdenDeCompra);
             bool allReceived = productosOrden.All(p => p.PorRecibir == 0);
-
             if (allReceived)
             {
                 res = _ordenDeCompraService.UpdateOrdenDeCompraStatus(idOrdenDeCompra, 5);
@@ -118,8 +147,6 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(new { success = (res == 0) });
         }
-
-
 
         [HttpPost]
         public IActionResult VerOrden(int idOrdenDeCompra)
@@ -132,9 +159,5 @@ namespace AgricolaDH_GApp.Controllers
 
             return PartialView("~/Views/Ingresos/IngresoForm.cshtml", model);
         }
-
-
-
-
     }
 }
