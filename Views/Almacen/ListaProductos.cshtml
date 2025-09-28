@@ -66,23 +66,52 @@
 
 <script>
     $(document).ready(function () {
+        let inputBuffer = '';
+        let lastInputTime = Date.now();
+        const scanThreshold = 50; // ms between characters (adjust as needed)
+        const minScanLength = 5;  // minimum length for a scan
+
+        $('.escanear').on('paste drop', function (e) {
+            e.preventDefault();
+            return false;
+        });
         $('.escanear').on('keypress', function (event) {
-            if (event.which !== 13) {
-                return;
+            const now = Date.now();
+            if (now - lastInputTime > scanThreshold) {
+                inputBuffer = '';
             }
-            event.preventDefault();
+            lastInputTime = now;
 
-            var dataform = $("#lista");
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("AgregarProductoLista", "Almacen")',
-                data: dataform.serialize(),
-                success: function (data) {
-                    $("#ListaDeProductos").html(data);
-                    $("input[name='almacen.SerialNumber']").val("").focus(); // Limpia y vuelve a enfocar para el siguiente escaneo
+            // Allow numbers, uppercase/lowercase letters, and Enter
+            if (
+                (event.which >= 48 && event.which <= 57) ||   // 0-9
+                (event.which >= 65 && event.which <= 90) ||   // A-Z
+                (event.which >= 97 && event.which <= 122) ||  // a-z
+                event.which === 13                            // Enter
+            ) {
+                // If Enter is pressed, check if buffer is a scan
+                if (event.which === 13) {
+                    event.preventDefault();
+                    if (inputBuffer.length >= minScanLength) {
+                        var dataform = $("#lista");
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("AgregarProductoLista", "Egresos")',
+                            data: dataform.serialize(),
+                            success: function (data) {
+                                $("#ListaDeProductos").html(data);
+                                $("input[name='almacen.SerialNumber']").val("").focus();
+                            }
+                        });
+                    }
+                    inputBuffer = '';
+                } else {
+                    inputBuffer += String.fromCharCode(event.which);
                 }
-            });
+            } else {
+                // Block any other input
+                event.preventDefault();
+            }
         });
 
         $('.eliminarAlmacenLista').click(function () {
