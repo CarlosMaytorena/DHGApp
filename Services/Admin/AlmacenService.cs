@@ -155,12 +155,31 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
 
-        public List<string> ObtenerSerialesValidos(List<string> seriales)
+        public List<string> ObtenerSerialesValidosPorOrden(string orden, IEnumerable<string> seriales)
         {
-            return context.Almacen
-                .Where(a => seriales.Contains(a.SerialNumber))
-                .Select(a => a.SerialNumber)
+            if (string.IsNullOrWhiteSpace(orden) || seriales == null) return new List<string>();
+
+            var solicitados = seriales
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim().ToUpper())
                 .ToList();
+
+            if (solicitados.Count == 0) return new List<string>();
+
+            // Validate in SerialMap (order + serial)
+            var validos = context.SerialMap
+                .Where(sm => sm.OrderNumber == orden && solicitados.Contains(sm.SerialKey))
+                .Select(sm => sm.SerialKey)
+                .Distinct()
+                .ToList();
+
+            // (Optional) also require they exist in Almacen:
+            // validos = (from a in context.Almacen
+            //            join sm in context.SerialMap on a.SerialNumber equals sm.SerialKey
+            //            where sm.OrderNumber == orden && validos.Contains(sm.SerialKey)
+            //            select sm.SerialKey).Distinct().ToList();
+
+            return validos;
         }
 
         public int ContarSerialesPorProductoOrden(string pn, int ordenId)

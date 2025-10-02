@@ -13,24 +13,19 @@
     </div>
 
     <div class="card card-margin">
-
-        <!-- Order and Product Section -->
+        <!-- Orden -->
         <div class="row card-row-spacer">
             <div class="col-md-6">
                 <label style="font-weight: normal; float: left">Orden de compra</label>
-                <input id="ordenDeCompraInput" class="form-control" placeholder="Ingrese número de orden" />
-            </div>
-            <div class="col-md-6">
-                <label style="font-weight: normal; float: left">Producto</label>
-                <input id="productoInput" class="form-control" placeholder="Ingrese el numero de parte" />
+                <input id="ordenDeCompraInput" class="form-control" placeholder="Ej. 2001" />
             </div>
         </div>
 
-        <!-- Series Section -->
+        <!-- Serial(es) -->
         <div class="row card-row-spacer mb-4">
             <div class="col-md-12">
-                <label style="font-weight: normal; float: left">Series</label>
-                <input id="seriesInput" class="form-control" placeholder="Ej. 1,2,3..." />
+                <label style="font-weight: normal; float: left">Serial(es)</label>
+                <input id="serialesInput" class="form-control" placeholder="Ingresa uno o varios seriales separados por coma (Ej. 5TXR..., 8ABC...)" />
             </div>
         </div>
     </div>
@@ -39,55 +34,63 @@
 <script type="module">
     import { openPrintWindow } from "/js/labelPrinter.js";
 
+    // simple HTML escape to avoid issues on product names
+    const esc = (s) => String(s || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
     $(document).ready(function () {
         $("#btnReimprimir").click(function () {
-            const orden = $("#ordenDeCompraInput").val().trim();
-            const producto = $("#productoInput").val().trim();
-            const seriesInput = $("#seriesInput").val().trim();
+            const orden = ($("#ordenDeCompraInput").val() || "").trim();
+            const serialesRaw = ($("#serialesInput").val() || "").trim();
 
-            if (!orden || !producto || !seriesInput) {
-                alert("Por favor llene todos los campos.");
+            if (!orden || !serialesRaw) {
+                alert("Por favor ingrese la orden y al menos un serial.");
                 return;
             }
 
-            const seriesRaw = seriesInput
+            // Normalizar lista de seriales
+            let serialesArr = serialesRaw
                 .split(",")
-                .map(s => s.trim())
+                .map(s => (s || "").trim().toUpperCase())
                 .filter(s => s !== "");
 
-            const duplicates = seriesRaw.filter((item, index) => seriesRaw.indexOf(item) !== index);
-            if (duplicates.length > 0) {
-                alert(`Las siguientes series están duplicadas: ${[...new Set(duplicates)].join(", ")}`);
+            if (serialesArr.length === 0) {
+                alert("No se detectaron seriales válidos.");
                 return;
             }
 
-            const series = seriesRaw.map(s => s.padStart(2, '0'));
-            const serialesCompletos = series.map(s => `${producto}-${orden}-${s}`);
+            // Quitar duplicados
+            serialesArr = [...new Set(serialesArr)];
 
-            // Validar seriales en backend
+            const payload = { orden, seriales: serialesArr };
+
             $.ajax({
                 url: "/Reimpresion/ValidarSeriales",
                 type: "POST",
                 contentType: "application/json",
-                data: JSON.stringify(serialesCompletos),
+                data: JSON.stringify(payload),
                 success: function (response) {
-                    if (!response.success || !response.seriales || response.seriales.length === 0) {
-                        alert("No se encontraron seriales válidos en el sistema.");
+                    // Esperado: { success: bool, seriales: [string], productos: { [serial]: nombreProducto } }
+                    if (!response || !response.success || !response.seriales || response.seriales.length === 0) {
+                        alert("No se encontraron seriales válidos para esa orden.");
                         return;
                     }
 
-                    // Generar etiquetas solo para los seriales válidos
-                    const labels = response.seriales.map(serial => {
-                        const parts = serial.split("-");
-                        const ordenValidada = parts[1];
-                        const productoValidado = producto;
+                    const productos = response.productos || {};
 
+                    // Construir etiquetas con producto (si viene)
+                    const labels = response.seriales.map(serial => {
+                        const nombre = productos[serial] || "";
                         return `
                                 <div class="label">
-                                    <h4>Orden: ${ordenValidada}</h4>
-                                    <h4>Producto: ${productoValidado}</h4>
-                                    <h4>Serial: ${serial}</h4>
-                                    <svg class="barcode" data-barcode-value="${serial}"></svg>
+                                    <h4>Orden: ${esc(orden)}</h4>
+                                    ${nombre ? `<h4>Producto: ${esc(nombre)}</h4>` : ""}
+                                    <h4>Serial: ${esc(serial)}</h4>
+                                    <svg class="barcode" data-barcode-value="${esc(serial)}"></svg>
                                 </div>
                             `;
                     });
@@ -95,7 +98,7 @@
                     openPrintWindow(labels.join(""), orden);
                 },
                 error: function () {
-                    alert("Error al validar datos.");
+                    alert("Error al validar los seriales.");
                 }
             });
         });

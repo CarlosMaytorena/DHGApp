@@ -96,7 +96,7 @@
                         var dataform = $("#lista");
                         $.ajax({
                             type: "POST",
-                            url: '@Url.Action("AgregarProductoLista", "Egresos")',
+                            url: '@Url.Action("AgregarProductoLista", "Almacen")',
                             data: dataform.serialize(),
                             success: function (data) {
                                 $("#ListaDeProductos").html(data);
