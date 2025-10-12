@@ -32,6 +32,7 @@ namespace AgricolaDH_GApp.Models
         public string? Solicitante { get; set; }
         [NotMapped]
         public string? Producto { get; set; }
+        public bool esAutorizado { get;set; }
 
     }
 }

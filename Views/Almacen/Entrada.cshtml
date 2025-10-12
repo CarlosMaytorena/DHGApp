@@ -1,35 +1,41 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
 <form id="dataform">
 
-<div class="row top-row-spacer">
-    <div class="col-md-4">
-        <h4 class="page-title">Entrada a Almacen</h4>
-    </div>
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-2">
-        <button type="button" class="btn btn-block secondary-background-color validacion" style="color: white">
-            Aceptar
-        </button>
-    </div>
-    <div class="col-md-2">
-        <button type="button" class="btn btn-block btn-danger almacen" style="color: white">
-            <i class="nav-icon fas fa-ban"></i>
-            Cancelar
-        </button>
-    </div>
-</div>
-
-<div class="card card-margin">
-    <div class="row card-row-spacer">
+    <div class="row top-row-spacer">
         <div class="col-md-4">
-            @Html.HiddenFor(m => m.almacen.IdProducto)
-            <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
-            @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar"})
+            <h4 class="page-title">Entrada a Almacen</h4>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-block secondary-background-color validacion" style="color: white">
+                Aceptar
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-block btn-danger almacen" style="color: white">
+                <i class="nav-icon fas fa-ban"></i>
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <div class="card card-margin">
+        <div class="row card-row-spacer">
+            <div class="col-md-4">
+                @Html.HiddenFor(m => m.almacen.IdProducto)
+                <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
+                @if (Model.almacen.esAutorizado)
+                {
+                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar" })
+                }
+                else {
+                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
+                }
         </div>
         <div class="col-md-4">
             <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-            @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar"})
+                @Html.DropDownListFor(m => m.almacen.IdSolicitante, new SelectList(Model.ingenieroList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar" })
         </div>
         <div class="col-md-4">
             <label style="font-weight: normal; text-align: left; float: left">Razon</label>
