@@ -26,7 +26,7 @@ body {
 }
 
 .secondary-background-color {
-    background-color: #80BCBD;
+    background-color: #4AB09E;
 }
 
 .top-row-spacer {
@@ -151,6 +151,10 @@ body {
     background-color: #e9ecef;
     border-left: inherit;
     border-radius: 0 .25rem .25rem 0;
+}
+
+.logout-button:hover {
+    background-color: #b4dfc4;
 }
 
 .login-container {
