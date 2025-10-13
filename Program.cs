@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
