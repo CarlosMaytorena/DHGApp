@@ -34,7 +34,7 @@
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Razon</label>
-                @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus validar" } })
+                @Html.EditorFor(m => m.almacen.RazonUso, new { htmlAttributes = new { @class = "form-control input-focus validar RazonValidar" } })
             </div>
         </div>
         <div class="row card-row-spacer">
@@ -89,6 +89,15 @@
 
 <script>
     $(document).ready(function () {
+
+        // Prevent Click Enter in Razon field
+        $('.RazonValidar').on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         $(".almacen").click(function () {
             $("#modal-success").modal("hide");
             $.ajax({
