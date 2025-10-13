@@ -53,8 +53,16 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
         public IActionResult EgresoForm()
         {
-			model.productosList = productoService.SelectProductos();
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
+            model.productosList = productoService.SelectProductos();
 			model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            model.egreso.IdSolicitante = idUsuario != null ? (int)idUsuario : 0;
+            model.egreso.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
+
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]

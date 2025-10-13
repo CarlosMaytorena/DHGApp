@@ -44,21 +44,36 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
 		public IActionResult Index()
         {
-
             model.almacenLista = almacenService.SelectAlmacen();
             return PartialView("~/Views/Almacen/Index.cshtml", model);
 		}
         [HttpGet]
         public IActionResult Entrada()
         {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
             model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            model.almacen.IdAlmacenista = idUsuario != null ? (int)idUsuario : 0;
+            model.almacen.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
+
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 
         [HttpGet]
         public IActionResult Salida()
         {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
             model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            model.almacen.IdAlmacenista = idUsuario != null ? (int)idUsuario : 0;
+            model.almacen.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
+
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
         [HttpPost]

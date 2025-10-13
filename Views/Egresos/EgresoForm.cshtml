@@ -24,7 +24,13 @@
             <div class="col-md-4">
                 @Html.HiddenFor(m => m.egreso.IdProducto)
                 <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar" })
+                @if (Model.egreso.esAutorizado)
+                {
+                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar" })
+                }
+                else {
+                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
+                }
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Evidencia Antes</label>
