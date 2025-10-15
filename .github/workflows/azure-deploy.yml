@@ -4,12 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       azure_env:
-        type: choice
+        type: environment
         description: Environment
         required: true
         default: 'dev'
-        options: 
-          - dev
+
 permissions:
   id-token: write
   contents: read
