@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
@@ -122,14 +124,14 @@ namespace AgricolaDH_GApp.Controllers
                 {
                     string descripcion = item.GetAttribute("Descripcion").ToLower();
 
-                    RegexOptions options = RegexOptions.None;
-                    Regex regex = new Regex("[ ]{2,}", options);
-                    descripcion = regex.Replace(descripcion, " ");
+                    //RegexOptions options = RegexOptions.None;
+                    //Regex regex = new Regex("[ ]{2,}", options);
+                    descripcion = Regex.Replace(ReplaceDiacritics(descripcion), @"[^a-zA-Z0-9]", "");
 
                     int i = 0;
                     foreach(var productoOrdenar in productosOrdenarName)
                     {
-                        var productoOrdenarName = (regex.Replace(productoOrdenar, " ")).ToLower();
+                        var productoOrdenarName = Regex.Replace(ReplaceDiacritics(productoOrdenar), @"[^a-zA-Z0-9]", "").ToLower();
                         if (descripcion != null && productoOrdenarName == descripcion)
                         {
                             model.productosOrdenar[i].Cantidad = Convert.ToInt32(Convert.ToDouble(item.GetAttribute("Cantidad")));
@@ -159,6 +161,39 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/ProductosOrdenar.cshtml", model) });
 
+        }
+
+        static string ReplaceDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
+
+            // First, remove decomposable accents
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            string result = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+
+            // Handle special letters that don't decompose automatically
+            result = result
+                .Replace('ł', 'l')
+                .Replace('Ł', 'L')
+                .Replace('đ', 'd')
+                .Replace('Đ', 'D')
+                .Replace('ø', 'o')
+                .Replace('Ø', 'O')
+                .Replace('ß', 's'); // or "ss" if you prefer
+
+            return result;
         }
 
         public IActionResult Privacy()
