@@ -1,5 +1,5 @@
 name: Deploy App to Azure Web App
-
+run-name: "??Env: ${{inputs.azure_env}}"
 on:
   workflow_dispatch:
     inputs:
