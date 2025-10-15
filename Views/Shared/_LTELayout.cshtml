@@ -432,6 +432,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
             $(".nav-link").css("background-color", "")
             id.css("background-color", "white");
         }
+        
+        // Handle typing in any search input
+        $(document).on('keyup', 'input[name="table_search"]', function() {
+          var value = $(this).val().toLowerCase();
+          var table = $(this).closest('.card').find('table');
+
+          table.find('tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+          });
+        });
+
+        // Optional: handle click on search button
+        $(document).on('click', '.card-tools .btn', function() {
+          var input = $(this).closest('.input-group').find('input[name="table_search"]');
+          var value = input.val().toLowerCase();
+          var table = $(this).closest('.card').find('table');
+
+          table.find('tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+          });
+        });
+
     });
 </script>
 

@@ -24,10 +24,9 @@
 
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
+                            <input type="text" name="table_search" id="requisiciones_tableSearch" class="form-control float-right" placeholder="Search">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
+                                <button type="button" id="requisicones_searchButton" class="btn btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -36,7 +35,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table id="requisicionesTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
                                 <th style="width:30px">Acción</th>
@@ -86,7 +85,7 @@
                             <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
 
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
+                                <button type="submit" id="requisiconesAceptadas_searchButton" class="btn btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -95,7 +94,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table id="requisicionesAceptadasTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
                                 <th style="width:30px">Acción</th>
@@ -142,8 +141,7 @@
 
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
+                            <input type="text" id="requisiciones_tableSearch" name="table_search" class="form-control float-right" placeholder="Search">
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-default">
                                     <i class="fas fa-search"></i>
@@ -217,9 +215,7 @@
         });
 
         $(".editarRequisicion").click(function () {
-
             var IdOrdenDeCompra = $(this).attr("id");
-
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("EditarRequisicion", "Requisicion")',
@@ -230,7 +226,6 @@
                 }
             });
         });
-
     });
 </script>
 
