@@ -1,20 +1,11 @@
 @model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <div class="text-center">
-    <div class="row top-row-spacer align-items-center mb-2">
-        <div class="col-md-8">
+
+    <div class="row top-row-spacer">
+        <div class="col-md-12">
             <h4 class="page-title">Ingresos</h4>
-        </div>
-        <div class="col-md-4">
-            <div class="input-group float-right" style="max-width: 250px; margin-left: auto;">
-                <input type="text" id="searchOpenOrdersInput" class="form-control" placeholder="# Orden Abierta" />
-                <div class="input-group-append">
-                    <button id="searchOpenOrdersBtn" class="btn btn-secondary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+        </div>       
     </div>
 
     <!-- Open Orders -->
@@ -23,7 +14,20 @@
             <div class="card card-margin">
                 <div class="card-header">
                     <h3 class="card-title">Ordenes para Recibo</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" id="ingresos_tableSearch" class="form-control float-right" placeholder="Search">
+                            <div class="input-group-append">
+                                <button type="button" id="ingresos_searchButton" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table id="openOrdersTable" class="table table-head-fixed text-nowrap">
                         <thead>
@@ -67,63 +71,64 @@
         </div>
     </div>
 
-    <div class="col-md-12 d-flex justify-content-end align-items-center mb-2">
-        <div class="input-group" style="width: 250px;">
-            <input type="text" id="searchClosedOrdersInput" class="form-control" placeholder="# Orden Cerrada" />
-            <div class="input-group-append">
-                <button id="searchClosedOrdersBtn" class="btn btn-secondary"><i class="fas fa-search"></i></button>
-            </div>
-        </div>
-    </div>
     <!-- Closed Orders -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Ordenes Cerradas</h3>
-                </div>
-                <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table id="closedOrdersTable" class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Ver</th>
-                                <th># Orden</th>
-                                <th>Fecha</th>
-                                <th>Solicitante</th>
-                                <th>Proveedor</th>
-                                <th>Área</th>
-                                <th>Cultivo</th>
-                                <th>Rancho</th>
-                                <th>Etapa</th>
-                                <th>Temporada</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var order in Model.ordenesCerradas)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="#" class="verOrdenCerrada" data-id="@order.IdOrdenDeCompra" style="color: #2E2E2E">
-                                            <i class="nav-icon fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                    <td>@order.IdOrdenDeCompra</td>
-                                    <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
-                                    <td>@order.Solicitante</td>
-                                    <td>@order.Proveedor</td>
-                                    <td>@order.Area</td>
-                                    <td>@order.Cultivo</td>
-                                    <td>@order.Rancho</td>
-                                    <td>@order.Etapa</td>
-                                    <td>@order.Temporada</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+    <div class="card card-margin">
+        <div class="card-header">
+            <h3 class="card-title">Ordenes Cerradas</h3>
+   
+            <div class="card-tools">
+                <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                        <button type="submit" id="ingresosClosed_searchButton" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="card-body table-responsive p-0" style="height: 300px;">
+            <table id="closedOrdersTable" class="table table-head-fixed text-nowrap">
+                <thead>
+                    <tr>
+                        <th>Ver</th>
+                        <th># Orden</th>
+                        <th>Fecha</th>
+                        <th>Solicitante</th>
+                        <th>Proveedor</th>
+                        <th>Área</th>
+                        <th>Cultivo</th>
+                        <th>Rancho</th>
+                        <th>Etapa</th>
+                        <th>Temporada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.ordenesCerradas)
+                    {
+                        <tr>
+                            <td>
+                                <a href="#" class="verOrdenCerrada" data-id="@order.IdOrdenDeCompra" style="color: #2E2E2E">
+                                    <i class="nav-icon fas fa-eye"></i>
+                                </a>
+                            </td>
+                            <td>@order.IdOrdenDeCompra</td>
+                            <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
+                            <td>@order.Solicitante</td>
+                            <td>@order.Proveedor</td>
+                            <td>@order.Area</td>
+                            <td>@order.Cultivo</td>
+                            <td>@order.Rancho</td>
+                            <td>@order.Etapa</td>
+                            <td>@order.Temporada</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>  
 </div>
 
 <script>
