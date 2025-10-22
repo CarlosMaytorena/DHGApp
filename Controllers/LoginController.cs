@@ -56,49 +56,45 @@ namespace AgricolaDH_GApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Use the model.Username and model.Password values from the form
                 bool isValid = _context.Usuarios
                     .Any(u => u.Username == model.Username && u.Password == model.Password);
 
                 if (isValid)
                 {
-                    // TODO: Set session or auth cookie
-                    Usuario user = new Usuario();
-                    user = usuarioService.UsuarioLogin(model.Username, model.Password);
+                    Usuario user = usuarioService.UsuarioLogin(model.Username, model.Password);
 
+                    // Crear claims para autenticación
                     var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Username),
-                        new Claim("UserId", user.IdUsuario.ToString()),
-                        new Claim(ClaimTypes.Role, user.IdRol.ToString())
-                    };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("UserId", user.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Role, user.IdRol.ToString())
+            };
 
                     var identity = new ClaimsIdentity(claims, "CookieAuth");
                     var principal = new ClaimsPrincipal(identity);
 
                     HttpContext.SignInAsync("CookieAuth", principal);
 
-                    HttpContext.Session.SetString("Correo", user.Correo);
+                    // Guardar datos mínimos en sesión
+                    HttpContext.Session.SetString("Correo", user.Correo ?? "");
                     HttpContext.Session.SetInt32("IdUsuario", user.IdUsuario);
                     HttpContext.Session.SetInt32("IdRol", user.IdRol);
 
-                    return View("~/Views/Home/Index.cshtml", user);
-
-                    //return View("~/Views/Home/Index.cshtml", user);
+                    // ✅ En lugar de renderizar la vista, redirigimos (PRG pattern)
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    TempData["LoginError"] = "Invalid login.";
+                    TempData["LoginError"] = "Usuario o contraseña incorrectos.";
                     return View("Index");
                 }
             }
 
-            // If we got this far, something failed; redisplay form
-            Login loginModel = new Login();
-
-            return View("~/Views/Login/Index.cshtml", loginModel);
-            //return RedirectToAction("Login", "Home");  // This sends the user to '/'
+            // Si el modelo no es válido, regresar al login
+            return View("Index", model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()

@@ -29,6 +29,12 @@ namespace AgricolaDH_GApp.Services.Admin
             _clientSecret = configuration["AzureAD:ClientSecret"];
         }
 
+        public Usuario GetUsuarioById(int id)
+        {
+            return context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+        }
+
+
         public Usuario UsuarioLogin(string username, string password)
         {
             Usuario usuario;

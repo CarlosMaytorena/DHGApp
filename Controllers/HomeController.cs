@@ -1,67 +1,59 @@
-﻿using AgricolaDH_GApp.Controllers.Admin;
-using AgricolaDH_GApp.DataAccess;
+﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace AgricolaDH_GApp.Controllers
 {
-	public class HomeController : Controller
-	{
+    [Authorize(AuthenticationSchemes = "CookieAuth")]
+    public class HomeController : Controller
+    {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _context;
+        private readonly UsuarioService _usuarioService;
 
-        private readonly AppDbContext context;
-        private UsuarioService usuarioService;
-        private ViewRenderService renderService;
-
-		public HomeController(ILogger<HomeController> logger, AppDbContext _ctx,
-            UsuarioService _usuarioService, ViewRenderService _renderService)
-		{
-			_logger = logger;
-            context = _ctx;
-            usuarioService = _usuarioService;
-            renderService = _renderService;
-        }
-
-		public IActionResult Index()
-		{
-            return PartialView("~/Views/Home/Index.cshtml");
-		}
-
-        public IActionResult Login()
+        public HomeController(ILogger<HomeController> logger, AppDbContext context, UsuarioService usuarioService)
         {
-            Login model = new Login();
-
-            return View("~/Views/Login/Index.cshtml", model);
-
+            _logger = logger;
+            _context = context;
+            _usuarioService = usuarioService;
         }
 
-        //     public IActionResult Login(Login model)
-        //     {
-        //Usuario user = new Usuario();
-        //user = usuarioService.UsuarioLogin(model.Username, model.Password);
+        public IActionResult Index()
+        {
+            // 🔹 Recuperar el ID del usuario desde la sesión
+            var userId = HttpContext.Session.GetInt32("IdUsuario");
 
-        //if (user == null) 
-        //{
-        //             return View("~/Views/Login/Index.cshtml", model);
-        //         }
+            if (userId == null)
+            {
+                // Si por alguna razón no hay sesión, redirigir al login
+                return RedirectToAction("Index", "Login");
+            }
 
-        //HttpContext.Session.SetString("s_SessionUser", JsonConvert.SerializeObject(user));
+            // 🔹 Obtener el usuario desde la base de datos
+            var user = _usuarioService.GetUsuarioById(userId.Value);
 
-        //         return View("~/Views/Dashboard/Index.cshtml", user);
-        //     }
+            if (user == null)
+            {
+                // Si el usuario no existe o hubo error, redirigir al login
+                return RedirectToAction("Index", "Login");
+            }
+
+            // 🔹 Pasar el modelo Usuario a la vista
+            return View("~/Views/Home/Index.cshtml", user);
+        }
 
         public IActionResult Privacy()
-		{
-			return View();
-		}
+        {
+            return View();
+        }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
 }
