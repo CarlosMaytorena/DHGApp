@@ -45,6 +45,14 @@ namespace AgricolaDH_GApp.Controllers
             return View("~/Views/Home/Index.cshtml", user);
         }
 
+        public IActionResult Login()
+        {
+            Login model = new Login();
+
+            return View("~/Views/Login/Index.cshtml", model);
+
+        }
+
         public IActionResult Privacy()
         {
             return View();

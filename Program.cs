@@ -52,7 +52,9 @@ builder.Services.AddSession();
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
-        options.LoginPath = "/Login"; // Change if your login URL is different
+        options.LoginPath = "/Login/Index"; // Change if your login URL is different
+        options.AccessDeniedPath = "/Login/Index"; // opcional, cuando no tiene permisos
+
     });
 
 builder.Services.AddAuthorization();
@@ -72,12 +74,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Login}/{id?}");
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.Run();
