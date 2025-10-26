@@ -46,6 +46,19 @@
                     </button>
                 </div>
             }
+            else if (!Model.esAutorizado && Model.requisicion.IdOrdenDeCompraStatus <= OrdenDeCompraStatusEnumerators.Enviado)
+            {
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="cancelarRequisicion" class="btn btn-block btn-danger" style="color: white">
+                        <i class="nav-icon fas fa-ban"></i>
+                        Cancelar
+                    </button>
+                </div>
+            }
 
         </div>
 
@@ -106,9 +119,9 @@
             <div class="col-md-10">
             </div>
             <div class="col-md-2">
-                <button type="button" id="cancelarRequisicion" class="btn btn-block btn-danger" style="color: white">
-                    <i class="nav-icon fas fa-ban"></i>
-                    Cancelar
+                <button type="button" id="regresarRequisicion" class="btn btn-block btn-secondary" style="color: white">
+                    <i class="nav-icon fas fa-arrow-left"></i>
+                    Regresar
                 </button>
             </div>
         </div>
@@ -182,6 +195,28 @@
     <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="modal-cancelarRequisicionConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cancelar Requisición</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea cancelar la requisición?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="cancelarRequisicionConfirm" type="button" class="btn btn-danger">Cancelar Requisición</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <script>
     $(document).ready(function () {
 
@@ -205,6 +240,14 @@
 
             if(Validation()){
                 $("#modal-negarRequisicionConfirm").modal("show");
+            }
+
+        });
+
+        $("#cancelarRequisicion").click(function () {
+
+            if(Validation()){
+                $("#modal-cancelarRequisicionConfirm").modal("show");
             }
 
         });
@@ -262,7 +305,25 @@
 
         });
 
-        $("#cancelarRequisicion").click(function () {
+        $("#cancelarRequisicionConfirm").click(function () {
+
+            $("#modal-cancelarRequisicionConfirm").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
+                data: dataform.serialize() + "&IdOrdenDeCompraStatus=6",
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                }
+            });
+
+
+        });
+
+        $("#regresarRequisicion").click(function () {
 
             $.ajax({
                 type: "GET",

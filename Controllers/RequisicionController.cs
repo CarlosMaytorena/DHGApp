@@ -201,13 +201,14 @@ namespace AgricolaDH_GApp.Controllers
                 OrdenDeCompraTable ordenDeCompra = requisicionService.SelectOrdenDeCompra(model.requisicion.IdOrdenDeCompra);
                 List<ProductoOrdenarSelected> productosOrdenar = requisicionService.SelectProductosOrdenarSelected(model.requisicion.IdOrdenDeCompra);
 
-                Proveedor proveedor = proveedorService.SelectProveedor(model.requisicion.IdProveedor);
+                //Proveedor proveedor = proveedorService.SelectProveedor(model.requisicion.IdProveedor);
+                var solicitante = usuarioService.SelectUsuario(model.requisicion.IdSolicitante);
 
                 if(res == 0)
                 {
                     string sendgridKey = constanteService.SelectConstante("SendgridKey").Valor;
                     string defaultEmailFrom = constanteService.SelectConstante("DefaultEmailFrom").Valor;
-                    email.SendMail(sendgridKey, defaultEmailFrom, proveedor.Correo, proveedor.Nombre, "Requisicion #" + ordenDeCompra.IdOrdenDeCompra, ordenDeCompra.FechaRequisicion.ToShortDateString(), ordenDeCompra.Cultivo, ordenDeCompra.Rancho, ordenDeCompra.Etapa, ordenDeCompra.Temporada, productosOrdenar);
+                    email.SendMail(sendgridKey, defaultEmailFrom, solicitante.Correo, solicitante.Nombre, "Requisicion #" + ordenDeCompra.IdOrdenDeCompra, ordenDeCompra.FechaRequisicion.ToShortDateString(), ordenDeCompra.Cultivo, ordenDeCompra.Rancho, ordenDeCompra.Etapa, ordenDeCompra.Temporada, productosOrdenar);
                 }
             }
             else
