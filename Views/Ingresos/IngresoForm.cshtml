@@ -50,12 +50,10 @@
                         </div>
                         <div class="col-md-2">
                             <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
-                            <!-- add a class so we can read it later -->
                             <input type="number" class="form-control cantidad-esperada" value="@product.Cantidad" readonly />
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Restante</label>
-                            <!-- keep the visible value, but store the BASELINE (PorRecibir) in a data- attribute -->
                             <input type="number"
                                    class="form-control cantidad-restante"
                                    value="@product.PorRecibir"
@@ -64,7 +62,6 @@
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Recibir</label>
-                            <!-- call updateRestante as the user types -->
                             <input type="number"
                                    class="form-control cantidad-recibida"
                                    min="0"
@@ -82,9 +79,8 @@
                     </div>
                 }
                 <div style="height: 30px;"></div>
-
             }
-        </div>      
+        </div>
     </div>
 </div>
 
@@ -106,29 +102,28 @@
         }
         return out.padEnd(outLen, "0");
     }
+
     async function shortSerialFrom(pn, order, idx, length = 12) {
-        const source = `${pn}|${order}|${idx}`; // deterministic, no salt
+        const source = `${pn}|${order}|${idx}`;
         const data = new TextEncoder().encode(source);
         const hash = await crypto.subtle.digest("SHA-256", data);
         return bytesToBase32(new Uint8Array(hash), length);
     }
+
     // --------------------------------------------------------------
 
     function updateRestante(input) {
         const $row = $(input).closest(".product-row");
-
-        // Always subtract from the baseline we loaded from the server
         const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
-
         let recibida = parseInt($(input).val(), 10) || 0;
         if (recibida < 0) recibida = 0;
-        if (recibida > restanteBase) recibida = restanteBase;   // clamp
-
+        if (recibida > restanteBase) recibida = restanteBase;
         $(input).val(recibida);
         $row.find(".cantidad-restante").val(restanteBase - recibida);
     }
     window.updateRestante = updateRestante;
 
+    //  restauramos tu script original de impresión
     import { openPrintWindow } from "/js/labelPrinter.js";
 
     $(document).ready(function () {
@@ -141,12 +136,10 @@
             });
         });
 
-        // Live update of Restante while typing
         $(document).on('input', '.cantidad-recibida', function () {
             updateRestante(this);
         });
 
-        // Preload PN (barcode id) for each row
         $(".product-row").each(function () {
             const $row = $(this);
             const productName = $row.find("input[readonly]").first().val();
@@ -157,7 +150,7 @@
                 data: { nombreProducto: productName },
                 success: function (response) {
                     if (response.success) {
-                        $row.find(".product-barcode").data("barcode-value", response.barcodeID); // PN
+                        $row.find(".product-barcode").data("barcode-value", response.barcodeID);
                     } else {
                         console.error(`Error: ${response.message}`);
                     }
@@ -166,42 +159,39 @@
             });
         });
 
-        $("#realizarIngresoConfirm").click(async function () {
+        $("#realizarIngresoConfirm").off("click").on("click", async function () {
             const receivedProducts = [];
             const labelsToPrint = [];
-
             const rows = $(".product-row").toArray();
             const workOrderNumber = $("#orderNumber").val();
 
             for (const el of rows) {
                 const $row = $(el);
-
                 const productId = $row.find(".product-id").val();
                 const productName = $row.find("input[readonly]").first().val();
-                const partNumber = $row.find(".product-barcode").data("barcode-value"); // PN
-
+                const partNumber = $row.find(".product-barcode").data("barcode-value");
                 const recibida = parseInt($row.find(".cantidad-recibida").val(), 10) || 0;
                 const esperada = parseInt($row.find(".cantidad-esperada").val(), 10) || 0;
-
                 const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
 
                 if (!productName || !partNumber) continue;
                 if (restanteBase === 0) continue;
                 if (recibida <= 0) continue;
-
-                if (recibida > restanteBase) { alert(`No puedes recibir más de lo que queda en Restante para: ${productName}`); return; }
+                if (recibida > restanteBase) {
+                    alert(`No puedes recibir más de lo que queda en Restante para: ${productName}`);
+                    return;
+                }
 
                 const newRestante = restanteBase - recibida;
-
                 const yaRecibido = esperada - restanteBase;
 
                 const shortSerials = [];
                 for (let i = 1; i <= recibida; i++) {
-                    const unitIndex = yaRecibido + i; // 1-based sequence within order+PN
+                    const unitIndex = yaRecibido + i;
                     const shortSerial = (await shortSerialFrom(partNumber, workOrderNumber, unitIndex)).toUpperCase();
                     shortSerials.push(shortSerial);
 
-                    // Build label using the short serial directly
+                    // usamos tu formato original
                     labelsToPrint.push(`
                             <div class="label">
                                 <h4>Orden: ${workOrderNumber}</h4>
@@ -236,13 +226,16 @@
                     if (response.success) {
                         alert("Ingreso registrado correctamente.");
                         if (labelsToPrint.length > 0) {
+                            //  Aquí vuelve tu impresión nativa
                             openPrintWindow(labelsToPrint.join(''), workOrderNumber);
                         }
                     } else {
                         alert("Hubo un error al actualizar los datos.");
                     }
                 },
-                error: function () { alert("Error al enviar la solicitud."); }
+                error: function () {
+                    alert("Error al enviar la solicitud.");
+                }
             });
         });
     });
