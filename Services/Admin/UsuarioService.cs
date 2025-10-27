@@ -184,8 +184,9 @@ namespace AgricolaDH_GApp.Services.Admin
                         return -1;
                 }
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return -1;
             }
             return 0;
@@ -240,8 +241,9 @@ namespace AgricolaDH_GApp.Services.Admin
                         return -1;
                 }
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return -1;
             }
             return 0;
@@ -252,7 +254,6 @@ namespace AgricolaDH_GApp.Services.Admin
             try
             {
                 var url = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
-
                 var body = new Dictionary<string, string>
                 {
                     {"client_id", clientId},
@@ -265,10 +266,12 @@ namespace AgricolaDH_GApp.Services.Admin
                 var res = await client.PostAsync(url, new FormUrlEncodedContent(body));
                 var json = await res.Content.ReadAsStringAsync();
                 var tokenObj = JsonConvert.DeserializeObject<JObject>(json);
+;               Console.WriteLine($"Access Token: {tokenObj["access_token"]}");
                 return tokenObj["access_token"]?.ToString();
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return "";
             }
         }
