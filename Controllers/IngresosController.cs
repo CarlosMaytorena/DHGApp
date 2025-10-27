@@ -30,16 +30,19 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int closedWeeks = 1)
         {
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
 
-            SubirFacturaVM model = new SubirFacturaVM
+            var model = new SubirFacturaVM
             {
-                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4, idUsuario), // Status 4 for Ingresos
-                ordenesCerradas = _ordenDeCompraService.SelectOrdenDeCompraTableList(5, idUsuario)  // Status 5: Closed
-
+                // Abiertas: sin filtro de semanas
+                subirFacturaList = _ordenDeCompraService.SelectOrdenDeCompraTableList(4, idUsuario, 0),
+                // Cerradas: con el parámetro que venga del dropdown (1, 2 o 0 = sin filtro)
+                ordenesCerradas = _ordenDeCompraService.SelectOrdenDeCompraTableList(5, idUsuario, closedWeeks)
             };
+
+            ViewBag.ClosedWeeks = closedWeeks; // para que el dropdown recuerde el valor
             return PartialView("~/Views/Ingresos/Index.cshtml", model);
         }
 

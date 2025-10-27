@@ -1,11 +1,25 @@
 @model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+@{
+    // Valor actual de semanas (default 1)
+    var cw = (ViewBag.ClosedWeeks as int?) ?? 1;
+}
+
+<style>
+    /* Hace que los controles del header se alineen a la derecha y en fila */
+    .tools-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto; /* empuja a la derecha */
+    }
+</style>
 
 <div class="text-center">
 
     <div class="row top-row-spacer">
         <div class="col-md-12">
             <h4 class="page-title">Ingresos</h4>
-        </div>       
+        </div>
     </div>
 
     <!-- Open Orders -->
@@ -26,7 +40,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table id="openOrdersTable" class="table table-head-fixed text-nowrap">
@@ -72,141 +85,156 @@
     </div>
 
     <!-- Closed Orders -->
-    <div class="card card-margin">
-        <div class="card-header">
-            <h3 class="card-title">Ordenes Cerradas</h3>
-   
-            <div class="card-tools">
-                <div class="input-group input-group-sm" style="width: 150px;">
-                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-margin">
+                <div class="card-header d-flex align-items-center">
+                    <h3 class="card-title mb-0">Ordenes Cerradas</h3>
 
-                    <div class="input-group-append">
-                        <button type="submit" id="ingresosClosed_searchButton" class="btn btn-default">
-                            <i class="fas fa-search"></i>
-                        </button>
+                    <!-- Controles a la derecha y en línea -->
+                    <div class="tools-inline">
+                        <!-- Dropdown de semanas (sin C# en atributos) -->
+                        <select id="closedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
+                            @if (cw == 1)
+                            {
+                                <option value="1" selected>Últimos 7 días</option>
+                            }
+                            else
+                            {
+                                <option value="1">Últimos 7 días</option>
+                            }
+                            @if (cw == 2)
+                            {
+                                <option value="2" selected>Últimas 2 semanas</option>
+                            }
+                            else
+                            {
+                                <option value="2">Últimas 2 semanas</option>
+                            }
+                            @if (cw == 0)
+                            {
+                                <option value="0" selected>Sin filtro</option>
+                            }
+                            else
+                            {
+                                <option value="0">Sin filtro</option>
+                            }
+                        </select>
+
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" id="ingresosClosed_tableSearch" name="table_search" class="form-control" placeholder="Search">
+                            <div class="input-group-append">
+                                <button type="button" id="ingresosClosed_searchButton" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table id="closedOrdersTable" class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Ver</th>
+                                <th># Orden</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Proveedor</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Etapa</th>
+                                <th>Temporada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.ordenesCerradas)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" class="verOrdenCerrada" data-id="@order.IdOrdenDeCompra" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                    <td>@order.IdOrdenDeCompra</td>
+                                    <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
+                                    <td>@order.Solicitante</td>
+                                    <td>@order.Proveedor</td>
+                                    <td>@order.Area</td>
+                                    <td>@order.Cultivo</td>
+                                    <td>@order.Rancho</td>
+                                    <td>@order.Etapa</td>
+                                    <td>@order.Temporada</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
+    </div>
 
-        <div class="card-body table-responsive p-0" style="height: 300px;">
-            <table id="closedOrdersTable" class="table table-head-fixed text-nowrap">
-                <thead>
-                    <tr>
-                        <th>Ver</th>
-                        <th># Orden</th>
-                        <th>Fecha</th>
-                        <th>Solicitante</th>
-                        <th>Proveedor</th>
-                        <th>Área</th>
-                        <th>Cultivo</th>
-                        <th>Rancho</th>
-                        <th>Etapa</th>
-                        <th>Temporada</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model.ordenesCerradas)
-                    {
-                        <tr>
-                            <td>
-                                <a href="#" class="verOrdenCerrada" data-id="@order.IdOrdenDeCompra" style="color: #2E2E2E">
-                                    <i class="nav-icon fas fa-eye"></i>
-                                </a>
-                            </td>
-                            <td>@order.IdOrdenDeCompra</td>
-                            <td>@order.FechaOrdenDeCompra?.ToString("MM/dd/yyyy")</td>
-                            <td>@order.Solicitante</td>
-                            <td>@order.Proveedor</td>
-                            <td>@order.Area</td>
-                            <td>@order.Cultivo</td>
-                            <td>@order.Rancho</td>
-                            <td>@order.Etapa</td>
-                            <td>@order.Temporada</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>  
 </div>
 
 <script>
     $(document).ready(function () {
+        // Navegación
         $(".realizarIngreso").click(function () {
             var idOrdenDeCompra = $(this).data("id");
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("RealizarIngreso", "Ingresos")',
                 data: { idOrdenDeCompra: idOrdenDeCompra },
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error during RealizarIngreso:", status, error);
-                }
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function (xhr, status, error) { console.error("Error during RealizarIngreso:", status, error); }
             });
         });
 
         $(".verOrdenCerrada").click(function () {
             var idOrden = $(this).data("id");
-
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("VerOrden", "Ingresos")',
                 data: { idOrdenDeCompra: idOrden },
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                },
-                error: function () {
-                    alert("No se pudo cargar la orden.");
-                }
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function () { alert("No se pudo cargar la orden."); }
             });
         });
 
+        // --- Búsqueda local por # de orden ---
         function searchOpenOrders() {
-            let query = $("#searchOpenOrdersInput").val().toLowerCase();
+            let query = ($("#ingresos_tableSearch").val() || "").toLowerCase();
             $("#openOrdersTable tbody tr").each(function () {
-                let orderId = $(this).find("td:eq(1)").text();
+                let orderId = ($(this).find("td:eq(1)").text() || "").toLowerCase();
                 $(this).toggle(orderId.includes(query));
             });
         }
 
         function searchClosedOrders() {
-            let query = $("#searchClosedOrdersInput").val().toLowerCase();
+            let query = ($("#ingresosClosed_tableSearch").val() || "").toLowerCase();
             $("#closedOrdersTable tbody tr").each(function () {
-                let orderId = $(this).find("td:eq(1)").text();
+                let orderId = ($(this).find("td:eq(1)").text() || "").toLowerCase();
                 $(this).toggle(orderId.includes(query));
             });
         }
 
-        // Buscar con el botón
-        $("#searchOpenOrdersBtn").click(searchOpenOrders);
-        $("#searchClosedOrdersBtn").click(searchClosedOrders);
+        // Botones
+        $("#ingresos_searchButton").click(searchOpenOrders);
+        $("#ingresosClosed_searchButton").click(searchClosedOrders);
 
-        // Buscar con tecla Enter
-        $("#searchOpenOrdersInput").keypress(function (e) {
-            if (e.which === 13) searchOpenOrders();
-        });
-        $("#searchClosedOrdersInput").keypress(function (e) {
-            if (e.which === 13) searchClosedOrders();
-        });
+        // Enter
+        $("#ingresos_tableSearch").keypress(function (e) { if (e.which === 13) searchOpenOrders(); });
+        $("#ingresosClosed_tableSearch").keypress(function (e) { if (e.which === 13) searchClosedOrders(); });
 
-        // 🔽 Auto-filtrar órdenes cerradas de la semana pasada
-         (function filterClosedOrdersByLastWeek() {
-            const now = new Date();
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(now.getDate() - 7);
-
-            $("#closedOrdersTable tbody tr").each(function () {
-                const fechaTexto = $(this).find("td:eq(2)").text();
-                const fechaOrden = new Date(fechaTexto);
-                if (fechaOrden >= oneWeekAgo && fechaOrden <= now) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
+        // Dropdown: recargar Index con el número de semanas seleccionado
+        $("#closedWeeksSelect").on("change", function () {
+            var weeks = $(this).val() || 1;
+            $.get('@Url.Action("Index", "Ingresos")', { closedWeeks: weeks }, function (html) {
+                $("#HtmlBody").html(html);
             });
-        })();
+        });
     });
 </script>
+ 
