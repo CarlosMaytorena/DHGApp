@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.SetMinimumLevel(LogLevel.Debug);
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,7 +25,6 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn
 // Register BlobStorageService for Egresos
 var connectionStringBlob = builder.Configuration.GetConnectionString("AzureBlobStorage");
 builder.Services.AddSingleton<BlobStorageService>(new BlobStorageService(connectionStringBlob, "evidencias"));
-
 
 //Services
 builder.Services.AddScoped<UsuarioService>();

@@ -31,6 +31,7 @@ namespace AgricolaDH_GApp.Services.Admin
             _clientId = configuration["AzureAD:ClientId"];
             _clientSecret = configuration["AzureAD:ClientSecret"];
             _logger = logger;
+            _logger.LogInformation($"TenantId: {_tenantId}, ClientId: {_clientId}, ClientSecret: {(_clientSecret != null ? "OK" : "NULL")}");
         }
 
         public Usuario GetUsuarioById(int id)
@@ -257,6 +258,7 @@ namespace AgricolaDH_GApp.Services.Admin
 
         private async Task<string> GetAccessTokenAsync(string tenantId, string clientId, string clientSecret)
         {
+            _logger.LogInformation($"TenantId: {tenantId}, ClientId: {clientId}, ClientSecret: {(clientSecret != null ? "OK" : "NULL")}");
             try
             {
                 var url = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
@@ -272,7 +274,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 var res = await client.PostAsync(url, new FormUrlEncodedContent(body));
                 var json = await res.Content.ReadAsStringAsync();
                 var tokenObj = JsonConvert.DeserializeObject<JObject>(json);
-;             _logger.LogInformation($"Access Token: {tokenObj["access_token"]} | Message: {res.Content}");
+;               _logger.LogInformation($"Access Token: {tokenObj["access_token"]} | Message: {res.Content}");
                 return tokenObj["access_token"]?.ToString();
             }
             catch(Exception e)

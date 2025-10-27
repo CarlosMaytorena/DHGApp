@@ -65,8 +65,11 @@ namespace AgricolaDH_GApp.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> InsertUsuario(UsuariosVM model)
         {
+            _logger.LogInformation("Hola InsertarUsuario");
+
             int res = usuarioService.InsertUsuario(model.usuario);
-            res += await usuarioService.AddToActiveDirectory(model.usuario);
+            // Access to Active Directory
+            //res += await usuarioService.AddToActiveDirectory(model.usuario);
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
@@ -78,8 +81,9 @@ namespace AgricolaDH_GApp.Controllers.Admin
         public async Task<IActionResult> UpdateUsuario(UsuariosVM model)
         {
             Usuario old = context.Usuarios.AsNoTracking().FirstOrDefault(u => u.IdUsuario == model.usuario.IdUsuario);
-            int res = await usuarioService.UpdateActiveDirectory(old, model.usuario);
-            res += usuarioService.UpdateUsuario(model.usuario);
+            // Access to Active Directory
+            //int res = await usuarioService.UpdateActiveDirectory(old, model.usuario);
+            int res = usuarioService.UpdateUsuario(model.usuario);
             model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
@@ -91,10 +95,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> BorrarUsuario(int IdUsuario)
         {
+            _logger.LogInformation("Hola Borrar Usuario");
+            // Access to Active Directory
+            //int res = await usuarioService.DropActiveDirectory(u);
+            //res += usuarioService.DeleteUsuario(IdUsuario);
             Usuario u = context.Usuarios.AsNoTracking().FirstOrDefault(a => a.IdUsuario == IdUsuario);
-            int res = await usuarioService.DropActiveDirectory(u);
-            res += usuarioService.DeleteUsuario(IdUsuario);
-            
+            int res = 0;
             UsuariosVM model = new UsuariosVM();
             model.usuarioList = usuarioService.SelectUsuarios();
             model.usuarioList = GetRolDescripcion(model.usuarioList);
