@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -19,14 +20,17 @@ namespace AgricolaDH_GApp.Services.Admin
         private readonly string _tenantId;
         private readonly string _clientId;
         private readonly string _clientSecret;
+        private readonly ILogger<UsuarioService> _logger;
 
-        public UsuarioService(AppDbContext _ctx, IConfiguration configuration)
+
+        public UsuarioService(AppDbContext _ctx, IConfiguration configuration, ILogger<UsuarioService> logger)
         {
             context = _ctx;
             // Retrieve the AAD settings from the configuration
             _tenantId = configuration["AzureAD:TenantId"];
             _clientId = configuration["AzureAD:ClientId"];
             _clientSecret = configuration["AzureAD:ClientSecret"];
+            _logger = logger;
         }
 
         public Usuario GetUsuarioById(int id)
@@ -165,6 +169,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 using (var client = new HttpClient())
                 {
                     var token = await GetAccessTokenAsync(_tenantId, _clientId, _clientSecret);
+                    _logger.LogInformation($"Access Token: {token}");
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var invitationData = new
                     {
@@ -180,13 +185,14 @@ namespace AgricolaDH_GApp.Services.Admin
                     };
                     var content = new StringContent(JsonConvert.SerializeObject(invitationData), Encoding.UTF8, "application/json");
                     var response = await client.PostAsync("https://graph.microsoft.com/v1.0/invitations", content);
+                    _logger.LogInformation($"Response Code: {response.StatusCode} | Message: {response.Content}");
                     if (!response.IsSuccessStatusCode)
                         return -1;
                 }
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogWarning(e.Message);
                 return -1;
             }
             return 0;
@@ -243,13 +249,13 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+               _logger.LogWarning(e.Message);
                 return -1;
             }
             return 0;
         }
 
-        private static async Task<string> GetAccessTokenAsync(string tenantId, string clientId, string clientSecret)
+        private async Task<string> GetAccessTokenAsync(string tenantId, string clientId, string clientSecret)
         {
             try
             {
@@ -266,12 +272,12 @@ namespace AgricolaDH_GApp.Services.Admin
                 var res = await client.PostAsync(url, new FormUrlEncodedContent(body));
                 var json = await res.Content.ReadAsStringAsync();
                 var tokenObj = JsonConvert.DeserializeObject<JObject>(json);
-;               Console.WriteLine($"Access Token: {tokenObj["access_token"]}");
+;             _logger.LogInformation($"Access Token: {tokenObj["access_token"]} | Message: {res.Content}");
                 return tokenObj["access_token"]?.ToString();
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogWarning(e.Message);
                 return "";
             }
         }
