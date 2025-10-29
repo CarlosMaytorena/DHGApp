@@ -46,11 +46,12 @@
                         <thead>
                             <tr>
                                 <th style="width:20px">Acción</th>
-                                <th style="width:30%">Nombre de Producto</th>
-                                <th style="width:30%">Nombre Interno</th>
-                                <th style="width:30%">Compañía</th>
-                                <th style="width:60%">Descripción</th>
-                                <th style="width:20%">Numero de Producto</th>
+                                <th style="width:20%">Nombre Interno</th>
+                                <th style="width:10%">Unidad de SKU</th>
+                                <th style="width:10%">Contenido</th>
+                                <th style="width:20%">Compañía</th>
+                                <th style="width:20%">Descripción</th>
+                                <th style="width:20%">Proveedor</th>
 
                             </tr>
                         </thead>
@@ -68,12 +69,12 @@
                                             <i class="nav-icon fas fa-pen"></i>
                                         </a>
                                     </td>
-                                    <td>@proveedor.NombreProducto</td>
-                                    <td>@proveedor.Descripcion</td>
                                     <td>@proveedor.NombreInterno</td>
+                                    <td>@proveedor.UnidadDeSKU</td>
+                                    <td>@proveedor.Contenido</td>
                                     <td>@proveedor.Compania</td>
-                                    <td>@proveedor.PN</td> <!--  -->
-
+                                    <td>@proveedor.Descripcion</td>
+                                    <td>@proveedor.Proveedor</td>
                                 </tr>
                             }
                         </tbody>

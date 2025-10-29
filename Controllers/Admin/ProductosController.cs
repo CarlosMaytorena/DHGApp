@@ -16,14 +16,16 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
         private readonly AppDbContext context;
         private ProductoService productoService;
+        private ProveedorService proveedorService;
         private ViewRenderService renderService;
 
         public ProductosController(ILogger<ProductosController> logger, AppDbContext _ctx,
-            ProductoService _productoService, ViewRenderService _renderService)
+            ProductoService _productoService, ProveedorService _proveedorService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
             productoService = _productoService;
+            proveedorService = _proveedorService;
             renderService = _renderService;
         }
 
@@ -34,6 +36,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
             ProductosVM model = new ProductosVM();
 
             model.productoList = productoService.SelectProductos();
+            model.proveedorList = proveedorService.SelectProveedores();
+
+            foreach (var producto in model.productoList)
+            {
+                producto.Proveedor = model.proveedorList.FirstOrDefault(a => a.IdProveedor == producto.IdProveedor)?.Nombre;
+            }
 
             return PartialView("~/Views/Admin/Productos/Index.cshtml", model);
         }
@@ -42,6 +50,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
         public IActionResult AgregarProducto()
         {
             ProductosVM model = new ProductosVM();
+            model.proveedorList = proveedorService.SelectProveedores();
 
             return PartialView("~/Views/Admin/Productos/Productos.cshtml", model);
         }
@@ -52,6 +61,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
             ProductosVM model = new ProductosVM();
 
             model.producto = productoService.SelectProducto(IdProducto);
+            model.proveedorList = proveedorService.SelectProveedores();
 
             return PartialView("~/Views/Admin/Productos/Productos.cshtml", model);
         }
@@ -72,6 +82,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new ProductosVM();
             model.productoList = productoService.SelectProductos();
+            model.proveedorList = proveedorService.SelectProveedores();
+
+            foreach (var producto in model.productoList)
+            {
+                producto.Proveedor = model.proveedorList.FirstOrDefault(a => a.IdProveedor == producto.IdProveedor)?.Nombre;
+            }
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }
@@ -84,6 +100,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new ProductosVM();
             model.productoList = productoService.SelectProductos();
+            model.proveedorList = proveedorService.SelectProveedores();
+
+            foreach (var producto in model.productoList)
+            {
+                producto.Proveedor = model.proveedorList.FirstOrDefault(a => a.IdProveedor == producto.IdProveedor)?.Nombre;
+            }
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }
@@ -96,6 +118,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             ProductosVM model = new ProductosVM();
             model.productoList = productoService.SelectProductos();
+            model.proveedorList = proveedorService.SelectProveedores();
+
+            foreach (var producto in model.productoList)
+            {
+                producto.Proveedor = model.proveedorList.FirstOrDefault(a => a.IdProveedor == producto.IdProveedor)?.Nombre;
+            }
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Productos/Index.cshtml", model) });
         }

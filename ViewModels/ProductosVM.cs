@@ -7,11 +7,14 @@ namespace AgricolaDH_GApp.ViewModels
     {
         public List<Producto> productoList { get; set; }
         public Producto producto { get; set; }
+        public List<Proveedor> proveedorList { get; set; }
+
 
         public ProductosVM()
         {
             productoList = new List<Producto>();
             producto = new Producto();
-        }        
+            proveedorList = new List<Proveedor>();
+        }
     }
 }

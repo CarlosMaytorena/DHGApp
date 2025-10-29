@@ -16,15 +16,17 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
         private readonly AppDbContext context;
         private RanchoService ranchoService;
+        private AreaService areaService;
         private ViewRenderService renderService;
 
 
-        public RanchosController(ILogger<RanchosController> logger, AppDbContext _ctx, RanchoService _ranchoService, ViewRenderService _renderService)
+        public RanchosController(ILogger<RanchosController> logger, AppDbContext _ctx, RanchoService _ranchoService, AreaService _areaService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
             ranchoService = _ranchoService;
             renderService = _renderService;
+            areaService = _areaService;
         }
 
         [HttpGet]
@@ -33,6 +35,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             RanchosVM model = new RanchosVM();
             model.ranchoList = ranchoService.SelectRanchos();
+            model.areaList = areaService.SelectAreas();
+
+            foreach(var rancho in model.ranchoList)
+            {
+                rancho.Area = model.areaList.FirstOrDefault(a => a.IdArea == rancho.IdArea)?.Descripcion;
+            }
 
             return PartialView("~/Views/Admin/Ranchos/Index.cshtml", model);
         }
@@ -51,6 +59,7 @@ namespace AgricolaDH_GApp.Controllers.Admin
             RanchosVM model = new RanchosVM();
 
             model.rancho = ranchoService.SelectRancho(IdRancho);
+            model.areaList = areaService.SelectAreas();
 
             return PartialView("~/Views/Admin/Ranchos/Rancho.cshtml", model);
         }
@@ -62,6 +71,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new RanchosVM();
             model.ranchoList = ranchoService.SelectRanchos();
+            model.areaList = areaService.SelectAreas();
+
+            foreach (var rancho in model.ranchoList)
+            {
+                rancho.Area = model.areaList.FirstOrDefault(a => a.IdArea == rancho.IdArea)?.Descripcion;
+            }
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Ranchos/Index.cshtml", model) });
         }
@@ -73,6 +88,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             model = new RanchosVM();
             model.ranchoList = ranchoService.SelectRanchos();
+            model.areaList = areaService.SelectAreas();
+
+            foreach (var rancho in model.ranchoList)
+            {
+                rancho.Area = model.areaList.FirstOrDefault(a => a.IdArea == rancho.IdArea)?.Descripcion;
+            }
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Ranchos/Index.cshtml", model) });
         }
@@ -86,6 +107,12 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
             RanchosVM model = new RanchosVM();
             model.ranchoList = ranchoService.SelectRanchos();
+            model.areaList = areaService.SelectAreas();
+
+            foreach (var rancho in model.ranchoList)
+            {
+                rancho.Area = model.areaList.FirstOrDefault(a => a.IdArea == rancho.IdArea)?.Descripcion;
+            }
 
             return Json(new {res, url = await renderService.RenderViewToStringAsync("~/Views/Admin/Ranchos/Index.cshtml", model) });
         }

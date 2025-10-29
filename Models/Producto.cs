@@ -17,5 +17,11 @@ namespace AgricolaDH_GApp.Models
         public string Descripcion { get; set; }
         public string SKUInterno { get; set; }
         public string PN { get; set; }
+        public int IdProveedor { get; set; }
+
+        [NotMapped]
+        public string? Proveedor { get; set; }
+
+
     }
 }

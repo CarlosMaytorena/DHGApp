@@ -72,6 +72,10 @@
                     <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
                     @Html.EditorFor(m => m.producto.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus notNull" } })
                 </div>
+                <div class="col-md-6">
+                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
+                    @Html.DropDownListFor(m => m.producto.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus producto" })
+                </div>
             </div>
             <div class="row card-row-spacer">
             </div>
