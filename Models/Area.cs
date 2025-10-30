@@ -6,6 +6,7 @@ namespace AgricolaDH_GApp.Models
     {
         public int IdArea { get; set; }
         public string Descripcion { get; set; }
+        public string? Nomenclatura { get; set; }
 
     }
 }

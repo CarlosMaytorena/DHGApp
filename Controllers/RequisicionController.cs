@@ -67,19 +67,19 @@ namespace AgricolaDH_GApp.Controllers
 
 			model.requisicion.FechaRequisicion = DateTime.Now;
 
-			model.productosOrdenar = new List<ProductoOrdenar>() { 
-				new ProductoOrdenar()
-			};
+            model.productosOrdenar = new List<ProductoOrdenar>() {
+                new ProductoOrdenar()
+            };
 
-			model.solicitanteList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Administrador);
+            model.solicitanteList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Administrador);
 			model.solicitanteList.AddRange(usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero));
 			model.proveedorList = proveedorService.SelectProveedores();
 			model.areaList = areaService.SelectAreas();
 			model.cultivoList = cultivoService.SelectCultivos();
-			model.ranchoList = ranchoService.SelectRanchos();
+			//model.ranchoList = ranchoService.SelectRanchos();
 			model.etapaList = etapaService.SelectEtapas();
 			model.temporadaList = temporadaService.SelectTemporadas();
-			model.productoList = productoService.SelectProductos();
+			//model.productoList = productoService.SelectProductos();
 
             model.requisicion.IdSolicitante = idUsuario != null ? (int)idUsuario : 0;
 
@@ -110,7 +110,7 @@ namespace AgricolaDH_GApp.Controllers
             model.ranchoList = ranchoService.SelectRanchos();
             model.etapaList = etapaService.SelectEtapas();
             model.temporadaList = temporadaService.SelectTemporadas();
-            model.productoList = productoService.SelectProductos();
+            model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
 
             if(idRol == RolEnumerators.Ingeniero)
             {
@@ -124,7 +124,7 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult AgregarProductoOrdenar(RequisicionesVM model)
         {
             model.productosOrdenar.Add(new ProductoOrdenar());
-            model.productoList = productoService.SelectProductos();
+            model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
 
             return PartialView("~/Views/Requisicion/ProductosOrdenar.cshtml", model);
         }
@@ -223,6 +223,28 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
+        }
+
+        [HttpGet]
+        public IActionResult GetRanchoList(int IdArea)
+        {
+            var ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == IdArea).ToList();
+
+            return Json(new { ranchoList });
+        }
+
+        [HttpGet]
+        public IActionResult GetProductoList(int IdProveedor)
+        {
+            RequisicionesVM model = new RequisicionesVM();
+
+            model.productosOrdenar = new List<ProductoOrdenar>() {
+                new ProductoOrdenar()
+            };
+
+            model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == IdProveedor).ToList();
+
+            return PartialView("~/Views/Requisicion/ProductosOrdenar.cshtml", model);
         }
 
         public IActionResult Privacy()

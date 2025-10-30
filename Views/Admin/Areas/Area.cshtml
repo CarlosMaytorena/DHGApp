@@ -8,7 +8,11 @@
             <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
             @Html.EditorFor(m => m.area.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" }})
         </div>
-        <div class="col-md-5">
+        <div class="col-md-3">
+            <label style="font-weight: normal; text-align: left; float: left">Nomenclatura</label>
+            @Html.EditorFor(m => m.area.Nomenclatura, new { htmlAttributes = new { @class = "form-control input-focus" } })
+        </div>
+        <div class="col-md-2">
         </div>
         <div class="col-md-2">
             <button type="button" id="cancelar" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">

@@ -355,6 +355,40 @@
 
         }
 
+        $('#requisicion_IdArea').change(function(e){
+            const IdArea = $(this).val();
+             $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetRanchoList", "Requisicion")',
+                data: { IdArea: IdArea },
+                success: function (data) {
+                    const $ranchoDropdown = $("#requisicion_IdRancho");
+
+                    $ranchoDropdown.empty();
+
+                    $ranchoDropdown.append($('<option>').val('').text(''));
+
+                    $.each(data.ranchoList, function (index, rancho) {
+                        console.log(rancho)
+                        $ranchoDropdown.append(
+                            $('<option>').val(rancho.idRancho).text(rancho.descripcion)
+                        );
+                    });
+                }
+            });
+        });
+
+        $('#requisicion_IdProveedor').change(function(e){
+            const IdProveedor = $(this).val();
+             $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetProductoList", "Requisicion")',
+                data: { IdProveedor: IdProveedor },
+                success: function (data) {
+                    $("#productosOrdenarContent").html(data);
+                }
+            });
+        });
 
 
     });
