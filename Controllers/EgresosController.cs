@@ -99,21 +99,22 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Egresos/Detalles.cshtml", model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DescargarArchivo([FromBody] string filename)
+        [HttpGet]
+        public async Task<IActionResult> DescargarArchivo([FromQuery] string filename)
         {
             int res = 1;
             try
             {
 				if (filename.IsNullOrEmpty())
 					throw new Exception();
-				blobStorageService.DownloadFileAsync(filename);
+                var download = await blobStorageService.DownloadFileAsync(filename);
+                return File(download.Content, download.ContentType ?? "application/octet-stream", filename);
             }
             catch
 			{
                 res = -1;
             }
-            return Json(new { res});
+            return Json(new { res });
         }
 
         [HttpPost]

@@ -80,17 +80,32 @@
         });
 
         $(".descargar").click(function (event) {
-            event.preventDefault();
-            var filename = $(this).closest('.input-group').find('input').val(); 
-            //console.log(filename);
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("DescargarArchivo", "Egresos")',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(filename),
-                success: function (data) {
-                }
-            });
+            event.preventDefault(); // Prevents the default action (like submitting a form or following a link)
+            var filename = $(this).closest('.input-group').find('input').val(); // Gets the filename from the nearest input field
+            
+            if (filename) {
+                var url = '/Egresos/DescargarArchivo?filename=' + encodeURIComponent(filename); // Builds the download URL with the filename as a query parameter
+                fetch(url, { // Uses the Fetch API to make a GET request to the server
+                    method: 'GET',
+                    credentials: 'same-origin' // Ensures cookies (for authentication) are sent if needed
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok'); // Checks if the response is OK
+                    return response.blob(); // Converts the response to a Blob (binary data)
+                })
+                .then(blob => {
+                    var link = document.createElement('a'); // Creates a temporary <a> element
+                    link.href = window.URL.createObjectURL(blob); // Creates a URL for the Blob
+                    link.download = filename; // Sets the suggested filename for download
+                    document.body.appendChild(link); // Adds the link to the document
+                    link.click(); // Simulates a click to start the download
+                    document.body.removeChild(link); // Removes the link from the document
+                    window.URL.revokeObjectURL(link.href); // Cleans up the Blob URL
+                })
+                .catch(error => {
+                    alert('Error downloading file: ' + error); // Alerts the user if there was an error
+                });
+            }
         });
     });
 </script>
