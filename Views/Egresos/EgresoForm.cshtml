@@ -26,10 +26,10 @@
                 <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
                 @if (Model.egreso.esAutorizado)
                 {
-                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar" })
+                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar" })
                 }
                 else {
-                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "Username"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
+                    @Html.DropDownListFor(m => m.egreso.IdSolicitante, new SelectList(Model.usuariosList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
                 }
             </div>
             <div class="col-md-4">

@@ -21,6 +21,16 @@ namespace AgricolaDH_GApp.Models
         [NotMapped]
         public string RolDescripcion { get; set; }
 
+        [NotMapped]
+        public string NombreCompleto
+        {
+            get
+            {
+                return $"{Nombre} {ApellidoPaterno}";
+            }
+        }
+
+
     }
 
     public class UsuarioDropdown
