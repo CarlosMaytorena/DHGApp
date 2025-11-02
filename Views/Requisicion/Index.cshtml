@@ -1,4 +1,18 @@
 ﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
+@{
+    // Semanas actuales para aceptadas / rechazadas (default 1 semana)
+    var aw = (ViewBag.AcceptedWeeks as int?) ?? 1;
+    var rw = (ViewBag.RejectedWeeks as int?) ?? 1;
+}
+
+<style>
+    .tools-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+    }
+</style>
 
 <div class="text-center">
 
@@ -6,8 +20,10 @@
         <div class="col-md-6">
             <h4 class="page-title">Requisición</h4>
         </div>
+
         <div class="col-md-4">
         </div>
+
         <div class="col-md-2">
             <button id="crearRequisicion" class="btn btn-block secondary-background-color" style="color: white">
                 <i class="nav-icon fas fa-arrow-plus"></i>
@@ -18,6 +34,8 @@
 
     <div class="row">
         <div class="col-12">
+
+            <!-- Requisiciones Enviadas -->
             <div class="card card-margin">
                 <div class="card-header">
                     <h3 class="card-title">Requisiciones Enviadas</h3>
@@ -33,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- /.card-header -->
+
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table id="requisicionesTable" class="table table-head-fixed text-nowrap">
                         <thead>
@@ -51,7 +69,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for(int i=0; i < Model.requisicionList.Count; i++)
+                            @for (int i = 0; i < Model.requisicionList.Count; i++)
                             {
                                 <tr>
                                     <td>
@@ -69,30 +87,57 @@
                                     <td>@Model.requisicionList[i].Etapa</td>
                                     <td>@Model.requisicionList[i].Temporada</td>
                                 </tr>
-                            }                           
+                            }
                         </tbody>
                     </table>
                 </div>
-                <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+            <!-- Requisiciones Aceptadas -->
             <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Requisiciones Aceptadas</h3>
+                <div class="card-header d-flex align-items-center">
+                    <h3 class="card-title mb-0">Requisiciones Aceptadas</h3>
 
-                    <div class="card-tools">
+                    <div class="tools-inline">
+                        <!-- Dropdown de semanas para aceptadas -->
+                        <select id="acceptedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
+                            @if (aw == 1)
+                            {
+                                <option value="1" selected>Últimos 7 días</option>
+                            }
+                            else
+                            {
+                                <option value="1">Últimos 7 días</option>
+                            }
+                            @if (aw == 2)
+                            {
+                                <option value="2" selected>Últimas 2 semanas</option>
+                            }
+                            else
+                            {
+                                <option value="2">Últimas 2 semanas</option>
+                            }
+                            @if (aw == 0)
+                            {
+                                <option value="0" selected>Sin filtro</option>
+                            }
+                            else
+                            {
+                                <option value="0">Sin filtro</option>
+                            }
+                        </select>
+
+                        <!-- Search local por ID en aceptadas -->
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
+                            <input type="text" id="requisicionesAceptadas_tableSearch" class="form-control" placeholder="Search">
                             <div class="input-group-append">
-                                <button type="submit" id="requisiconesAceptadas_searchButton" class="btn btn-default">
+                                <button type="button" id="requisicionesAceptadas_searchButton" class="btn btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.card-header -->
+
                 <div class="card-body table-responsive p-0" style="height: 300px;">
                     <table id="requisicionesAceptadasTable" class="table table-head-fixed text-nowrap">
                         <thead>
@@ -132,27 +177,55 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+            <!-- Requisiciones Rechazadas -->
             <div class="card card-margin">
-                <div class="card-header">
-                    <h3 class="card-title">Requisiciones Rechazadas</h3>
+                <div class="card-header d-flex align-items-center">
+                    <h3 class="card-title mb-0">Requisiciones Rechazadas</h3>
 
-                    <div class="card-tools">
+                    <div class="tools-inline">
+                        <!-- Dropdown de semanas para rechazadas -->
+                        <select id="rejectedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
+                            @if (rw == 1)
+                            {
+                                <option value="1" selected>Últimos 7 días</option>
+                            }
+                            else
+                            {
+                                <option value="1">Últimos 7 días</option>
+                            }
+                            @if (rw == 2)
+                            {
+                                <option value="2" selected>Últimas 2 semanas</option>
+                            }
+                            else
+                            {
+                                <option value="2">Últimas 2 semanas</option>
+                            }
+                            @if (rw == 0)
+                            {
+                                <option value="0" selected>Sin filtro</option>
+                            }
+                            else
+                            {
+                                <option value="0">Sin filtro</option>
+                            }
+                        </select>
+
+                        <!-- Search local por ID en rechazadas -->
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" id="requisiciones_tableSearch" name="table_search" class="form-control float-right" placeholder="Search">
+                            <input type="text" id="requisicionesRechazadas_tableSearch" class="form-control" placeholder="Search">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
+                                <button type="button" id="requisicionesRechazadas_searchButton" class="btn btn-default">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.card-header -->
+
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table id="requisicionesRechazadasTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
                                 <th style="width:30px">Acción</th>
@@ -190,17 +263,16 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+
         </div>
     </div>
-
 </div>
 
 <script>
     $(document).ready(function () {
 
+        //  Navegación / abrir formularios 
         $("#crearRequisicion").click(function () {
             $.ajax({
                 type: "POST",
@@ -208,7 +280,6 @@
                 contentType: "application/json; charset=utf-8",
                 data: {},
                 success: function (data) {
-
                     $("#HtmlBody").html(data);
                 }
             });
@@ -221,11 +292,70 @@
                 url: '@Url.Action("EditarRequisicion", "Requisicion")',
                 data: { IdOrdenDeCompra: IdOrdenDeCompra },
                 success: function (data) {
-
                     $("#HtmlBody").html(data);
                 }
             });
         });
+
+        // Búsqueda local 
+        function searchTableById($table, query) {
+            query = (query || "").toLowerCase();
+            $table.find("tbody tr").each(function () {
+                let idText = ($(this).find("td:eq(1)").text() || "").toLowerCase();
+                $(this).toggle(idText.includes(query));
+            });
+        }
+
+        // Enviadas
+        $("#requisicones_searchButton").click(function () {
+            const q = $("#requisiciones_tableSearch").val();
+            searchTableById($("#requisicionesTable"), q);
+        });
+        $("#requisiciones_tableSearch").keypress(function (e) {
+            if (e.which === 13) {
+                const q = $(this).val();
+                searchTableById($("#requisicionesTable"), q);
+            }
+        });
+
+        // Aceptadas
+        $("#requisicionesAceptadas_searchButton").click(function () {
+            const q = $("#requisicionesAceptadas_tableSearch").val();
+            searchTableById($("#requisicionesAceptadasTable"), q);
+        });
+        $("#requisicionesAceptadas_tableSearch").keypress(function (e) {
+            if (e.which === 13) {
+                const q = $(this).val();
+                searchTableById($("#requisicionesAceptadasTable"), q);
+            }
+        });
+
+        // Rechazadas
+        $("#requisicionesRechazadas_searchButton").click(function () {
+            const q = $("#requisicionesRechazadas_tableSearch").val();
+            searchTableById($("#requisicionesRechazadasTable"), q);
+        });
+        $("#requisicionesRechazadas_tableSearch").keypress(function (e) {
+            if (e.which === 13) {
+                const q = $(this).val();
+                searchTableById($("#requisicionesRechazadasTable"), q);
+            }
+        });
+
+        $("#acceptedWeeksSelect").on("change", function () {
+            var newAccepted = $(this).val() || 1;
+            var currRejected = $("#rejectedWeeksSelect").val() || @rw;
+            $.get('@Url.Action("Index", "Requisicion")', { acceptedWeeks: newAccepted, rejectedWeeks: currRejected }, function (html) {
+                $("#HtmlBody").html(html);
+            });
+        });
+
+        $("#rejectedWeeksSelect").on("change", function () {
+            var newRejected = $(this).val() || 1;
+            var currAccepted = $("#acceptedWeeksSelect").val() || @aw;
+            $.get('@Url.Action("Index", "Requisicion")', { acceptedWeeks: currAccepted, rejectedWeeks: newRejected }, function (html) {
+                $("#HtmlBody").html(html);
+            });
+        });
     });
 </script>
-

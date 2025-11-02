@@ -1,31 +1,65 @@
+
 <div class="text-center">
 
+    <!-- Header -->
     <div class="row top-row-spacer">
-        <div class="col-md-10">
+        <div class="col-md-8">
             <h4 class="page-title">Reimpresión de Etiquetas</h4>
         </div>
-        <div class="col-md-2">
-            <button id="btnReimprimir" class="btn btn-block secondary-background-color" style="color: white">
+
+        <div class="col-md-4 text-md-right text-sm-left">
+            <button id="btnReimprimirSeleccion" class="btn btn-block secondary-background-color" style="color:white" disabled>
                 <i class="fas fa-print"></i>
-                Imprimir Etiquetas
+                Reimprimir seleccionados
             </button>
         </div>
     </div>
 
+    <!-- Búsqueda -->
     <div class="card card-margin">
-        <!-- Orden -->
-        <div class="row card-row-spacer">
-            <div class="col-md-6">
+        <div class="row card-row-spacer align-items-end">
+            <div class="col-md-6 mb-3">
                 <label style="font-weight: normal; float: left">Orden de compra</label>
                 <input id="ordenDeCompraInput" class="form-control" placeholder="Ingresa el número de orden" />
             </div>
-        </div>
 
-        <!-- Serial(es) -->
-        <div class="row card-row-spacer mb-4">
+            <div class="col-md-3 mb-3">
+                <button id="btnBuscarOrden" class="btn btn-block btn-primary">
+                    <i class="fas fa-search"></i>
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card card-margin" id="resultadosCard" style="display:none;">
+        <div class="row card-row-spacer">
             <div class="col-md-12">
-                <label style="font-weight: normal; float: left">Serial(es)</label>
-                <input id="serialesInput" class="form-control" placeholder="Ingresa el serial" />
+                <h5 class="text-left">Seriales encontrados</h5>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered table-hover" id="tablaSeriales">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width:40px;">
+                                    <input type="checkbox" id="chkAll" />
+                                </th>
+                                <th>Serial</th>
+                                <th>Producto</th>
+                                <th>Fecha ingreso</th>
+                                <th style="width:80px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noResultadosMsg" class="alert alert-warning" style="display:none; text-align:left;">
+                    No se encontraron seriales para esa orden.
+                </div>
             </div>
         </div>
     </div>
@@ -34,7 +68,6 @@
 <script type="module">
     import { openPrintWindow } from "/js/labelPrinter.js";
 
-    // simple HTML escape to avoid issues on product names
     const esc = (s) => String(s || "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -42,65 +75,134 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
 
-    $(document).ready(function () {
-        $("#btnReimprimir").click(function () {
-            const orden = ($("#ordenDeCompraInput").val() || "").trim();
-            const serialesRaw = ($("#serialesInput").val() || "").trim();
+    let ultimosResultados = [];
 
-            if (!orden || !serialesRaw) {
-                alert("Por favor ingrese la orden y al menos un serial.");
-                return;
-            }
+    function syncReimprimirSeleccionButton() {
+        const algunoMarcado = $(".chkFila:checked").length > 0;
+        $("#btnReimprimirSeleccion").prop("disabled", !algunoMarcado);
+    }
 
-            // Normalizar lista de seriales
-            let serialesArr = serialesRaw
-                .split(",")
-                .map(s => (s || "").trim().toUpperCase())
-                .filter(s => s !== "");
+    function renderTabla(resultados, orden) {
+        const $tbody = $("#tablaSeriales tbody");
+        $tbody.empty();
 
-            if (serialesArr.length === 0) {
-                alert("No se detectaron seriales válidos.");
-                return;
-            }
+        if (!resultados || resultados.length === 0) {
+            $("#noResultadosMsg").show();
+            $("#tablaSeriales").hide();
+            $("#btnReimprimirSeleccion").prop("disabled", true);
+            return;
+        }
 
-            // Quitar duplicados
-            serialesArr = [...new Set(serialesArr)];
+        $("#noResultadosMsg").hide();
+        $("#tablaSeriales").show();
 
-            const payload = { orden, seriales: serialesArr };
+        resultados.forEach((row, idx) => {
+            const safeSerial = esc(row.serial);
+            const safeProd = esc(row.producto || "");
+            const safeFecha = esc(row.fecha || "");
 
-            $.ajax({
-                url: "/Reimpresion/ValidarSeriales",
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(payload),
-                success: function (response) {
-                    // Esperado: { success: bool, seriales: [string], productos: { [serial]: nombreProducto } }
-                    if (!response || !response.success || !response.seriales || response.seriales.length === 0) {
-                        alert("No se encontraron seriales válidos para esa orden.");
-                        return;
-                    }
+            const tr = `
+                    <tr data-index="${idx}">
+                        <td class="text-center">
+                            <input type="checkbox" class="chkFila" data-serial="${safeSerial}" />
+                        </td>
+                        <td>${safeSerial}</td>
+                        <td>${safeProd}</td>
+                        <td>${safeFecha}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-secondary btn-imprimir-uno" data-serial="${safeSerial}">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            $tbody.append(tr);
+        });
 
-                    const productos = response.productos || {};
+        // Eventos dinámicos
+        $(".chkFila").on("change", syncReimprimirSeleccionButton);
 
-                    // Construir etiquetas con producto (si viene)
-                    const labels = response.seriales.map(serial => {
-                        const nombre = productos[serial] || "";
-                        return `
-                                <div class="label">
-                                    <h4>Orden: ${esc(orden)}</h4>
-                                    ${nombre ? `<h4>Producto: ${esc(nombre)}</h4>` : ""}
-                                    <h4>Serial: ${esc(serial)}</h4>
-                                    <svg class="barcode" data-barcode-value="${esc(serial)}"></svg>
-                                </div>
-                            `;
-                    });
+        $("#chkAll").off("change").on("change", function () {
+            const marcado = $(this).is(":checked");
+            $(".chkFila").prop("checked", marcado);
+            syncReimprimirSeleccionButton();
+        });
 
-                    openPrintWindow(labels.join(""), orden);
-                },
-                error: function () {
-                    alert("Error al validar los seriales.");
+        $(".btn-imprimir-uno").on("click", function () {
+            const serial = $(this).data("serial");
+            imprimirSeriales([serial], orden);
+        });
+    }
+
+    function imprimirSeriales(listaSeriales, orden) {
+        const labels = listaSeriales.map(serial => {
+            const info = ultimosResultados.find(x => x.serial === serial) || {};
+            const producto = info.producto || "";
+
+            return `
+                    <div class="label">
+                        <h4>Orden: ${esc(orden)}</h4>
+                        ${producto ? `<h4>Producto: ${esc(producto)}</h4>` : ""}
+                        <h4>Serial: ${esc(serial)}</h4>
+                        <svg class="barcode" data-barcode-value="${esc(serial)}"></svg>
+                    </div>
+                `;
+        });
+
+        openPrintWindow(labels.join(""), orden);
+    }
+
+    $("#btnReimprimirSeleccion").on("click", function () {
+        const orden = ($("#ordenDeCompraInput").val() || "").trim();
+        if (!orden) {
+            alert("Falta la orden.");
+            return;
+        }
+
+        const seleccionados = $(".chkFila:checked")
+            .map(function () { return $(this).data("serial"); })
+            .get();
+
+        if (seleccionados.length === 0) {
+            alert("Selecciona al menos un serial.");
+            return;
+        }
+
+        imprimirSeriales(seleccionados, orden);
+    });
+
+    $("#btnBuscarOrden").on("click", function () {
+        const orden = ($("#ordenDeCompraInput").val() || "").trim();
+        if (!orden) {
+            alert("Por favor ingresa la orden.");
+            return;
+        }
+
+        $.ajax({
+            url: "/Reimpresion/ObtenerSerialesPorOrden",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ orden }),
+            success: function (response) {
+                if (!response || !response.success) {
+                    alert(response && response.error
+                        ? response.error
+                        : "No se pudo obtener la información de la orden.");
+                    return;
                 }
-            });
+
+                ultimosResultados = response.data || [];
+
+                $("#resultadosCard").show();
+
+                $("#chkAll").prop("checked", false);
+                $("#btnReimprimirSeleccion").prop("disabled", true);
+
+                renderTabla(ultimosResultados, response.orden || orden);
+            },
+            error: function () {
+                alert("Error al buscar la orden.");
+            }
         });
     });
 </script>
