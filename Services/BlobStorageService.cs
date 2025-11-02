@@ -35,7 +35,7 @@ public class BlobStorageService
             throw new Exception();
         }
     }
-    public async Task DownloadFileAsync(string blobName)
+    public async Task<BlobDownloadInfo> DownloadFileAsync(string blobName)
     {
         string downloadFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Downloads",blobName); 
         try
@@ -46,11 +46,7 @@ public class BlobStorageService
             Console.WriteLine($"Downloading blob '{blobName}' to '{downloadFilePath}'");
             BlobDownloadInfo download = await blobClient.DownloadAsync();
 
-            // Write the blob's contents to a file
-            using (FileStream fs = File.OpenWrite(downloadFilePath))
-            {
-                await download.Content.CopyToAsync(fs);
-            }
+            return download;
         }
         catch
         {

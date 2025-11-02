@@ -5,12 +5,11 @@
 }
 
 <style>
-    /* Hace que los controles del header se alineen a la derecha y en fila */
     .tools-inline {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-left: auto; /* empuja a la derecha */
+        margin-left: auto;
     }
 </style>
 
@@ -91,9 +90,8 @@
                 <div class="card-header d-flex align-items-center">
                     <h3 class="card-title mb-0">Ordenes Cerradas</h3>
 
-                    <!-- Controles a la derecha y en línea -->
                     <div class="tools-inline">
-                        <!-- Dropdown de semanas (sin C# en atributos) -->
+                        <!-- Dropdown de semanas -->
                         <select id="closedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
                             @if (cw == 1)
                             {

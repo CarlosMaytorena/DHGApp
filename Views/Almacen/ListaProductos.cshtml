@@ -1,4 +1,5 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
+
 <form id="lista">
     <div class="card card-margin">
         <div class="row card-row-spacer">
@@ -72,10 +73,19 @@
         const minScanLength = 5;  // minimum length for a scan
 
         $('.escanear').on('paste drop', function (e) {
+            const isRolAdmin = @Model.almacen.esAutorizado.ToString().ToLower();
+
+            if(isRolAdmin){
+                return true;
+            }
+
             e.preventDefault();
             return false;
         });
         $('.escanear').on('keypress', function (event) {
+
+            const isRolAdmin = @Model.almacen.esAutorizado.ToString().ToLower();
+
             const now = Date.now();
             if (now - lastInputTime > scanThreshold) {
                 inputBuffer = '';
@@ -92,7 +102,7 @@
                 // If Enter is pressed, check if buffer is a scan
                 if (event.which === 13) {
                     event.preventDefault();
-                    if (inputBuffer.length >= minScanLength) {
+                    if (inputBuffer.length >= minScanLength || isRolAdmin) {
                         var dataform = $("#lista");
                         $.ajax({
                             type: "POST",

@@ -72,11 +72,17 @@
         const minScanLength = 5;  // minimum length for a scan
 
         $('.escanear').on('paste drop', function (e) {
+            const isRolAdmin = @Model.egreso.esAutorizado.ToString().ToLower();
+            if(isRolAdmin){
+                return true;
+            }
             e.preventDefault();
             return false;
         });
         $('.escanear').on('keypress', function (event) {
             const now = Date.now();
+            const isRolAdmin = @Model.egreso.esAutorizado.ToString().ToLower();
+
             if (now - lastInputTime > scanThreshold) {
                 inputBuffer = '';
             }
@@ -92,7 +98,7 @@
                 // If Enter is pressed, check if buffer is a scan
                 if (event.which === 13) {
                     event.preventDefault();
-                    if (inputBuffer.length >= minScanLength) {
+                    if (inputBuffer.length >= minScanLength || isRolAdmin) {
                         var dataform = $("#lista");
                         $.ajax({
                             type: "POST",
