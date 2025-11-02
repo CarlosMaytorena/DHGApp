@@ -23,14 +23,22 @@
     <div class="card card-margin">
         <div class="row card-row-spacer">
             <div class="col-md-4">
+
                 @Html.HiddenFor(m => m.almacen.IdProducto)
                 <label style="font-weight: normal; text-align: left; float: left">Almacenista</label>
                 @if (Model.almacen.esAutorizado)
                 {
-                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar" })
+                    var usuariosFiltrados = Model.usuariosList
+                    .Where(u => u.IdRol == 1 || u.IdRol == 4 || u.IdRol == 5)
+                    .ToList();
+
+                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(usuariosFiltrados, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar" })
                 }
                 else {
-                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(Model.usuariosList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
+                    var usuariosFiltrados = Model.usuariosList
+                    .Where(u => u.IdRol == 1 || u.IdRol == 4 || u.IdRol == 5)
+                    .ToList();
+                    @Html.DropDownListFor(m => m.almacen.IdAlmacenista, new SelectList(usuariosFiltrados, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus validar", @disabled = "disabled" })
                 }
         </div>
         <div class="col-md-4">
