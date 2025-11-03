@@ -45,17 +45,21 @@ namespace AgricolaDH_GApp.Controllers
         }
 
 		[HttpGet]
-		public IActionResult Index()
+		public IActionResult Index(int acceptedWeeks = 1, int rejectedWeeks = 1)
 		{
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
-            RequisicionesVM model = new RequisicionesVM();
+            var model = new RequisicionesVM
+            {
+                requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),              
+                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, acceptedWeeks),
+                requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, rejectedWeeks)
+            };
 
-            model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 2);
-            model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 2);
+            ViewBag.AcceptedWeeks = acceptedWeeks;
+            ViewBag.RejectedWeeks = rejectedWeeks;
 
             return PartialView("~/Views/Requisicion/Index.cshtml", model);
-		}
+        }
 
         [HttpPost]
         public IActionResult CrearRequisicion()
