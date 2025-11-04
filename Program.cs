@@ -23,7 +23,7 @@ var connectionString = builder.Configuration.GetConnectionString("DbConnection")
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 // Register BlobStorageService for Egresos
-var connectionStringBlob = builder.Configuration.GetConnectionString("AzureBlobStorage");
+var connectionStringBlob = builder.Configuration.GetConnectionString("BlobConnection");
 builder.Services.AddSingleton<BlobStorageService>(new BlobStorageService(connectionStringBlob, "evidencias"));
 
 //Services
