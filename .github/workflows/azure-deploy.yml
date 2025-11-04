@@ -1,4 +1,4 @@
-name: Deploy App to Azure Web App
+name: Deploy to Azure App Service
 run-name: "Env: ${{inputs.azure_env}}"
 on:
   workflow_dispatch:
@@ -39,21 +39,14 @@ jobs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        client-id: ${{ vars.AZURE_CLIENT_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-        tenant-id: ${{ vars.AZURE_TENANT_ID }}
-        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }} # JSON format
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ vars.APP_SERVICE_NAME }}
-        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: ./output
-        connection-strings: |
-          AzureBlobStorage=${{ secrets.BLOB_STORAGE_CONN_STRING }}
-          DbConnection=${{ secrets.DB_CONN_STRING }}
         app-settings: |
-          AzureAD__TenantId=${{ vars.AAD_TENANT_ID }}
-          AzureAD__ClientId=${{ vars.AAD_CLIENT_ID }}
-          AzureAD__ClientSecret=${{ secrets.AAD_CLIENT_SECRET }}
+          AzureAD__TenantId=${{ vars.ACTIVE_DIRECTORY_TENANT_ID }}
+          AzureAD__ClientId=${{ vars.ACTIVE_DIRECTORY_CLIENT_ID }}
+          AzureAD__ClientSecret=${{ secrets.ACTIVE_DIRECTORY_CLIENT_SECRET }}
