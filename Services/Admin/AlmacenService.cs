@@ -47,6 +47,23 @@ namespace AgricolaDH_GApp.Services.Admin
                     a.NombreProducto = producto?.NombreProducto ?? "Producto desconocido";
                     a.Descripcion = producto?.Descripcion ?? "-";
                 }
+                // Agrupar por producto y tomar solo un registro por producto
+                almacenList = almacenList
+                    .GroupBy(x => x.NombreProducto)
+                    .Select(g =>
+                    {
+                        var first = g.First();
+
+                        // Totales por estatus
+                        first.EstatusFuera = g.Count(x => x.Estatus == "Fuera");
+                        first.EstatusAlmacen = g.Count(x => x.Estatus == "Almacen");
+
+                        // Total general si lo quieres seguir usando
+                        first.Cantidad = g.Count();
+
+                        return first;
+                    })
+                    .ToList();
             }
             catch
             {

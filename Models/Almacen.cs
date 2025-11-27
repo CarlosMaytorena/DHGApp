@@ -36,6 +36,14 @@ namespace AgricolaDH_GApp.Models
         [NotMapped]
         public string? Estatus { get; set; }
         [NotMapped]
+        public int? Cantidad { get; set; }
+        [NotMapped]
         public bool esAutorizado { get; set; }
+
+        [NotMapped]
+        public int EstatusFuera { get; set; }
+        [NotMapped]
+        public int EstatusAlmacen { get; set; }
+
     }
 }
