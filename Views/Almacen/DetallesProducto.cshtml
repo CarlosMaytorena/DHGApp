@@ -1,0 +1,19 @@
+<table class="table table-sm table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Serial</th>
+            <th>Movimiento</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.SerialNumber</td>
+                <td>@d.Movimiento</td>
+                <td>@d.Fecha</td>
+            </tr>
+        }
+    </tbody>
+</table>

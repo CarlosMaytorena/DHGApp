@@ -134,6 +134,22 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
         }
 
+        public IActionResult GetDetallesProducto(int idProducto)
+        {
+            var data = context.Almacen
+                .Where(x => x.IdProducto == idProducto)
+                .Select(x => new {
+                    x.SerialNumber,
+                    x.Movimiento,
+                    x.Estatus,
+                    x.Fecha
+                })
+                .ToList();
+
+            return PartialView("DetallesProducto", data);
+        }
+
+
         public IActionResult Privacy()
 		{
 			return View();

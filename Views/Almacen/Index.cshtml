@@ -59,9 +59,11 @@
                         <tbody>
                             @foreach (var a in Model.almacenLista)
                             {
-                                <tr>
+                                <tr class="main-row" data-product="@a.IdProducto">
                                     <td>@a.SerialNumber</td>
-                                    <td>@a.NombreProducto</td>
+                                    <td class="expand-btn" style="cursor:pointer; color:#007bff;">
+                                        @a.NombreProducto
+                                    </td>
                                     <td>@a.EstatusFuera</td>
                                     <td>@a.EstatusAlmacen</td>
                                     <td>@a.Cantidad</td>
@@ -70,8 +72,15 @@
                                     <td>@a.Solicitante</td>
                                     <td>@a.Fecha</td>
                                 </tr>
+
+                                <tr class="details-row" id="details-@a.IdProducto" style="display:none;">
+                                    <td colspan="9" class="p-0">
+                                        <div id="details-container-@a.IdProducto"></div>
+                                    </td>
+                                </tr>
                             }
                         </tbody>
+
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -106,6 +115,27 @@
                 }
             });
         });
+
+        $(".expand-btn").click(function () {
+
+            var row = $(this).closest("tr");
+            var idProducto = row.data("product");
+            var detailsRow = $("#details-" + idProducto);
+            var container = $("#details-container-" + idProducto);
+
+            if (detailsRow.is(":visible")) {
+                detailsRow.hide();
+                container.html("");
+                return;
+            }
+
+            $.get("/Almacen/GetDetallesProducto", { idProducto: idProducto }, function (html) {
+                container.html(html);
+                detailsRow.show();
+            });
+        });
     });
+
+
 </script>
 
