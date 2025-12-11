@@ -56,8 +56,11 @@
 </div>
 </form>
 <div id="ListaDeProductos">
-    @Html.Partial("~/Views/Almacen/ListaProductos.cshtml", Model)
+    <partial name="~/Views/Almacen/ListaProductos.cshtml"
+             model="Model"
+             view-data='new ViewDataDictionary(ViewData) { { "SourceView", "Entrada" } }' />
 </div>
+
 
 <div class="modal fade" id="modal-success">
     <div class="modal-dialog">

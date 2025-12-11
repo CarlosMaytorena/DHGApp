@@ -78,7 +78,7 @@ namespace AgricolaDH_GApp.Services.Admin
         {
             try
             {
-                if (model.almacenLista.Any(x => x.Estatus.Equals("Almacen")) )
+                if (model.almacenLista.Any(x => x.Estatus.Equals("Almacen")))
                 {
                     throw new Exception();
                 }
@@ -204,6 +204,26 @@ namespace AgricolaDH_GApp.Services.Admin
             return context.Almacen.Count(a => a.SerialNumber.StartsWith($"{pn}-{ordenId}-"));
         }
 
-
+        /// <summary>
+        /// Valida el estado del producto en Almacen para Entrada o Salida. Si el producto ya se encuentra en el estado contrario, retorna true.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="SourceView"></param>
+        /// <returns></returns>
+        public bool ValidarEstadoProducto(Almacen a, string SourceView)
+        {
+            bool exists = false; //Valor default
+            if (SourceView == "Entrada")
+            {
+                // Verificar en Salida
+                exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals("Salida"));
+            }
+            else if (SourceView == "Salida")
+            {
+                // Verificar en Entrada
+                exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals("Entrada"));
+            }
+            return exists;
+        }
     }
 }
