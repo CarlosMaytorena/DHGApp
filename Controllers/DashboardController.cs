@@ -1,10 +1,12 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -35,143 +37,7 @@ namespace AgricolaDH_GApp.Controllers
             return Json(data);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ordenesPorArea()
-        {
-            var query = _context.OrdenesDeCompra
-                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
-                             oc.FechaRequisicion.Year == DateTime.Now.Year)
-                .Join(_context.Areas,
-                      oc => oc.IdArea,
-                      a => a.IdArea,
-                      (oc, a) => new { a.Descripcion, oc.IdOrdenDeCompra })
-                .GroupBy(x => x.Descripcion)
-                .Select(g => new
-                {
-                    Area = g.Key,
-                    Cantidad = g.Count()
-                });
-
-            var data = await query.ToListAsync();
-
-            return Json(data);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ordenesPorCultivo()
-        {
-            var query = _context.OrdenesDeCompra
-                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
-                             oc.FechaRequisicion.Year == DateTime.Now.Year)
-                .Join(_context.Cultivos,
-                      oc => oc.IdCultivo,
-                      c => c.IdCultivo,
-                      (oc, c) => new { c.Descripcion, oc.IdOrdenDeCompra })
-                .GroupBy(x => x.Descripcion)
-                .Select(g => new
-                {
-                    Cultivo = g.Key,
-                    Cantidad = g.Count()
-                });
-
-            var data = await query.ToListAsync();
-
-            return Json(data);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ordenesPorEtapa()
-        {
-            var query = _context.OrdenesDeCompra
-                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
-                             oc.FechaRequisicion.Year == DateTime.Now.Year)
-                .Join(_context.Etapas,
-                      oc => oc.IdEtapa,
-                      e => e.IdEtapa,
-                      (oc, e) => new { e.Descripcion, oc.IdOrdenDeCompra })
-                .GroupBy(x => x.Descripcion)
-                .Select(g => new
-                {
-                    Etapa = g.Key,
-                    Cantidad = g.Count()
-                });
-
-            var data = await query.ToListAsync();
-
-            return Json(data);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> TotalPorProducto()
-        {
-            var query = _context.OrdenesDeCompra
-                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
-                             oc.FechaRequisicion.Year == DateTime.Now.Year)
-                .Join(_context.ProductosOrdenar,
-                      oc => oc.IdOrdenDeCompra,
-                      po => po.IdOrdenDeCompra,
-                      (oc, po) => new { po.IdProducto, po.Cantidad })
-                .Join(_context.Productos,
-                      temp => temp.IdProducto,
-                      p => p.IdProducto,
-                      (temp, p) => new { p.NombreProducto, temp.Cantidad })
-                .GroupBy(x => x.NombreProducto)
-                .Select(g => new
-                {
-                    Producto = g.Key,
-                    Cantidad = g.Sum(x => x.Cantidad)
-                });
-
-            var data = await query.ToListAsync();
-
-            return Json(data);
-        }
-
-
-
-
-        [HttpGet]
-        public async Task<IActionResult> ordenesPorProveedor()
-        {
-            var query = _context.OrdenesDeCompra
-                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
-                             oc.FechaRequisicion.Year == DateTime.Now.Year)
-                .Join(_context.Proveedores,
-                      oc => oc.IdProveedor,
-                      p => p.IdProveedor,
-                      (oc, p) => new { p.Nombre, oc.IdOrdenDeCompra })
-                .GroupBy(x => x.Nombre)
-                .Select(g => new
-                {
-                    Proveedor = g.Key,
-                    Cantidad = g.Count()
-                });
-
-            var data = await query.ToListAsync();
-
-            return Json(data);
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> ingresosPorMes()
-        {
-            var data = await _context.ProductosOrdenar
-            .Join(_context.OrdenesDeCompra,
-                    productos => productos.IdOrdenDeCompra,
-                    ordenes => ordenes.IdOrdenDeCompra,
-                    (productos, ordenes) => new { productos.Total, ordenes.FechaOrdenDeCompra })
-            .GroupBy(x => x.FechaOrdenDeCompra)
-            .Select(g => new
-            {
-                FechaOrden = g.Key,
-                Ingreso = g.Sum(x => x.Total)
-            })
-            .ToListAsync();
-
-            return Json(data); // Return JSON response
-        }
+        // ======================================== KPIs ========================================
 
         [HttpGet]
         public async Task<IActionResult> ventaPorRancho(string? ranchoName)
@@ -210,7 +76,6 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(data);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> opcionesRancho()
@@ -273,7 +138,7 @@ namespace AgricolaDH_GApp.Controllers
             // Optional filter by Movimiento
             if (descripcionMovimiento != null)
             {
-                
+
             }
             query = query.Where(x => x.Movimiento == descripcionMovimiento);
             var data = await query.ToListAsync();
@@ -292,6 +157,181 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(status);
         }
+
+        // ======================================== Primer Linea de graficas ========================================
+
+        [HttpGet]
+        public async Task<IActionResult> ordenesPorArea()
+        {
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Areas,
+                      oc => oc.IdArea,
+                      a => a.IdArea,
+                      (oc, a) => new { a.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Area = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ordenesPorCultivo()
+        {
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Cultivos,
+                      oc => oc.IdCultivo,
+                      c => c.IdCultivo,
+                      (oc, c) => new { c.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Cultivo = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+        }
+
+        // ======================================== Segunda Linea de graficas ========================================
+
+        [HttpGet]
+        public async Task<IActionResult> ordenesPorEtapa()
+        {
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Etapas,
+                      oc => oc.IdEtapa,
+                      e => e.IdEtapa,
+                      (oc, e) => new { e.Descripcion, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Descripcion)
+                .Select(g => new
+                {
+                    Etapa = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ordenesPorProveedor()
+        {
+            var query = _context.OrdenesDeCompra
+                .Where(oc => oc.FechaRequisicion.Month == DateTime.Now.Month &&
+                             oc.FechaRequisicion.Year == DateTime.Now.Year)
+                .Join(_context.Proveedores,
+                      oc => oc.IdProveedor,
+                      p => p.IdProveedor,
+                      (oc, p) => new { p.Nombre, oc.IdOrdenDeCompra })
+                .GroupBy(x => x.Nombre)
+                .Select(g => new
+                {
+                    Proveedor = g.Key,
+                    Cantidad = g.Count()
+                });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+        }
+
+        // ======================================== Tercer Linea de graficas ========================================
+
+        [HttpGet]
+        public async Task<IActionResult> GastoPorEtapa()
+        {
+            var query = _context.ProductosOrdenar
+            .Join(
+                _context.OrdenesDeCompra,
+                po => po.IdOrdenDeCompra,
+                oc => oc.IdOrdenDeCompra,
+                (po, oc) => new { po.Total, oc.IdEtapa }
+            )
+            .GroupBy(x => x.IdEtapa)
+            .Select(g => new
+            {
+                IdEtapa = g.Key,
+                TotalPorEtapa = Math.Round(
+                    g.Sum(x => (double?)x.Total) ?? 0,
+                    1
+                )
+            });
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProductoEnAlmacen()
+        {
+            var now = DateTime.Now;
+
+            var start = new DateTime(now.Year, now.Month, 1);
+            var end = start.AddMonths(1);
+
+            var query = _context.Almacen
+                .Where(a => a.Fecha >= start && a.Fecha < end)
+                .Join(
+                    _context.Productos,
+                    a => a.IdProducto,
+                    p => p.IdProducto,
+                    (a, p) => new { a.Movimiento, p.NombreProducto }
+                )
+                .GroupBy(x => x.NombreProducto)
+                .Select(g => new
+                {
+                    Producto = g.Key,
+                    Entradas = g.Count(x => x.Movimiento == "Entrada"),
+                    Salidas = g.Count(x => x.Movimiento == "Salida")
+                });
+
+
+            var data = await query.ToListAsync();
+
+            return Json(data);
+
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ingresosPorMes()
+        {
+            var data = await _context.ProductosOrdenar
+            .Join(_context.OrdenesDeCompra,
+                    productos => productos.IdOrdenDeCompra,
+                    ordenes => ordenes.IdOrdenDeCompra,
+                    (productos, ordenes) => new { productos.Total, ordenes.FechaOrdenDeCompra })
+            .GroupBy(x => x.FechaOrdenDeCompra)
+            .Select(g => new
+            {
+                FechaOrden = g.Key,
+                Ingreso = g.Sum(x => x.Total)
+            })
+            .ToListAsync();
+
+            return Json(data); // Return JSON response
+        }
+
+
+
+        // ======================================== stuff lol ========================================
 
         private readonly ILogger<DashboardController> _logger;
 
