@@ -126,9 +126,10 @@
                             url: '@Url.Action("AgregarProductoLista", "Almacen")',
                             data: dataform.serialize(),
                             success: function (data) {
-                                $("#ListaDeProductos").html(data);
+                                $("#ListaDeProductos").html(data.html);
                                 $("input[name='almacen.SerialNumber']").val("").focus();
-                            }
+                            },
+                            error: function (xhr, status, error) { alert("Error: " + xhr.responseText); }
                         });
                     }
                     inputBuffer = '';
@@ -148,9 +149,8 @@
                 type: "POST",
                 url: '@Url.Action("EliminarProductoLista", "Almacen")',
                 data: dataform.serialize(),
-                success: function (data) {
-                    $("#ListaDeProductos").html(data);
-                }
+                success: function (data) { ("#ListaDeProductos").html(data.html); },
+                error: function (xhr, status, error) { alert("Error: " + xhr.responseText); }
             });
         });
 
