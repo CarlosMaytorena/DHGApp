@@ -172,20 +172,15 @@ namespace AgricolaDH_GApp.Controllers
             var username = User.Identity?.Name;
 
             if (string.IsNullOrEmpty(username))
-            {
                 return Unauthorized("No active user session.");
-            }
 
             // Validate password against DB
             bool isValid = context.Usuarios
                 .Any(u => u.Username == username && u.Password == password);
 
             if (!isValid)
-            {
                 return BadRequest("Password incorrect.");
-            }
 
-            // If valid, allow the sensitive action
             return Ok("Re-authentication successful.");
         }
 
