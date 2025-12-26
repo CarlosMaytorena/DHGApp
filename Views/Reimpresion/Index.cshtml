@@ -77,6 +77,12 @@
 
     let ultimosResultados = [];
 
+    function scrambleSerial(serial) {
+        serial = String(serial || "");
+        if (serial.length !== 12) return serial;
+        return serial.substring(6) + serial.substring(0, 6);
+    }
+
     function syncReimprimirSeleccionButton() {
         const algunoMarcado = $(".chkFila:checked").length > 0;
         $("#btnReimprimirSeleccion").prop("disabled", !algunoMarcado);
@@ -97,27 +103,32 @@
         $("#tablaSeriales").show();
 
         resultados.forEach((row, idx) => {
-            const safeSerial = esc(row.serial);
+            const originalSerial = row.serial;
+            const scrambled = scrambleSerial(originalSerial);
+
+            const safeSerialOriginal = esc(originalSerial);
+            const safeScrambled = esc(scrambled);
             const safeProd = esc(row.producto || "");
             const safeFecha = esc(row.fecha || "");
 
             const tr = `
-                    <tr data-index="${idx}">
-                        <td class="text-center">
-                            <input type="checkbox" class="chkFila" data-serial="${safeSerial}" />
-                        </td>
-                        <td>${safeSerial}</td>
-                        <td>${safeProd}</td>
-                        <td>${safeFecha}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-secondary btn-imprimir-uno" data-serial="${safeSerial}">
-                                <i class="fas fa-print"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            <tr data-index="${idx}">
+                <td class="text-center">
+                    <input type="checkbox" class="chkFila" data-serial="${safeSerialOriginal}" />
+                </td>
+                <td>${safeScrambled}</td>
+                <td>${safeProd}</td>
+                <td>${safeFecha}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary btn-imprimir-uno" data-serial="${safeSerialOriginal}">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
             $tbody.append(tr);
         });
+
 
         // Eventos dinámicos
         $(".chkFila").on("change", syncReimprimirSeleccionButton);
@@ -139,14 +150,21 @@
             const info = ultimosResultados.find(x => x.serial === serial) || {};
             const producto = info.producto || "";
 
+            const scrambled = scrambleSerial(serial);
+
             return `
-                    <div class="label">
-                        <h4>Orden: ${esc(orden)}</h4>
-                        ${producto ? `<h4>Producto: ${esc(producto)}</h4>` : ""}
-                        <h4>Serial: ${esc(serial)}</h4>
-                        <svg class="barcode" data-barcode-value="${esc(serial)}"></svg>
-                    </div>
-                `;
+                <div class="label">
+                    <h4>Orden: ${esc(orden)}</h4>
+                    ${producto ? `<h4>Producto: ${esc(producto)}</h4>` : ""}
+                    <h4 class="serial-header">Serial: ${esc(scrambled)}</h4>
+
+                    <svg class="barcode"
+                         data-barcode-value="${esc(serial)}"          <!-- ORIGINAL -->
+                         data-scrambled="${esc(scrambled)}"></svg>    <!-- SCRAMBLED -->
+
+                    <div class="serial-below">${esc(scrambled)}</div>
+                </div>
+            `;
         });
 
         openPrintWindow(labels.join(""), orden);

@@ -10,5 +10,7 @@ namespace AgricolaDH_GApp.Models
         public string OrderNumber { get; set; } = default!;
         public string PartNumber { get; set; } = default!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public string ScrambledSerial { get; set; } = default!;
     }
 }

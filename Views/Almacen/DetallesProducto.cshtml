@@ -1,3 +1,14 @@
+@functions {
+    string ScrambleSerial(string s)
+    {
+        s = (s ?? "").Trim().ToUpper();
+        if (s.Length < 2) return s;
+
+        int mid = s.Length / 2;
+        return s.Substring(mid) + s.Substring(0, mid);
+    }
+}
+
 <table class="table table-sm table-bordered mb-0">
     <thead>
         <tr>
@@ -10,7 +21,7 @@
         @foreach (var d in Model)
         {
             <tr>
-                <td>@d.SerialNumber</td>
+                <td>@ScrambleSerial(d.SerialNumber)</td>
                 <td>@d.Movimiento</td>
                 <td>@d.Fecha</td>
             </tr>
