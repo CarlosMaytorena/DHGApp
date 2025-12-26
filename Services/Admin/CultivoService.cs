@@ -20,7 +20,7 @@ namespace AgricolaDH_GApp.Services.Admin
 
             try
             {
-                cultivoList = context.Cultivos.ToList();
+                cultivoList = context.Cultivos.OrderBy(a => a.Descripcion).ToList();
             }
             catch
             {

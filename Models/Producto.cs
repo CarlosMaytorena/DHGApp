@@ -11,17 +11,19 @@ namespace AgricolaDH_GApp.Models
         public string NombreProducto { get; set; }
         public string UnidadDeVenta { get; set; }
         public string UnidadDeSKU { get; set; }
-        public int Contenido { get; set; }
+        public decimal Contenido { get; set; }
         public string NombreInterno { get; set; }
         public string Compania { get; set; }
         public string Descripcion { get; set; }
         public string SKUInterno { get; set; }
         public string PN { get; set; }
         public int IdProveedor { get; set; }
+        public bool CalculoAlterno { get; set; }
 
         [NotMapped]
         public string? Proveedor { get; set; }
 
-
+        [NotMapped]
+        public string NombreDropdown => $"{NombreInterno} - {Compania} ({Contenido} {UnidadDeSKU})";
     }
 }

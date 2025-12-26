@@ -246,8 +246,8 @@ namespace AgricolaDH_GApp.Services.Admin
                 Cantidad = productoOrdenarConFactura.Cantidad,
                 Unidad = productoOrdenarConFactura.Unidad,
                 Total = productoOrdenarConFactura.Total,
-                PorRecibir = productoOrdenarConFactura.Cantidad
-
+                PorRecibir = productoOrdenarConFactura.Cantidad,
+                MonedaNacional = productoOrdenarConFactura.MonedaNacional
             };
 
             try
@@ -257,6 +257,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 context.Entry(productoOrdenar).Property(m => m.Unidad).IsModified = true;
                 context.Entry(productoOrdenar).Property(m => m.Total).IsModified = true;
                 context.Entry(productoOrdenar).Property(m => m.PorRecibir).IsModified = true;
+                context.Entry(productoOrdenar).Property(m => m.MonedaNacional).IsModified = true;
 
                 context.SaveChanges();
             }

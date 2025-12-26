@@ -38,7 +38,7 @@ namespace AgricolaDH_GApp.Services.Admin
 
             try
             {
-                productoList = context.Productos.ToList();
+                productoList = context.Productos.OrderBy(a => a.NombreInterno).ToList();
             }
             catch
             {

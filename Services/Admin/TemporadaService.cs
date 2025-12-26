@@ -20,7 +20,7 @@ namespace AgricolaDH_GApp.Services.Admin
 
             try
             {
-                temporadaList = context.Temporadas.ToList();
+                temporadaList = context.Temporadas.OrderBy(a => a.Descripcion).ToList();
             }
             catch
             {

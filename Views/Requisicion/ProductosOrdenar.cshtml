@@ -34,7 +34,7 @@
         @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
         @Html.HiddenFor(m => m.productosOrdenar[i].IdOrdenDeCompra)
         <div class="col-md-10">
-            @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreProducto"), " ", new { @class = "form-control input-focus requisicion" })
+            @Html.DropDownListFor(m => m.productosOrdenar[i].IdProducto, new SelectList(Model.productoList, "IdProducto", "NombreDropdown"), " ", new { @class = "form-control input-focus requisicion" })
         </div>
         <div class="col-md-2">
             @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus requisicion inputValidation", @min = 0 } })

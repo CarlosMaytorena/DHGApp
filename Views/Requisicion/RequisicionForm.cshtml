@@ -92,22 +92,22 @@
                     @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdEtapa, new SelectList(Model.etapaList, "IdEtapa", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
             </div>
             <div id="productosOrdenarContent">
