@@ -205,7 +205,7 @@ namespace AgricolaDH_GApp.Services.Admin
         }
 
         /// <summary>
-        /// Valida el estado del producto en Almacen para Entrada o Salida. Si el producto ya se encuentra en el estado, retorna true.
+        /// Valida el estado del producto en Almacen para Entrada o Salida. Si el producto ya se encuentra en el estado en el que se va a registrar, retorna true.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="SourceView"></param>
