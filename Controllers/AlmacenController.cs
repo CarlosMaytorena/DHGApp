@@ -95,7 +95,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model, string SourceView)
         {
-            // Verificar si existe en el estado contrario Entrada o Salida segun el caso
+            // Verificar si existe en el estado Entrada o Salida segun el caso
             bool ValidarSiProductoEnOtroEstado = !almacenService.ValidarEstadoProducto(model.almacen,SourceView); // true si no existe
 
             bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados Almacen

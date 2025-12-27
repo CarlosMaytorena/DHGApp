@@ -205,7 +205,7 @@ namespace AgricolaDH_GApp.Services.Admin
         }
 
         /// <summary>
-        /// Valida el estado del producto en Almacen para Entrada o Salida. Si el producto ya se encuentra en el estado contrario, retorna true.
+        /// Valida el estado del producto en Almacen para Entrada o Salida. Si el producto ya se encuentra en el estado, retorna true.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="SourceView"></param>
@@ -213,16 +213,7 @@ namespace AgricolaDH_GApp.Services.Admin
         public bool ValidarEstadoProducto(Almacen a, string SourceView)
         {
             bool exists = false; //Valor default
-            if (SourceView == "Entrada")
-            {
-                // Verificar en Salida
-                exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals("Salida"));
-            }
-            else if (SourceView == "Salida")
-            {
-                // Verificar en Entrada
-                exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals("Entrada"));
-            }
+            exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals(SourceView));
             return exists;
         }
     }
