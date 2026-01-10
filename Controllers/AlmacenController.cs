@@ -77,43 +77,30 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
         [HttpPost]
-        public async Task<IActionResult> AltaAlmacen(AlmacenVM model)
+        public IActionResult AltaAlmacen(AlmacenVM model)
         {
-            int res = 1;
-            try
-            {
-                almacenService.Entrada(model);
-            }
-            catch
-            {
-                res = -1;
-            }
-            model.almacenLista = almacenService.SelectAlmacen();
-            return Json( new {res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+            try { almacenService.Entrada(model); }
+            catch { return BadRequest("Password incorrect."); }
+            return Ok("Re-authentication successful.");
         }
 
         [HttpPost]
-        public async Task<IActionResult> BajaAlmacen(AlmacenVM model)
+        public IActionResult BajaAlmacen(AlmacenVM model)
         {
-            int res = 1;
-            try
-            {
-                almacenService.Salida(model);
-            }
-            catch
-            {
-                res = -1;
-            }
-            model.almacenLista = almacenService.SelectAlmacen();
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Almacen/Index.cshtml", model) });
+            try { almacenService.Salida(model); }
+            catch { return BadRequest("Password incorrect."); }
+            return Ok("Re-authentication successful.");
         }
 
         [HttpPost]
-        public IActionResult AgregarProductoLista(AlmacenVM model)
+        public IActionResult AgregarProductoLista(AlmacenVM model, string SourceView)
         {
+            // Verificar si existe en el estado Entrada o Salida segun el caso
+            bool validarEstadoProducto = !almacenService.ValidarEstadoProducto(model.almacen,SourceView); // true si no existe
+
             bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados Almacen
             bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados en ListaProductos
-            if (cond1 && cond2)
+            if (cond1 && cond2 && validarEstadoProducto)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                 a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
@@ -149,6 +136,30 @@ namespace AgricolaDH_GApp.Controllers
             return PartialView("DetallesProducto", data);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ReAuthenticate(string password)
+        {
+            // Get current logged-in username from claims
+            var username = User.Identity?.Name;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized("No active user session.");
+            }
+
+            // Validate password against DB
+            bool isValid = context.Usuarios
+                .Any(u => u.Username == username && u.Password == password);
+
+            if (!isValid)
+            {
+                return BadRequest("Password incorrect.");
+            }
+
+            // If valid, allow the sensitive action
+            return Ok("Re-authentication successful.");
+        }
 
         public IActionResult Privacy()
 		{
@@ -160,5 +171,6 @@ namespace AgricolaDH_GApp.Controllers
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
+
 	}
 }

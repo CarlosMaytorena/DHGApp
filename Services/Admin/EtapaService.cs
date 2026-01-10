@@ -20,7 +20,7 @@ namespace AgricolaDH_GApp.Services.Admin
 
             try
             {
-                etapaList = context.Etapas.ToList();
+                etapaList = context.Etapas.OrderBy(a => a.Descripcion).ToList();
             }
             catch
             {

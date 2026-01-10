@@ -87,6 +87,13 @@
 <script type="module">
     // ---- Short serial (12-char Crockford Base32 from SHA-256) ----
     const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"; // no I/L/O/U
+    
+    function scrambleSerial(serial) {
+        if (!serial || serial.length !== 12) return serial;
+        // "123456ABCDEF" -> "ABCDEF123456"
+        return serial.substring(6) + serial.substring(0, 6);
+    }
+    
     function bytesToBase32(bytes, outLen) {
         let bits = 0, value = 0, out = "";
         for (let i = 0; i < bytes.length && out.length < outLen; i++) {
@@ -191,13 +198,19 @@
                     const shortSerial = (await shortSerialFrom(partNumber, workOrderNumber, unitIndex)).toUpperCase();
                     shortSerials.push(shortSerial);
 
+                    const scrambled = scrambleSerial(shortSerial);
+
+
                     // usamos tu formato original
                     labelsToPrint.push(`
                             <div class="label">
                                 <h4>Orden: ${workOrderNumber}</h4>
                                 <h4>Producto: ${productName}</h4>
-                                <h4>Serial: ${shortSerial}</h4>
-                                <svg class="barcode" data-barcode-value="${shortSerial}"></svg>
+                                <h4 class="serial-header">Serial: ${scrambled}</h4>
+                                <svg class="barcode" 
+                                    data-barcode-value="${shortSerial}"
+                                    data-scrambled="${scrambled}"></svg>
+                                <div class="serial-below">${scrambled}</div>
                             </div>
                         `);
                 }
@@ -211,6 +224,8 @@
                     SerialesCortos: shortSerials
                 });
             }
+
+            console.log(receivedProducts);
 
             if (receivedProducts.length === 0) {
                 alert("No se han ingresado productos válidos.");

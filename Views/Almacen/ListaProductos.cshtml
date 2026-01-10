@@ -1,6 +1,18 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
 
+@functions {
+    string ScrambleSerial(string? s)
+    {
+        s = (s ?? "").Trim().ToUpper();
+        if (s.Length < 2) return s;
+
+        int mid = s.Length / 2;
+        return s.Substring(mid) + s.Substring(0, mid);
+    }
+}
+
 <form id="lista">
+    @Html.Hidden("SourceView", ViewData["SourceView"])
     <div class="card card-margin">
         <div class="row card-row-spacer">
             <div class="col-md-12">
@@ -45,7 +57,12 @@
                         @Html.HiddenFor(m => m.almacenLista[i].IdEstatus)
                         @Html.HiddenFor(m => m.almacenLista[i].Estatus)
                         <div class="col-md-4">
-                            @Html.EditorFor(m => m.almacenLista[i].SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
+                            @* el real se manda al server *@
+                            @Html.HiddenFor(m => m.almacenLista[i].SerialNumber)
+
+                            @* el usuario ve el scrambled *@
+                            <input class="form-control input-focus" readonly
+                                   value="@ScrambleSerial(Model.almacenLista[i].SerialNumber)" />
                         </div>
                         <div class="col-md-4">
                             @Html.EditorFor(m => m.almacenLista[i].NombreProducto, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })

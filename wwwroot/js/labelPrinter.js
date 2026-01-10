@@ -40,6 +40,13 @@
             width: 70%; height: 70%; object-fit: contain; opacity: 0.45;
             z-index: 0; pointer-events: none; transform: translate(-50%, -50%);
           }
+          .serial-below {
+            margin-top: -4px;
+            font-size: 8px;
+            position: relative;
+            z-index: 1;
+          }
+
         </style>
       </head>
       <body>
@@ -61,22 +68,30 @@
                 label.insertBefore(img, label.firstChild);
               }
 
-              // Render barcode using the FINAL serial passed in the HTML
               const barcodeEl = label.querySelector('.barcode');
               const finalSerial = barcodeEl?.dataset.barcodeValue || '';
               if (finalSerial) {
-                JsBarcode(barcodeEl, finalSerial, {
-                  format: "CODE128",
-                  width: 1.5,
-                  height: 50,
-                  margin: 8,
-                  displayValue: true,
-                  fontSize: 12
-                });
-                // Ensure visible text matches the barcode value
-                const serialText = label.querySelector('.serial-text') || label.querySelector('h4:nth-of-type(3)');
-                if (serialText) serialText.textContent = "Serial: " + finalSerial;
-              }
+                  JsBarcode(barcodeEl, finalSerial, {
+                    format: "CODE128",
+                    width: 1.5,
+                    height: 50,
+                    margin: 8,
+                    displayValue: false,
+                    fontSize: 12
+              });
+
+              const scrambled = barcodeEl.dataset.scrambled || "";
+
+              if (scrambled) {
+                let serialBelow = label.querySelector('.serial-below');
+                if (!serialBelow) {
+                  serialBelow = document.createElement('div');
+                  serialBelow.className = 'serial-below';
+                  label.appendChild(serialBelow);
+                }
+                serialBelow.textContent = scrambled;
+              }               
+            }
 
               // Print date
               const dateDiv = document.createElement('div');
@@ -105,17 +120,26 @@ export function triggerLabelPrinting(orderNumber) {
     $(".product-row").each(function () {
         const $row = $(this);
         const productName = $row.find("input[readonly]").val();
-        const finalSerial = $row.find(".product-barcode").data("barcode-value"); // must already be FINAL serial
+        const finalSerial = $row.find(".product-barcode").data("barcode-value");
 
         if (productName && finalSerial) {
+
+            // ➜ Generar el scrambled (igual que en Ingresos)
+            const scrambled = finalSerial.substring(6) + finalSerial.substring(0, 6);
+
             labels.push(`
-        <div class="label">
-          <h4>Orden: ${orderNumber}</h4>
-          <h4>Producto: ${productName}</h4>
-          <h4 class="serial-text">Serial: ${finalSerial}</h4>
-          <svg class="barcode" data-barcode-value="${finalSerial}"></svg>
-        </div>
-      `);
+                <div class="label">
+                    <h4>Orden: ${orderNumber}</h4>
+                    <h4>Producto: ${productName}</h4>
+                    <h4 class="serial-header">Serial: ${scrambled}</h4>
+
+                    <svg class="barcode"
+                        data-barcode-value="${finalSerial}"   <!-- ORIGINAL -->
+                        data-scrambled="${scrambled}"></svg>  <!-- SCRAMBLED -->
+
+                    <div class="serial-below">${scrambled}</div>
+                </div>
+            `);
         }
     });
 

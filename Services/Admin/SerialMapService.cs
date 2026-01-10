@@ -35,10 +35,12 @@ namespace AgricolaDH_GApp.Services.Admin
                 entity.SerialKey = (entity.SerialKey ?? "").ToUpperInvariant();
                 if (entity.SerialKey.Length != 12) return -1;
 
+                entity.ScrambledSerial = ScrambleSerial(entity.SerialKey);
+
                 if (entity.CreatedAt == default) entity.CreatedAt = DateTime.UtcNow;
 
                 context.SerialMap.Add(entity);
-                context.SaveChanges(); // PK on SerialKey prevents duplicates
+                context.SaveChanges();
             }
             catch
             {
@@ -72,6 +74,14 @@ namespace AgricolaDH_GApp.Services.Admin
             }
             catch { res = -1; }
             return res;
+        }
+
+        private string ScrambleSerial(string serial)
+        {
+            if (serial.Length != 12)
+                return serial;
+
+            return serial.Substring(6, 6) + serial.Substring(0, 6);
         }
     }
 }

@@ -45,32 +45,36 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                
+                                @* <th>ID</th> *@
+
                                 <th>Producto</th>
                                 <th>Fuera</th>
                                 <th>Almacen</th>
                                 <th>Total</th>
-                                <th>Movimiento</th>
-                                <th>Almacenista</th>
-                                <th>Solicitante</th>
-                                <th>Fecha</th>
+                                @* <th>Movimiento</th> *@
+                                @* <th>Almacenista</th> *@
+                                @* <th>Solicitante</th> *@
+                                @* <th>Fecha</th> *@
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var a in Model.almacenLista)
                             {
                                 <tr class="main-row" data-product="@a.IdProducto">
-                                    <td>@a.SerialNumber</td>
+                                    
+                                    @* <td>@a.SerialNumber</td> *@
+
                                     <td class="expand-btn" style="cursor:pointer; color:#007bff;">
                                         @a.NombreProducto
                                     </td>
                                     <td>@a.EstatusFuera</td>
                                     <td>@a.EstatusAlmacen</td>
                                     <td>@a.Cantidad</td>
-                                    <td>@a.Movimiento</td>
-                                    <td>@a.Almacenista</td>
-                                    <td>@a.Solicitante</td>
-                                    <td>@a.Fecha</td>
+                                    @* <td>@a.Movimiento</td> *@
+                                    @* <td>@a.Almacenista</td> *@
+                                    @* <td>@a.Solicitante</td> *@
+                                    @* <td>@a.Fecha</td> *@
                                 </tr>
 
                                 <tr class="details-row" id="details-@a.IdProducto" style="display:none;">

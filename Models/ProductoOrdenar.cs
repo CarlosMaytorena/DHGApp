@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgricolaDH_GApp.Models
 {
@@ -12,6 +13,7 @@ namespace AgricolaDH_GApp.Models
         public decimal? Total { get; set; }
         public decimal? Impuesto { get; set; }
         public int PorRecibir { get; set; }
+        public bool? MonedaNacional { get; set; }
     }
 
     public class ProductoOrdenarSelected
@@ -25,6 +27,16 @@ namespace AgricolaDH_GApp.Models
         public decimal? Impuesto { get; set; }
         public decimal? Descuento { get; set; }
         public int PorRecibir { get; set; }
+        public int ClaveProveedor { get; set; }
+        public decimal Contenido { get; set; }
+        public bool CalculoAlterno { get; set; }
+        public string NombreInterno {  get; set; }
+        public string Compania { get; set; }
+        public string UnidadDeSKU { get; set; }
+        public bool? MonedaNacional { get; set; }
+
+        [NotMapped]
+        public string NombreDropdown => $"{NombreInterno} - {Compania} ({Contenido} {UnidadDeSKU})";
 
     }
 

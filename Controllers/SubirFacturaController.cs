@@ -107,7 +107,6 @@ namespace AgricolaDH_GApp.Controllers
             try
             {
                 var filePath = Path.GetTempFileName();
-
                 using (var stream = System.IO.File.Create(filePath))
                 {
                     // The formFile is the method parameter which type is IFormFile
@@ -118,7 +117,13 @@ namespace AgricolaDH_GApp.Controllers
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
 
-                List<string> productosOrdenarName = model.productosOrdenar.Select(m => m.Producto.ToLower()).ToList();
+                //List<string> productosOrdenarName = model.productosOrdenar.Select(m => m.Producto.ToLower()).ToList();
+
+                var moneda = doc
+                    .GetElementsByTagName("cfdi:Comprobante")
+                    .Cast<XmlElement>()
+                    .FirstOrDefault()?.GetAttribute("Moneda");
+
 
                 foreach (XmlElement item in doc.GetElementsByTagName("cfdi:Concepto"))
                 {
@@ -128,15 +133,22 @@ namespace AgricolaDH_GApp.Controllers
                     //Regex regex = new Regex("[ ]{2,}", options);
                     descripcion = Regex.Replace(ReplaceDiacritics(descripcion), @"[^a-zA-Z0-9]", "");
 
+                    string? noIdentificacion = item.GetAttribute("NoIdentificacion");
+
                     int i = 0;
-                    foreach(var productoOrdenar in productosOrdenarName)
+                    foreach(var productoOrdenar in model.productosOrdenar)
                     {
-                        var productoOrdenarName = Regex.Replace(ReplaceDiacritics(productoOrdenar), @"[^a-zA-Z0-9]", "").ToLower();
-                        if (descripcion != null && productoOrdenarName == descripcion)
-                        {
-                            model.productosOrdenar[i].Cantidad = Convert.ToInt32(Convert.ToDouble(item.GetAttribute("Cantidad")));
+                        var productoOrdenarName = Regex.Replace(ReplaceDiacritics(productoOrdenar.Producto), @"[^a-zA-Z0-9]", "").ToLower();
+
+                        if ((descripcion != null && descripcion == productoOrdenarName) || 
+                            (noIdentificacion != null && Convert.ToInt32(noIdentificacion) == productoOrdenar.ClaveProveedor)
+                        ) {
+                            var cantidad = Convert.ToDecimal(item.GetAttribute("Cantidad"));
+
+                            model.productosOrdenar[i].Cantidad = (!productoOrdenar.CalculoAlterno) ? Convert.ToInt32(cantidad) : Convert.ToInt32(cantidad / productoOrdenar.Contenido);
                             model.productosOrdenar[i].Total = Convert.ToDecimal(item.GetAttribute("Importe"));
                             model.productosOrdenar[i].Unidad = model.productosOrdenar[i].Total / model.productosOrdenar[i].Cantidad;
+                            model.productosOrdenar[i].MonedaNacional = (moneda == "MXN") ? true : false;
                         }
                         i++;
                     }

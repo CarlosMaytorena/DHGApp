@@ -116,7 +116,7 @@ namespace AgricolaDH_GApp.Controllers
             model.temporadaList = temporadaService.SelectTemporadas();
             model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
 
-            if(idRol == RolEnumerators.Ingeniero)
+            if (idRol == RolEnumerators.Ingeniero)
             {
                 model.esAutorizado = false;
             }

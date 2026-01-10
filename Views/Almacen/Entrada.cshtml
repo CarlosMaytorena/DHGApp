@@ -8,7 +8,7 @@
         <div class="col-md-4">
         </div>
         <div class="col-md-2">
-            <button type="button" class="btn btn-block secondary-background-color validacion" style="color: white">
+            <button type="button" class="btn btn-block secondary-background-color fieldValidation" style="color: white">
                 Aceptar
             </button>
         </div>
@@ -56,8 +56,11 @@
 </div>
 </form>
 <div id="ListaDeProductos">
-    @Html.Partial("~/Views/Almacen/ListaProductos.cshtml", Model)
+    <partial name="~/Views/Almacen/ListaProductos.cshtml"
+             model="Model"
+             view-data='new ViewDataDictionary(ViewData) { { "SourceView", "Entrada" } }' />
 </div>
+
 
 <div class="modal fade" id="modal-success">
     <div class="modal-dialog">
@@ -80,21 +83,25 @@
     <!-- /.modal-dialog -->
 </div>
 
-<div class="modal fade" id="modal-confirmacion">
+<div class="modal fade" id="modal-reauth">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Confirmar Entrada</h4>
+                <h4 class="modal-title">Validar Usuario</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-agregar-body">
-                <p style="margin-left: 10px">Seguro que desea continuar?</p>
+            <div class="modal-agregar-body" style="margin: 15px">
+                <form id="passform">
+                    @Html.AntiForgeryToken()
+                    <label for="confirmPassword">Contraseña:</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="Password" />
+                </form>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary entradaAlmacen">Aceptar</button>
+                <button type="button" class="btn btn-primary reauth-user">Aceptar</button>
             </div>
         </div>
     </div>
@@ -102,14 +109,7 @@
 
 <script>
     $(document).ready(function () {
-        // Prevent Click Enter in Razon field
-        $('.RazonValidar').on('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                return false;
-            }
-        });
-
+        //Navegacion a Almacen
         $(".almacen").click(function () {
             $("#modal-success").modal("hide");
             $.ajax({
@@ -117,38 +117,40 @@
                 url: '@Url.Action("Index", "Almacen")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
-                success: function (data) {
-                    $("#HtmlBody").html(data);
-                }
+                success: function (data) { $("#HtmlBody").html(data); }
             });
         });
-
-        $(".validacion").click(function () {
-            if (Validation()) {
-                $("#modal-confirmacion").modal("show");
-            }
-        });
-
-        $(".entradaAlmacen").click(function () {
-            $("#modal-confirmacion").modal("hide");
+        
+        // Generar Entrada de Almacen
+        function entradaAlmacen() {
             var dataform = $("#dataform").serialize() + '&' + $("#lista").serialize();
             //alert(dataform);
             $.ajax({
                 type: "POST",
-                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 url: '@Url.Action("AltaAlmacen", "Almacen")',
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: dataform,
-                success: function (data) {
-                    if (data.res > 0) {
-                        $("#modal-success").modal("show");
-                    } 
-                    else {
-                        $("#modal-warning").modal("show");
-                        $(".almacen").click();
-                    }
-                },
+                success: function (data) { $("#modal-success").modal("show"); },
+                error: function (xhr, status, error) { $("#modal-warning").modal("show"); },
+                complete: function () { (".almacen").click(); }
             });
-        });     
+        }
+
+        // Evitar que el Enter envie el formulario de manera accidental
+        $('#passform, #dataform').on('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Validar campos antes de generar Entrada
+        $(".fieldValidation").click(function () {
+            if (Validation()){
+                $("#modal-reauth").modal("show");
+            }
+        });
         
         function Validation() {
             var validation = true;
@@ -163,5 +165,24 @@
             });
             return validation;
         };
+
+        // Reautenticar usuario antes de generar Salida
+        $(".reauth-user").click(function () {
+            $("#modal-reauth").modal("hide");
+            var form = $("#passform").serialize();
+            //alert(form);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ReAuthenticate", "Almacen")',
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                data: form,
+                success: function(data, textStatus, xhr) { entradaAlmacen(); },
+                error: function(xhr, status, error) {
+                    $("#modal-warning").modal("show");
+                    $(".almacen").click();
+                }
+            });
+        });
     });
 </script>
