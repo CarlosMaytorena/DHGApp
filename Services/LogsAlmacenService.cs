@@ -18,14 +18,16 @@ namespace AgricolaDH_GApp.Services
         {
             try
             {
-                // Supongamos que almacenLista es una lista de productos
+                var almacenDb = context.Almacen.FirstOrDefault(x => x.IdAlmacen == model.almacen.IdAlmacen); 
+                var fechaDb = almacenDb?.Fecha ?? DateTime.Now; // fallback si no existe
+
                 foreach (Almacen a in model.almacenLista)
                 {
                     LogsAlmacen log = new LogsAlmacen
                     {
                         IdProducto = a.IdProducto,
                         SerialKey = a.SerialNumber,
-                        Fecha = model.almacen.Fecha,
+                        Fecha = fechaDb,
                         IdSolicitante = a.IdSolicitante,
                         IdAlmacenista = a.IdAlmacenista,
                         IdMovimiento = a.IdEstatus,
