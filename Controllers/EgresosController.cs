@@ -44,6 +44,19 @@ namespace AgricolaDH_GApp.Controllers
 
         }
 
+        private void InicializarSesionUsuario(EgresosVM model)
+        {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
+            model.productosList = productoService.SelectProductos();
+            model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            model.egreso.IdSolicitante = idUsuario != null ? (int)idUsuario : 0;
+            model.egreso.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
+        }
+
         [HttpGet]
 		public IActionResult Index()
 		{
@@ -53,16 +66,7 @@ namespace AgricolaDH_GApp.Controllers
 		[HttpGet]
         public IActionResult EgresoForm()
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
-            int? idRol = HttpContext.Session.GetInt32("IdRol");
-
-            model.productosList = productoService.SelectProductos();
-			model.usuariosList = usuarioService.SelectUsuarios();
-            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
-
-            model.egreso.IdSolicitante = idUsuario != null ? (int)idUsuario : 0;
-            model.egreso.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
-
+            InicializarSesionUsuario(model);
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
 		[HttpPost]
@@ -120,6 +124,8 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(EgresosVM model)
         {
+            InicializarSesionUsuario(model);
+
             if (model.almacen == null)
                 return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
 
@@ -143,6 +149,8 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult EliminarProductoLista(EgresosVM model)
         {
+            InicializarSesionUsuario(model);
+
             if (model.almacenLista.Count > 0)
                 model.almacenLista.RemoveAt(model.almacenLista.Count - 1);
             return PartialView("~/Views/Egresos/ListaProductos.cshtml", model);
