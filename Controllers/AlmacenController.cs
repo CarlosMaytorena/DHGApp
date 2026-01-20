@@ -46,7 +46,21 @@ namespace AgricolaDH_GApp.Controllers
             logsAlmacenService = _logsAlmacenService;
         }
 
-		[HttpGet]
+        private void InicializarSesionUsuario(AlmacenVM model)
+        {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
+            // Listas comunes
+            model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            // Datos del usuario en sesión
+            model.almacen.IdAlmacenista = idUsuario ?? 0;
+            model.almacen.esAutorizado = idRol == RolEnumerators.Administrador;
+        }
+
+        [HttpGet]
 		public IActionResult Index()
         {
             model.almacenLista = almacenService.SelectAlmacen();
@@ -63,7 +77,7 @@ namespace AgricolaDH_GApp.Controllers
 
             model.almacen.IdAlmacenista = idUsuario != null ? (int)idUsuario : 0;
             model.almacen.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
-
+            
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 
@@ -84,6 +98,7 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AltaAlmacen(AlmacenVM model)
         {
+            InicializarSesionUsuario(model);
             try 
             { 
                 almacenService.Entrada(model);
@@ -106,12 +121,15 @@ namespace AgricolaDH_GApp.Controllers
         {
             try
             {
-                // Verificar si existe en el estado Entrada o Salida segun el caso
-                bool validarEstadoProducto = !almacenService.ValidarEstadoProducto(model.almacen, SourceView); // true si no existe
+                InicializarSesionUsuario(model);
 
-                bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados Almacen
-                bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados en ListaProductos
-                if (cond1 && cond2 && validarEstadoProducto)
+                // Verificar si existe en el estado contrario Entrada o Salida segun el caso
+                bool validarSiProductoEnOtroEstado = !almacenService.ValidarEstadoProducto(model.almacen, SourceView);
+
+                //bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados Almacen
+                bool duplicadosListaProductos = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados en ListaProductos
+
+                if (duplicadosListaProductos && validarSiProductoEnOtroEstado)
                 {
                     Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
                     a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
@@ -141,6 +159,8 @@ namespace AgricolaDH_GApp.Controllers
         {
             try
             {
+                InicializarSesionUsuario(model);
+
                 if (model.almacenLista.Count > 0)
                     model.almacenLista.RemoveAt(model.almacenLista.Count - 1);
 
