@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgricolaDH_GApp.Models
 {
@@ -21,6 +22,8 @@ namespace AgricolaDH_GApp.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
 
+        [NotMapped]
+        public string? AreaName { get; set; }
     }
 
     public class OrdenDeCompraTable

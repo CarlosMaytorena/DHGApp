@@ -16,14 +16,23 @@ namespace AgricolaDH_GApp.Controllers.Admin
 
         private readonly AppDbContext context;
         private EtapaService etapaService;
+        private AreaService areaService;
+        private CultivoService cultivoService;
+        private RanchoService ranchoService;
+        private TemporadaService temporadaService;
         private ViewRenderService renderService;
 
 
-        public EtapasController(ILogger<EtapasController> logger, AppDbContext _ctx, EtapaService _etapaService, ViewRenderService _renderService)
+        public EtapasController(ILogger<EtapasController> logger, AppDbContext _ctx, EtapaService _etapaService,
+            AreaService _areaService, CultivoService _cultivoService, RanchoService _ranchoService, TemporadaService _temporadaService, ViewRenderService _renderService)
         {
             _logger = logger;
             context = _ctx;
             etapaService = _etapaService;
+            areaService = _areaService;
+            cultivoService = _cultivoService;
+            ranchoService = _ranchoService;
+            temporadaService = _temporadaService;
             renderService = _renderService;
         }
 
@@ -37,13 +46,18 @@ namespace AgricolaDH_GApp.Controllers.Admin
             return PartialView("~/Views/Admin/Etapas/Index.cshtml", model);
         }
 
-        //[HttpPost]
-        //public IActionResult CrearProveedores()
-        //{
-        //    ProveedoresVM model = new ProveedoresVM();
+        [HttpPost]
+        public IActionResult AgregarEtapa()
+        {
+            EtapasVM model = new EtapasVM();
 
-        //    return PartialView("~/Views/Admin/Proveedores/Proveedor.cshtml", model);
-        //}
+            model.areaList = areaService.SelectAreas();
+            model.cultivoList = cultivoService.SelectCultivos();
+            model.ranchoList = ranchoService.SelectRanchos();
+            model.temporadaList = temporadaService.SelectTemporadas();
+
+            return PartialView("~/Views/Admin/Etapas/Etapa.cshtml", model);
+        }
 
         [HttpPost]
         public IActionResult EditarEtapa(int IdEtapa)
@@ -51,6 +65,11 @@ namespace AgricolaDH_GApp.Controllers.Admin
             EtapasVM model = new EtapasVM();
 
             model.etapa = etapaService.SelectEtapa(IdEtapa);
+
+            model.areaList = areaService.SelectAreas();
+            model.cultivoList = cultivoService.SelectCultivos();
+            model.ranchoList = ranchoService.SelectRanchos();
+            model.temporadaList = temporadaService.SelectTemporadas();
 
             return PartialView("~/Views/Admin/Etapas/Etapa.cshtml", model);
         }

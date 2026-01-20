@@ -67,6 +67,9 @@ namespace AgricolaDH_GApp.Controllers
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             int? idRol = HttpContext.Session.GetInt32("IdRol");
 
+            Usuario usuario = usuarioService.SelectUsuario(Convert.ToInt32(idUsuario));
+            Area area = areaService.SelectArea(Convert.ToInt32(usuario.IdArea));
+
             RequisicionesVM model = new RequisicionesVM();
 
 			model.requisicion.FechaRequisicion = DateTime.Now;
@@ -80,12 +83,15 @@ namespace AgricolaDH_GApp.Controllers
 			model.proveedorList = proveedorService.SelectProveedores();
 			model.areaList = areaService.SelectAreas();
 			model.cultivoList = cultivoService.SelectCultivos();
-			//model.ranchoList = ranchoService.SelectRanchos();
-			model.etapaList = etapaService.SelectEtapas();
+			model.ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == area.IdArea).ToList();
+            //model.etapaList = etapaService.SelectEtapas();
 			model.temporadaList = temporadaService.SelectTemporadas();
 			//model.productoList = productoService.SelectProductos();
 
             model.requisicion.IdSolicitante = idUsuario != null ? (int)idUsuario : 0;
+
+            model.requisicion.IdArea = Convert.ToInt32(usuario.IdArea);
+            model.requisicion.AreaName = area.Descripcion;
 
             if (idRol == RolEnumerators.Ingeniero)
             {
@@ -101,6 +107,9 @@ namespace AgricolaDH_GApp.Controllers
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             int? idRol = HttpContext.Session.GetInt32("IdRol");
 
+            Usuario usuario = usuarioService.SelectUsuario(Convert.ToInt32(idUsuario));
+            Area area = areaService.SelectArea(Convert.ToInt32(usuario.IdArea));
+
             RequisicionesVM model = new RequisicionesVM();
 
 			model.requisicion = requisicionService.SelectRequisicion(IdOrdenDeCompra);
@@ -111,10 +120,14 @@ namespace AgricolaDH_GApp.Controllers
             model.proveedorList = proveedorService.SelectProveedores();
             model.areaList = areaService.SelectAreas();
             model.cultivoList = cultivoService.SelectCultivos();
-            model.ranchoList = ranchoService.SelectRanchos();
-            model.etapaList = etapaService.SelectEtapas();
+            model.ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == area.IdArea).ToList();
+            //model.etapaList = etapaService.SelectEtapas();
             model.temporadaList = temporadaService.SelectTemporadas();
             model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
+
+
+            model.requisicion.IdArea = Convert.ToInt32(usuario.IdArea);
+            model.requisicion.AreaName = area.Descripcion;
 
             if (idRol == RolEnumerators.Ingeniero)
             {
@@ -235,6 +248,19 @@ namespace AgricolaDH_GApp.Controllers
             var ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == IdArea).ToList();
 
             return Json(new { ranchoList });
+        }
+
+        [HttpGet]
+        public IActionResult GetEtapaList(int IdArea, int IdTemporada, int IdCultivo, int IdRancho)
+        {
+            var etapaList = etapaService.SelectEtapas().Where(r => 
+                r.IdArea == IdArea && 
+                r.IdTemporada == IdTemporada &&
+                r.IdCultivo == IdCultivo &&
+                r.IdRancho == IdRancho
+            ).ToList();
+
+            return Json(new { etapaList });
         }
 
         [HttpGet]

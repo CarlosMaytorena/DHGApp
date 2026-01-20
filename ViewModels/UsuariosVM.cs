@@ -9,6 +9,7 @@ namespace AgricolaDH_GApp.ViewModels
         public Usuario usuario { get; set; }
 
         public List<Rol> rolesList { get; set; }
+        public List<Area> areasList { get; set; }
 
         public UsuariosVM()
         {

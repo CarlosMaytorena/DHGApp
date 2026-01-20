@@ -1,41 +1,68 @@
 ﻿@model AgricolaDH_GApp.ViewModels.EtapasVM
-
-<form id="dataform">
-
-    @Html.HiddenFor(m => m.etapa.IdEtapa)
-    <div class="row card-row-spacer">
-        <div class="col-md-3">
-            <label style="font-weight: normal; text-align: left; float: left">Descripcion</label>
-            @Html.EditorFor(m => m.etapa.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus" }})
-        </div>
-        <div class="col-md-5">
+<div class="text-center">
+    <div class="row top-row-spacer">
+        <div class="col-md-8">
         </div>
         <div class="col-md-2">
-            <button type="button" id="cancelar" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+            <button id="cancelar" class="btn btn-block secondary-background-color" style="color: white">
                 Cancelar
             </button>
         </div>
         <div class="col-md-2">
             @if (Model.etapa.IdEtapa != null && Model.etapa.IdEtapa != 0)
             {
-                <button type="button" id="editarEtapa" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                <button id="editarEtapa" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-pen"></i>
                     Editar Etapa
                 </button>
             }
             else
             {
-                <button type="button" id="crearEtapa" class="btn btn-block secondary-background-color btn-label-margin" style="color: white">
+                <button id="crearEtapa" class="btn btn-block secondary-background-color" style="color: white">
                     <i class="nav-icon fas fa-plus"></i>
                     Crear Etapa
                 </button>
             }
         </div>
     </div>
-</form>
 
-<div class="row card-row-spacer">
-</div>
+    <form id="dataform">
+        @Html.HiddenFor(m => m.etapa.IdEtapa)
+        <div class="card card-margin">
+            <div class="row card-row-spacer">
+                <div class="col-md-12">
+                    <label style="font-weight: normal; text-align: left; float: left">Descripción</label>
+                    @Html.EditorFor(m => m.etapa.Descripcion, new { htmlAttributes = new { @class = "form-control input-focus etapa" } })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+            </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
+                    @Html.DropDownListFor(m => m.etapa.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus etapa" })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Área</label>
+                    @Html.DropDownListFor(m => m.etapa.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus etapa" })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
+                    @Html.DropDownListFor(m => m.etapa.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus etapa" })
+                </div>
+                <div class="col-md-3">
+                    <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
+                    @Html.DropDownListFor(m => m.etapa.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus etapa" })
+                </div>
+            </div>
+            <div class="row card-row-spacer">
+            </div>
+        </div>
+    </form>
+
+
+    <div class="row card-row-spacer">
+    </div>
 
 <div class="modal fade" id="modal-crear">
     <div class="modal-dialog">
@@ -47,7 +74,7 @@
                 </button>
             </div>
             <div class="modal-crear-body">
-                <p style="margin-left: 10px">¿Seguro que desea crear el etapa?</p>
+                <p style="margin-left: 10px">¿Seguro que desea crear la etapa?</p>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
@@ -155,16 +182,20 @@
             });
         });
 
-        function Validation() {
 
-            $("#etapa_Descripcion").css("border-color", "");
+        function Validation() {
 
             var validation = true
 
-            if ($("#etapa_Descripcion").val() == null || $("#etapa_Descripcion").val() == "") {
-                $("#etapa_Descripcion").css("border-color", "red");
-                validation = false;
-            }
+            $('.etapa').each(function() {
+
+                $("#" + this.id).css("border-color", "");
+
+                if($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0"){
+                    $("#" + this.id).css("border-color", "red");
+                    validation = false;
+                }
+            });
 
             return validation;
 

@@ -16,7 +16,7 @@ namespace AgricolaDH_GApp.Models
         public string Correo { get; set; }
         public int IdRol { get; set; }
         public string? ResetPasswordToken { get; set; }
-
+        public int? IdArea { get; set; }
 
         [NotMapped]
         public string RolDescripcion { get; set; }

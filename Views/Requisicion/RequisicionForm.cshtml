@@ -81,15 +81,21 @@
                         @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
                     }
                 </div>
+                @*                 <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Área</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                </div> *@
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Área</label>
+                    @Html.HiddenFor(m => m.requisicion.IdArea)
+                    @Html.EditorFor(m => m.requisicion.AreaName, new { htmlAttributes = new { @class = "form-control input-focus notNull", @disabled = "disabled" } })
                 </div>
+
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
-                    <label style="font-weight: normal; text-align: left; float: left">Área</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdArea, new SelectList(Model.areaList, "IdArea", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
+                    @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
@@ -369,7 +375,6 @@
                     $ranchoDropdown.append($('<option>').val('').text(''));
 
                     $.each(data.ranchoList, function (index, rancho) {
-                        console.log(rancho)
                         $ranchoDropdown.append(
                             $('<option>').val(rancho.idRancho).text(rancho.descripcion)
                         );
@@ -390,6 +395,48 @@
             });
         });
 
+        $('#requisicion_IdTemporada').change(function(e){
+            GetEtapaList()
+        });
 
+        $('#requisicion_IdCultivo').change(function(e){
+            GetEtapaList()
+        });
+
+        $('#requisicion_IdRancho').change(function(e){
+            GetEtapaList()
+        });
+
+        function GetEtapaList() {
+            
+            const IdArea = $("#requisicion_IdArea").val();
+            const IdTemporada = $("#requisicion_IdTemporada").val();
+            const IdCultivo = $("#requisicion_IdCultivo").val();
+            const IdRancho = $("#requisicion_IdRancho").val();
+
+            if(IdArea && IdTemporada && IdCultivo && IdRancho) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetEtapaList", "Requisicion")',
+                    data: { IdArea: IdArea, IdTemporada: IdTemporada, IdCultivo: IdCultivo, IdRancho: IdRancho },
+                    success: function (data) {
+
+                        const $etapaDropdown = $("#requisicion_IdEtapa");
+                        $etapaDropdown.empty();
+
+                        $etapaDropdown.append($('<option>').val('').text(''));
+                        $.each(data.etapaList, function (index, etapa) {
+                            $etapaDropdown.append(
+                                $('<option>').val(etapa.idEtapa).text(etapa.descripcion)
+                            );
+                        });
+                    }
+                });
+            } 
+            else {
+                const $etapaDropdown = $("#requisicion_IdEtapa");
+                $etapaDropdown.empty();
+            }           
+        }
     });
 </script>
