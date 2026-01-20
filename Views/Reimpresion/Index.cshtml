@@ -68,6 +68,16 @@
 <script type="module">
     import { openPrintWindow } from "/js/labelPrinter.js";
 
+    function showWarning(msg) {
+        $("#modal-warning-msg").text(msg || "");
+        $("#modal-warning").modal("show");
+    }
+
+    function showSuccess(msg) {
+        $("#modal-success-msg").text(msg || "");
+        $("#modal-success").modal("show");
+    }
+
     const esc = (s) => String(s || "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -166,14 +176,13 @@
                 </div>
             `;
         });
-
         openPrintWindow(labels.join(""), orden);
     }
 
     $("#btnReimprimirSeleccion").on("click", function () {
         const orden = ($("#ordenDeCompraInput").val() || "").trim();
         if (!orden) {
-            alert("Falta la orden.");
+            showWarning("Falta la orden.");
             return;
         }
 
@@ -182,7 +191,7 @@
             .get();
 
         if (seleccionados.length === 0) {
-            alert("Selecciona al menos un serial.");
+            showWarning("Selecciona al menos un serial.");
             return;
         }
 
@@ -192,7 +201,7 @@
     $("#btnBuscarOrden").on("click", function () {
         const orden = ($("#ordenDeCompraInput").val() || "").trim();
         if (!orden) {
-            alert("Por favor ingresa la orden.");
+            showWarning("Por favor ingresa la orden.");
             return;
         }
 
@@ -203,7 +212,7 @@
             data: JSON.stringify({ orden }),
             success: function (response) {
                 if (!response || !response.success) {
-                    alert(response && response.error
+                    showWarning(response && response.error
                         ? response.error
                         : "No se pudo obtener la información de la orden.");
                     return;
@@ -219,8 +228,28 @@
                 renderTabla(ultimosResultados, response.orden || orden);
             },
             error: function () {
-                alert("Error al buscar la orden.");
+                showWarning("Error al buscar la orden.");
             }
         });
     });
 </script>
+
+<div class="modal fade" id="modal-warning">
+    <div class="modal-dialog">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">Error</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-warning-subtle">
+                <p id="modal-warning-msg"></p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>*@
+                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>

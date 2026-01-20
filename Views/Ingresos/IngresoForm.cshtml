@@ -39,26 +39,33 @@
         <div id="productContainer">
             @if (Model.productosOrdenar != null && Model.productosOrdenar.Any())
             {
-                @foreach (var product in Model.productosOrdenar)
+                @for (int i = 0; i < Model.productosOrdenar.Count; i++)
                 {
                     <div class="row card-row-spacer product-row">
                         <div class="col-md-4">
                             <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-                            <input class="form-control" value="@product.Producto" readonly />
-                            <input type="hidden" class="product-id" value="@product.IdProductoOrdenar" />
+
+                            @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
+
+                            @Html.EditorFor(m => m.productosOrdenar[i].NombreDropdown,
+                                new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @readonly = "true", @data_index = i } })
+                            <input type="hidden" class="product-name-raw" value="@Model.productosOrdenar[i].Producto" />
+
+                            <input type="hidden" class="product-id" value="@Model.productosOrdenar[i].IdProductoOrdenar" />
                             <input type="hidden" class="product-barcode" data-barcode-value="" />
                         </div>
+
                         <div class="col-md-2">
                             <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
-                            <input type="number" class="form-control cantidad-esperada" value="@product.Cantidad" readonly />
+                            <input type="number" class="form-control cantidad-esperada" value="@Model.productosOrdenar[i].Cantidad" readonly />
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Restante</label>
                             <input type="number"
                                    class="form-control cantidad-restante"
-                                   value="@product.PorRecibir"
+                                   value="@Model.productosOrdenar[i].PorRecibir"
                                    readonly
-                                   data-restante-inicial="@product.PorRecibir" />
+                                   data-restante-inicial="@Model.productosOrdenar[i].PorRecibir" />
                         </div>
                         <div class="col-md-1">
                             <label style="font-weight: normal; text-align: left; float: left">Recibir</label>
@@ -70,11 +77,11 @@
                         </div>
                         <div class="col-md-2">
                             <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                            <input type="number" class="form-control" value="@product.Unidad" readonly />
+                            <input class="form-control" value="@Model.productosOrdenar[i].Unidad" readonly />
                         </div>
                         <div class="col-md-2">
                             <label style="font-weight: normal; text-align: left; float: left">Total</label>
-                            <input type="number" class="form-control" value="@product.Total" readonly />
+                            <input class="form-control" value="@Model.productosOrdenar[i].Total" readonly />
                         </div>
                     </div>
                 }
@@ -133,13 +140,26 @@
     //  restauramos tu script original de impresión
     import { openPrintWindow } from "/js/labelPrinter.js";
 
+    function showWarning(msg) {
+        $("#modal-warning-msg").text(msg);
+        $("#modal-warning").modal("show");
+    }
+
+    function showSuccess(msg) {
+        $("#modal-success-msg").text(msg);
+        $("#modal-success").modal("show");
+    }
+
+
     $(document).ready(function () {
         $("#volverAIndex").click(function () {
             $.ajax({
                 url: '@Url.Action("Index", "Ingresos")',
                 type: 'GET',
                 success: function (data) { $("#HtmlBody").html(data); },
-                error: function () { alert("Error al regresar al listado de órdenes."); }
+                error: function () {
+                    showWarning("Error al regresar al listado de órdenes.");
+                }
             });
         });
 
@@ -149,7 +169,8 @@
 
         $(".product-row").each(function () {
             const $row = $(this);
-            const productName = $row.find("input[readonly]").first().val();
+            const productName = $row.find(".product-name-raw").val();
+
             if (!productName) return;
             $.ajax({
                 url: '/Ingresos/GetProductBarcodeID',
@@ -185,7 +206,7 @@
                 if (restanteBase === 0) continue;
                 if (recibida <= 0) continue;
                 if (recibida > restanteBase) {
-                    alert(`No puedes recibir más de lo que queda en Restante para: ${productName}`);
+                    showWarning(`No puedes recibir más de lo que queda en Restante para: ${productName}`);
                     return;
                 }
 
@@ -228,7 +249,7 @@
             console.log(receivedProducts);
 
             if (receivedProducts.length === 0) {
-                alert("No se han ingresado productos válidos.");
+                showWarning("No se han ingresado productos válidos.");
                 return;
             }
 
@@ -239,19 +260,59 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     if (response.success) {
-                        alert("Ingreso registrado correctamente.");
+                        showSuccess("Ingreso registrado correctamente.");
+
                         if (labelsToPrint.length > 0) {
-                            //  Aquí vuelve tu impresión nativa
                             openPrintWindow(labelsToPrint.join(''), workOrderNumber);
                         }
                     } else {
-                        alert("Hubo un error al actualizar los datos.");
+                        showWarning("Hubo un error al actualizar los datos.");
                     }
                 },
                 error: function () {
-                    alert("Error al enviar la solicitud.");
+                    showWarning("Error al enviar la solicitud.");
                 }
+
             });
         });
     });
 </script>
+
+<div class="modal fade" id="modal-success" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmación</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-success-msg">Ingreso registrado correctamente.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-warning">
+    <div class="modal-dialog">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">Error</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-warning-subtle">
+                <p id="modal-warning-msg"></p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>*@
+                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
