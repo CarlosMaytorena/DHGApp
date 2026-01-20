@@ -1,0 +1,43 @@
+﻿@model List<AgricolaDH_GApp.ViewModels.ReporteEgresosVM>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Serial Egreso</th>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Serial Almacén</th>
+            <th>Solicitante</th>
+            <th>Evidencia</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SerialEgreso</td>
+                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@item.NombreProducto</td>
+                    <td>@item.SerialAlmacen</td>
+                    <td>@item.Solicitante</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Path))
+                        {
+                            <a href="@item.Path" target="_blank">Ver</a>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No hay datos para mostrar
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
