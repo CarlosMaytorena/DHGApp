@@ -2,11 +2,6 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
-using Azure.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
 
 namespace AgricolaDH_GApp.Services
 {
@@ -19,21 +14,24 @@ namespace AgricolaDH_GApp.Services
             context = _ctx;
         }
 
-        public void Entrada(AlmacenVM model)
+        public void InsertarLog(AlmacenVM model)
         {
             try
             {
-                LogsAlmacen log = new LogsAlmacen
+                // Supongamos que almacenLista es una lista de productos
+                foreach (Almacen a in model.almacenLista)
                 {
-                    IdProducto = model.almacen.IdProducto,
-                    SerialKey = model.almacen.SerialNumber,
-                    Fecha = model.almacen.Fecha,
-                    IdSolicitante = model.almacen.IdSolicitante,
-                    IdAlmacenista = model.almacen.IdAlmacenista,
-                    IdMovimiento = model.almacen.IdEstatus,
-                };
-
-                context.LogsAlmacen.Add(log);
+                    LogsAlmacen log = new LogsAlmacen
+                    {
+                        IdProducto = a.IdProducto,
+                        SerialKey = a.SerialNumber,
+                        Fecha = model.almacen.Fecha,
+                        IdSolicitante = a.IdSolicitante,
+                        IdAlmacenista = a.IdAlmacenista,
+                        IdMovimiento = a.IdEstatus,
+                    };
+                    context.LogsAlmacen.Add(log);
+                }
                 context.SaveChanges();
             }
             catch (Exception ex)
