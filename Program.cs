@@ -2,6 +2,7 @@ using AgricolaDH_GApp.Controllers;
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Helper;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -42,6 +43,7 @@ builder.Services.AddScoped<EgresoService>();
 builder.Services.AddScoped<ConstanteService>();
 
 builder.Services.AddScoped<SerialMapService>();
+builder.Services.AddScoped<LogsAlmacenService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();

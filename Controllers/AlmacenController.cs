@@ -1,5 +1,6 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Antlr.Runtime.Tree;
@@ -24,13 +25,16 @@ namespace AgricolaDH_GApp.Controllers
         private ViewRenderService renderService;
         private UsuarioService usuarioService;
         private ProductoService productoService;
+        private LogsAlmacenService logsAlmacenService;
+
         public AlmacenController(
             ILogger<AlmacenController> logger,
             AppDbContext _ctx,
             ViewRenderService _renderService,
             AlmacenService _almacenService,
             UsuarioService _usuarioService,
-            ProductoService _productoService
+            ProductoService _productoService,
+            LogsAlmacenService _logsAlmacenService
             )
 		{
 			_logger = logger;
@@ -39,9 +43,24 @@ namespace AgricolaDH_GApp.Controllers
             renderService = _renderService;
             usuarioService = _usuarioService;
             productoService = _productoService;
+            logsAlmacenService = _logsAlmacenService;
         }
 
-		[HttpGet]
+        private void InicializarSesionUsuario(AlmacenVM model)
+        {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
+            // Listas comunes
+            model.usuariosList = usuarioService.SelectUsuarios();
+            model.ingenieroList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero);
+
+            // Datos del usuario en sesión
+            model.almacen.IdAlmacenista = idUsuario ?? 0;
+            model.almacen.esAutorizado = idRol == RolEnumerators.Administrador;
+        }
+
+        [HttpGet]
 		public IActionResult Index()
         {
             model.almacenLista = almacenService.SelectAlmacen();
@@ -58,7 +77,7 @@ namespace AgricolaDH_GApp.Controllers
 
             model.almacen.IdAlmacenista = idUsuario != null ? (int)idUsuario : 0;
             model.almacen.esAutorizado = idRol == RolEnumerators.Administrador ? true : false;
-
+            
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 
@@ -79,7 +98,12 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AltaAlmacen(AlmacenVM model)
         {
-            try { almacenService.Entrada(model); }
+            InicializarSesionUsuario(model);
+            try 
+            { 
+                almacenService.Entrada(model);
+                logsAlmacenService.Entrada(model);
+            }
             catch { return BadRequest("Password incorrect."); }
             return Ok("Re-authentication successful.");
         }
@@ -95,31 +119,64 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AgregarProductoLista(AlmacenVM model, string SourceView)
         {
-            // Verificar si existe en el estado Entrada o Salida segun el caso
-            bool validarEstadoProducto = !almacenService.ValidarEstadoProducto(model.almacen,SourceView); // true si no existe
-
-            bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados Almacen
-            bool cond2 = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); //duplicados en ListaProductos
-            if (cond1 && cond2 && validarEstadoProducto)
+            try
             {
-                Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-                a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
-                a.Descripcion = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).Descripcion;
-                Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
-                a.Estatus = estatus.NombreEstatus;
+                InicializarSesionUsuario(model);
 
-                model.almacenLista.Add(a);
+                // Verificar si existe en el estado contrario Entrada o Salida segun el caso
+                bool validarSiProductoEnOtroEstado = !almacenService.ValidarEstadoProducto(model.almacen, SourceView);
+
+                //bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados Almacen
+                bool duplicadosListaProductos = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados en ListaProductos
+
+                if (duplicadosListaProductos && validarSiProductoEnOtroEstado)
+                {
+                    Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
+                    a.NombreProducto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).NombreProducto;
+                    a.Descripcion = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(a.IdProducto)).Descripcion;
+                    Estatus estatus = context.Estatus.Single(x => x.IdEstatus.Equals(a.IdEstatus));
+                    a.Estatus = estatus.NombreEstatus;
+
+                    model.almacenLista.Add(a);
+                }
+
+                return Ok(new
+                {
+                    message = "Producto agregado correctamente.",
+                    model = model,
+                    html = renderService.RenderViewToStringAsync("~/Views/Almacen/ListaProductos.cshtml", model).Result
+                });
             }
-            return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
+            catch (Exception ex)
+            {
+                return BadRequest("Error al agregar producto: " + ex.Message);
+            }
         }
+
 
         [HttpPost]
         public IActionResult EliminarProductoLista(AlmacenVM model)
         {
-            if (model.almacenLista.Count > 0)
-                model.almacenLista.RemoveAt(model.almacenLista.Count-1);
-            return PartialView("~/Views/Almacen/ListaProductos.cshtml", model);
+            try
+            {
+                InicializarSesionUsuario(model);
+
+                if (model.almacenLista.Count > 0)
+                    model.almacenLista.RemoveAt(model.almacenLista.Count - 1);
+
+                return Ok(new
+                {
+                    message = "Producto eliminado correctamente.",
+                    model = model,
+                    html = renderService.RenderViewToStringAsync("~/Views/Almacen/ListaProductos.cshtml", model).Result
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error al eliminar producto: " + ex.Message);
+            }
         }
+
 
         public IActionResult GetDetallesProducto(int idProducto)
         {
@@ -144,20 +201,15 @@ namespace AgricolaDH_GApp.Controllers
             var username = User.Identity?.Name;
 
             if (string.IsNullOrEmpty(username))
-            {
                 return Unauthorized("No active user session.");
-            }
 
             // Validate password against DB
             bool isValid = context.Usuarios
                 .Any(u => u.Username == username && u.Password == password);
 
             if (!isValid)
-            {
                 return BadRequest("Password incorrect.");
-            }
 
-            // If valid, allow the sensitive action
             return Ok("Re-authentication successful.");
         }
 

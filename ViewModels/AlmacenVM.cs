@@ -8,12 +8,11 @@ namespace AgricolaDH_GApp.ViewModels
         public List<Almacen> almacenLista { get; set; }
         public Almacen almacen { get; set; }
 
-
-
         public List<Usuario> usuariosList { get; set; }
         public List<UsuarioDropdown> ingenieroList { get; set; }
         public Producto producto { get; set; }
 
+        public LogsAlmacen logsAlmacen { get; set; }
         public AlmacenVM()
         {
             almacenLista = new List<Almacen>();
@@ -23,6 +22,8 @@ namespace AgricolaDH_GApp.ViewModels
             ingenieroList = new List<UsuarioDropdown>();
 
             producto = new Producto();
+
+            logsAlmacen = new LogsAlmacen();
         }        
     }
 }

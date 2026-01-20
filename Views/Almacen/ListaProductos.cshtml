@@ -84,62 +84,87 @@
 
 <script>
     $(document).ready(function () {
+        // --- Configuración global ---
         let inputBuffer = '';
         let lastInputTime = Date.now();
-        const scanThreshold = 50; // ms between characters (adjust as needed)
-        const minScanLength = 5;  // minimum length for a scan
+        const scanThreshold = 50; // ms entre caracteres
+        const minScanLength = 5;  // longitud mínima para considerar escaneo
 
-        $('.escanear').on('paste drop', function (e) {
-            const isRolAdmin = @Model.almacen.esAutorizado.ToString().ToLower();
+        // Razor inyecta el valor y lo convertimos a boolean
+        const isAdmin = "@Model.almacen.esAutorizado".toLowerCase() === "true";
 
-            if(isRolAdmin){
-                return true;
-            }
-
-            e.preventDefault();
-            return false;
-        });
-        $('.escanear').on('keypress', function (event) {
-
-            const isRolAdmin = @Model.almacen.esAutorizado.ToString().ToLower();
-
+        // --- Funciones auxiliares ---
+        function resetBufferIfTimeout() {
             const now = Date.now();
             if (now - lastInputTime > scanThreshold) {
                 inputBuffer = '';
             }
             lastInputTime = now;
+        }
 
-            // Allow numbers, uppercase/lowercase letters, and Enter
+        function appendToBuffer(char) {
+            inputBuffer += char;
+        }
+
+        function enviarProducto() {
+            var dataform = $("#lista");
+            alert(dataform.serialize())
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AgregarProductoLista", "Almacen")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#ListaDeProductos").html(data.html);
+                    $("input[name='almacen.SerialNumber']").val("").focus();
+                },
+                error: function (xhr, status, error) { alert("Error: " + xhr.responseText); }
+            });
+        }
+
+        // --- Handlers ---
+        function handlePasteDrop(e) {
+            if (isAdmin) return true; // admin puede pegar/escribir
+            e.preventDefault();
+            return false;
+        }
+
+        function handleKeyPress(event) {
+            resetBufferIfTimeout();
+
+            if (isAdmin) {
+                // Admin puede escribir libremente, pero Enter dispara el envío
+                if (event.which === 13) {
+                    event.preventDefault();
+                    enviarProducto();
+                }
+                return;
+            }
+
+            // Usuarios normales: solo escaneo
             if (
                 (event.which >= 48 && event.which <= 57) ||   // 0-9
                 (event.which >= 65 && event.which <= 90) ||   // A-Z
                 (event.which >= 97 && event.which <= 122) ||  // a-z
                 event.which === 13                            // Enter
             ) {
-                // If Enter is pressed, check if buffer is a scan
                 if (event.which === 13) {
                     event.preventDefault();
-                    if (inputBuffer.length >= minScanLength || isRolAdmin) {
-                        var dataform = $("#lista");
-                        $.ajax({
-                            type: "POST",
-                            url: '@Url.Action("AgregarProductoLista", "Almacen")',
-                            data: dataform.serialize(),
-                            success: function (data) {
-                                $("#ListaDeProductos").html(data);
-                                $("input[name='almacen.SerialNumber']").val("").focus();
-                            }
-                        });
+                    if (inputBuffer.length >= minScanLength) {
+                        enviarProducto();
                     }
                     inputBuffer = '';
                 } else {
-                    inputBuffer += String.fromCharCode(event.which);
+                    appendToBuffer(String.fromCharCode(event.which));
                 }
             } else {
-                // Block any other input
                 event.preventDefault();
             }
-        });
+        }
+
+        // --- Binding ---
+        $('.escanear').on('paste drop', handlePasteDrop);
+        $('.escanear').on('keypress', handleKeyPress);
+
 
         $('.eliminarAlmacenLista').click(function () {
             var dataform = $("#lista");
@@ -148,9 +173,8 @@
                 type: "POST",
                 url: '@Url.Action("EliminarProductoLista", "Almacen")',
                 data: dataform.serialize(),
-                success: function (data) {
-                    $("#ListaDeProductos").html(data);
-                }
+                success: function (data) { $("#ListaDeProductos").html(data.html); },
+                error: function (xhr, status, error) { alert("Error: " + xhr.responseText); }
             });
         });
 
