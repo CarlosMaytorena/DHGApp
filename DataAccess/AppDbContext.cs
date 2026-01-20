@@ -33,9 +33,7 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<Estatus>().HasKey(m => new { m.IdEstatus });
             modelBuilder.Entity<Evidencia>().HasKey(m => new { m.IdEvidencia });
             modelBuilder.Entity<SerialMap>().HasKey(m => new { m.SerialKey });
-
-
-
+            modelBuilder.Entity<LogsAlmacen>().HasKey(m => new { m.IdLogsAlmacen });
             modelBuilder.Entity<UltimoProductoID>().HasKey(m => new { m.ID });
 
         }
@@ -67,6 +65,9 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<UltimoProductoID> UltimoProductoID { get; set; }
 
         public DbSet<SerialMap> SerialMap { get; set; }
+        public DbSet<LogsAlmacen> LogsAlmacen { get; set; }
+
+
 
 
 

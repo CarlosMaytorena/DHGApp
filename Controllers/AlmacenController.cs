@@ -1,5 +1,6 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Antlr.Runtime.Tree;
@@ -24,13 +25,16 @@ namespace AgricolaDH_GApp.Controllers
         private ViewRenderService renderService;
         private UsuarioService usuarioService;
         private ProductoService productoService;
+        private LogsAlmacenService logsAlmacenService;
+
         public AlmacenController(
             ILogger<AlmacenController> logger,
             AppDbContext _ctx,
             ViewRenderService _renderService,
             AlmacenService _almacenService,
             UsuarioService _usuarioService,
-            ProductoService _productoService
+            ProductoService _productoService,
+            LogsAlmacenService _logsAlmacenService
             )
 		{
 			_logger = logger;
@@ -39,6 +43,7 @@ namespace AgricolaDH_GApp.Controllers
             renderService = _renderService;
             usuarioService = _usuarioService;
             productoService = _productoService;
+            logsAlmacenService = _logsAlmacenService;
         }
 
 		[HttpGet]
@@ -79,7 +84,11 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult AltaAlmacen(AlmacenVM model)
         {
-            try { almacenService.Entrada(model); }
+            try 
+            { 
+                almacenService.Entrada(model);
+                logsAlmacenService.Entrada(model);
+            }
             catch { return BadRequest("Password incorrect."); }
             return Ok("Re-authentication successful.");
         }
