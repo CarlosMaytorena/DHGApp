@@ -40,6 +40,8 @@ builder.Services.AddScoped<OrdenDeCompraService>();
 builder.Services.AddScoped<AlmacenService>();
 builder.Services.AddScoped<EgresoService>();
 builder.Services.AddScoped<ConstanteService>();
+builder.Services.AddScoped<ReporteService>();
+
 
 builder.Services.AddScoped<SerialMapService>();
 

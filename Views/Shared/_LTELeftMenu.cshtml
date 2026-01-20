@@ -166,6 +166,18 @@
                         </ul>
                     </li>                    
                 }   
+
+                @if (Model.IdRol == RolEnumerators.Administrador)
+                {
+                    <li class="nav-item">
+                        <a href="#" id="reportes" class="nav-link" style="color: #2E2E2E">
+                            <i class="nav-icon fa fa-archive"></i>
+                            <p>
+                                Reportes
+                            </p>
+                        </a>
+                    </li>
+                }
                 
                 <li class="nav-item logout-button">
                     <form method="post" asp-controller="Login" asp-action="Logout" id="logoutForm" style="display:inline;">

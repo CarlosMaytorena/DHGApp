@@ -397,3 +397,13 @@ body {
     align-items: center;
     justify-items: center;
 }
+
+.custom-tabs .nav-link.active {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-bottom: 3px solid #38bdf8;
+}
+
+.custom-tabs {
+    color: #000000;
+}

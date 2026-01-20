@@ -17,12 +17,6 @@
     <None Remove="Views\NewFolder\**" />
   </ItemGroup>
 
-	<ItemGroup>
-		<!-- <Content Include="wwwroot\css\adminlte.min.css" /> -->
-		<!-- <Content Include="wwwroot\css\adminlte.min.css.map" /> -->
-		<!-- <Content Include="wwwroot\css\all.min.css" /> -->
-	</ItemGroup>
-
 <ItemGroup>
 	<None Include="wwwroot\Email\Requisicion.html" />
 	<None Include="wwwroot\webfonts\fa-brands-400.svg" />

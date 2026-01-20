@@ -1,0 +1,142 @@
+<div class="card" style="margin:20px;">
+    <div class="card-header p-0">
+        <ul class="nav nav-tabs d-flex" id="tabsReportes">
+            <li class="nav-item">
+                <a class="nav-link active custom-tabs" href="#" data-tipo="egresos" style="color: #000000">
+                    Egresos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link custom-tabs" href="#" data-tipo="salidas" style="color: #000000">
+                    Salidas
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link custom-tabs" href="#" data-tipo="entradas" style="color: #000000">
+                    Entradas
+                </a>
+            </li>
+
+            <li class="nav-item ms-auto me-3 d-flex align-items-center" style="margin-left: auto; margin-right: 20px; padding: 5px;">
+                <!-- DROPDOWN CALENDARIO -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+                        📅 Rango de fechas
+                    </button>
+
+                    <div class="dropdown-menu p-3" style="min-width: 280px;">
+                        <div class="mb-2">
+                            <label class="form-label">Fecha inicio</label>
+                            <input type="date" id="fechaInicio" class="form-control">
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Fecha fin</label>
+                            <input type="date" id="fechaFin" class="form-control">
+                        </div>
+
+                        <button id="btnAplicarFechas" class="btn btn-primary w-100">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+            </li>
+
+
+
+        </ul>
+
+    </div>
+
+    <div class="card-body">
+        <div id="contenedorReporte">
+            <div class="alert alert-info">
+                Selecciona un reporte para visualizar la información.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let tipoActual = 'egresos';
+    let fechaInicio = null;
+    let fechaFin = null;
+
+    $(document).ready(function () {
+
+        // Al cargar, dispara Egresos por default
+        cargarReporte('egresos');
+
+        $('#tabsReportes .nav-link').click(function (e) {
+            e.preventDefault();
+
+            $('#tabsReportes .nav-link').removeClass('active');
+            $(this).addClass('active');
+
+            tipoActual = $(this).data('tipo');
+            cargarReporte();
+        });
+
+    });
+
+    $(document).ready(function () {
+        const hoy = new Date();
+        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+
+        $('#fechaInicio').val(primerDia.toISOString().split('T')[0]);
+        $('#fechaFin').val(hoy.toISOString().split('T')[0]);
+    });
+
+
+
+    $('#btnAplicarFechas').on('click', function () {
+
+        fechaInicio = $('#fechaInicio').val();
+        fechaFin = $('#fechaFin').val();
+
+        if (!fechaInicio || !fechaFin) {
+            alert('Selecciona ambas fechas');
+            return;
+        }
+
+        // Cierra dropdown
+        $(this).closest('.dropdown-menu').prev().dropdown('toggle');
+
+        // ✅ RECARGA EL REPORTE
+        cargarReporte();
+    });
+
+        function cargarReporte() {
+
+        let url = `/Reportes/LoadReporte`;
+        let params = {
+            tipo: tipoActual
+        };
+
+        if (fechaInicio && fechaFin) {
+            params.fechaInicio = fechaInicio;
+            params.fechaFin = fechaFin;
+        }
+
+
+
+        $.get(url, params)
+            .done(function (html) {
+                $('#contenedorReporte').html(html);
+            })
+            .fail(function (err) {
+                console.error(err);
+                $('#contenedorReporte').html(`
+                    <div class="alert alert-danger">
+                        Error al cargar el reporte
+                    </div>
+                `);
+            });
+    }
+
+
+
+</script>
