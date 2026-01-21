@@ -121,10 +121,15 @@ namespace AgricolaDH_GApp.Controllers
             model.areaList = areaService.SelectAreas();
             model.cultivoList = cultivoService.SelectCultivos();
             model.ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == area.IdArea).ToList();
-            //model.etapaList = etapaService.SelectEtapas();
             model.temporadaList = temporadaService.SelectTemporadas();
             model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
 
+            model.etapaList = etapaService.SelectEtapas().Where(r =>
+                r.IdArea == model.requisicion.IdArea &&
+                r.IdTemporada == model.requisicion.IdTemporada &&
+                r.IdCultivo == model.requisicion.IdCultivo &&
+                r.IdRancho == model.requisicion.IdRancho
+            ).ToList();
 
             model.requisicion.IdArea = Convert.ToInt32(usuario.IdArea);
             model.requisicion.AreaName = area.Descripcion;

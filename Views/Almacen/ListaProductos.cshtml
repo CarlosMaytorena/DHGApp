@@ -108,7 +108,8 @@
 
         function enviarProducto() {
             var dataform = $("#lista");
-            alert(dataform.serialize())
+
+            // alert(dataform.serialize())
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("AgregarProductoLista", "Almacen")',

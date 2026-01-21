@@ -130,9 +130,11 @@
                 headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: dataform,
-                success: function (data) { $("#modal-success").modal("show"); },
+                success: function (data) { },
                 error: function (xhr, status, error) { $("#modal-warning").modal("show"); },
-                complete: function () { (".almacen").click(); }
+                complete: function () { 
+                    $(".almacen").click(); 
+                }
             });
         }
 
