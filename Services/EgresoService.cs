@@ -54,7 +54,7 @@ namespace AgricolaDH_GApp.Services.Admin
             return egresosList;
         }
 
-        public void Generar(EgresosVM model)
+        public void Generar(EgresosVM model, int IdLogsEgresos)
         {
             try
             {
@@ -68,7 +68,8 @@ namespace AgricolaDH_GApp.Services.Admin
                         IdEvidencia = model.egreso.IdEvidencia,
                         IdSolicitante = model.egreso.IdSolicitante,
                         PathAntes = model.egreso.PathAntes,
-                        PathDespues = model.egreso.PathDespues
+                        PathDespues = model.egreso.PathDespues,
+                        IdLogsEgresos = IdLogsEgresos
                     };
                     context.Egresos.Add(e);
                 }

@@ -1,5 +1,6 @@
 ﻿using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
+using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ namespace AgricolaDH_GApp.Controllers
 		private ProductoService productoService;
 		private UsuarioService usuarioService;
 		private AlmacenService almacenService;
+        private LogsEgresosService logsEgresosService;
 		private ViewRenderService renderService;
         private BlobStorageService blobStorageService;
 
@@ -31,6 +33,7 @@ namespace AgricolaDH_GApp.Controllers
             ProductoService _productoService,
 			UsuarioService _usuarioService,
 			AlmacenService _almacenService,
+            LogsEgresosService _logsEgresosService,
             BlobStorageService __blobStorageService)
 		{
 			_logger = logger;
@@ -39,6 +42,7 @@ namespace AgricolaDH_GApp.Controllers
 			productoService = _productoService;
 			usuarioService = _usuarioService;
             almacenService = _almacenService;
+            logsEgresosService = _logsEgresosService;
 			renderService = _renderService;
             blobStorageService = __blobStorageService;
 
@@ -77,11 +81,19 @@ namespace AgricolaDH_GApp.Controllers
             {
                 context.Evidencia.Add(new Evidencia());
                 context.SaveChanges();
+
+                LogsEgresos log = new LogsEgresos()
+                {
+                    IdSolicitante = model.egreso.IdSolicitante,
+                    Fecha = DateTime.Now
+                };
+                int idLogsEgresos = logsEgresosService.InsertarLog(log);
+
                 model.egreso.IdEvidencia = context.Evidencia.OrderByDescending(e => e.IdEvidencia).FirstOrDefault().IdEvidencia;
 
                 model.egreso.PathAntes = egresoService.UploadFile(model, "Antes");
                 model.egreso.PathDespues = egresoService.UploadFile(model, "Despues");
-                egresoService.Generar(model);
+                egresoService.Generar(model, idLogsEgresos);                
             }
 			catch
 			{

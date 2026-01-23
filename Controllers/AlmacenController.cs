@@ -100,7 +100,7 @@ namespace AgricolaDH_GApp.Controllers
             InicializarSesionUsuario(model);
             try
             { 
-                //almacenService.Salida(model);
+                almacenService.Salida(model);
                 //logsAlmacenService.InsertarLog(model);
             }
             catch { return BadRequest("Password incorrect."); }
