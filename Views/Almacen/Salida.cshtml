@@ -1,7 +1,6 @@
 @model AgricolaDH_GApp.ViewModels.AlmacenVM
 
 <form id="dataform">
-
     <div class="row top-row-spacer">
         <div class="col-md-4">
             <h4 class="page-title">Salida de Almacen</h4>
@@ -57,8 +56,7 @@
 </form>
 <div id="ListaDeProductos">
     <partial name="~/Views/Almacen/ListaProductos.cshtml"
-             model="Model"
-             view-data='new ViewDataDictionary(ViewData) { { "SourceView", "Salida" } }' />
+             model="Model"/>
 </div>
 
 <div class="modal fade" id="modal-success">
@@ -106,6 +104,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal-warning-password">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Advertencia</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-editar-body">
+                <p style="margin-left: 10px">Contraseña incorrecta. Intenta de nuevo.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
         // Navegacion a Almacen
@@ -130,11 +147,11 @@
                 headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: dataform,
-                success: function (data) { },
+                success: function (data) {
+                    $("#modal-reauth").modal("hide");
+                    $("#modal-success").modal("show");
+                },
                 error: function (xhr, status, error) { $("#modal-warning").modal("show"); },
-                complete: function () { 
-                    $(".almacen").click(); 
-                }
             });
         }
 
@@ -154,22 +171,32 @@
         });
 
         function Validation() {
-            var validation = true;
+            let validation = true;
+
+            // Validar campos generales
             $('.validar:not(:disabled)').each(function() {
-
-                $(this).css("border-color", "");
-
-                if($(this).val() == null || $(this).val().trim() === "" || $(this).val() === "0"){
-                    $(this).css("border-color", "red");
+                const $field = $(this);
+                $field.css("border-color", "");
+                // limpiar siempre antes
+                const value = $field.val()?.trim();
+                if (!value || value === "0") {
+                    $field.css("border-color", "red");
                     validation = false;
                 }
             });
-            return validation;
-        };
+
+            // Validar que haya al menos un producto en la lista
+            const productos = $('#ListaDeProductos input[type="hidden"][name*="almacenLista"][name*="IdProducto"]').length;
+            const $scanInput = $('#ListaDeProductos .escanear'); $scanInput.css("border-color", "");
+            //limpiar siempre antes
+            if (productos === 0) {
+                $scanInput.css("border-color", "red");
+                validation = false;
+            } return validation;
+        }
 
         // Reautenticar usuario antes de generar Salida
         $(".reauth-user").click(function () {
-            $("#modal-reauth").modal("hide");
             var form = $("#passform").serialize();
             //alert(form);
             $.ajax({
@@ -178,10 +205,12 @@
                 headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: form,
-                success: function(data, textStatus, xhr) { salidaAlmacen() },
+                success: function(data, textStatus, xhr) {
+                    $("#modal-reauth").modal("hide");
+                    salidaAlmacen();
+                },
                 error: function(xhr, status, error) {
-                    $("#modal-warning").modal("show");
-                    $(".almacen").click();
+                    $("#modal-warning-password").modal("show");
                 }
             });
         });
