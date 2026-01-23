@@ -1,5 +1,16 @@
 ﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
 
+@functions {
+    string ScrambleSerial(string s)
+    {
+        s = (s ?? "").Trim().ToUpper();
+        if (s.Length < 2) return s;
+
+        int mid = s.Length / 2;
+        return s.Substring(mid) + s.Substring(0, mid);
+    }
+}
+
     <div class="row top-row-spacer">
         <div class="col-md-5">
             <h4 class="page-title">Egresos</h4>
@@ -18,8 +29,14 @@
         <div class="row card-row-spacer">
             <div class="col-md-4">
                 @Html.HiddenFor(m => m.egreso.IdEgreso)
-                <label style="font-weight: normal; text-align: left; float: left">Numero de Serie</label>
-                @Html.EditorFor(m => m.egreso.SerialNumber, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "readonly" } })
+            <label style="font-weight: normal; text-align: left; float: left">Numero de Serie</label>
+
+            @* Serial REAL (válido) queda disponible *@
+            @Html.HiddenFor(m => m.egreso.SerialNumber)
+
+            @* Serial SCRAMBLED (solo visual) *@
+            <input class="form-control input-focus" type="text" readonly
+                   value="@ScrambleSerial(Model.egreso.SerialNumber)" />
             </div>
             <div class="col-md-4">
                 <label style="font-weight: normal; text-align: left; float: left">Producto</label>
