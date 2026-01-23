@@ -156,12 +156,12 @@
         
         function Validation() {
             var validation = true;
-            $('.validar').each(function() {
+            $('.validar:not(:disabled)').each(function() {
 
-                $("#" + this.id).css("border-color", "");
+                $(this).css("border-color", "");
 
-                if($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0"){
-                    $("#" + this.id).css("border-color", "red");
+                if($(this).val() == null || $(this).val().trim() === "" || $(this).val() === "0"){
+                    $(this).css("border-color", "red");
                     validation = false;
                 }
             });
