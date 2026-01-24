@@ -1,4 +1,5 @@
-﻿using AgricolaDH_GApp.Models;
+﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
@@ -15,19 +16,23 @@ namespace AgricolaDH_GApp.Controllers
         private readonly AlmacenService _almacenService;
         private readonly ProductoService _productoService;
         private readonly SerialMapService _serialMapService;
+        private readonly LogsAlmacenService _logsAlmacenService;
+        private readonly AppDbContext context;
 
         public IngresosController(
             ILogger<IngresosController> logger,
             OrdenDeCompraService ordenDeCompraService,
             AlmacenService almacenService,
             ProductoService productoService,
-            SerialMapService serialMapService)
+            SerialMapService serialMapService,
+            LogsAlmacenService logsAlmacenService)
         {
             _logger = logger;
             _ordenDeCompraService = ordenDeCompraService;
             _almacenService = almacenService;
             _productoService = productoService;
             _serialMapService = serialMapService;
+            _logsAlmacenService = logsAlmacenService;
         }
 
         [HttpGet]
@@ -122,6 +127,17 @@ namespace AgricolaDH_GApp.Controllers
                             );
                             _almacenService.GuardarEnAlmacen(producto.IdProducto, serial);
 
+                            // Registro de log en Almacen
+                            AlmacenVM model = new AlmacenVM
+                            {
+                                almacenLista = new List<Almacen>(),
+                            };
+                            Almacen a = context.Almacen.
+                                Single(x => x.IdProducto == producto.IdProducto && x.SerialNumber == serial);
+                            model.almacen = a;
+
+                            model.almacenLista.Add(a);
+                            _logsAlmacenService.InsertarLog(model);
                         }
                         catch (System.Exception ex)
                         {

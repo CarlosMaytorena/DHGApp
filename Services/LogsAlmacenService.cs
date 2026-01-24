@@ -35,7 +35,6 @@ namespace AgricolaDH_GApp.Services
 
                     foreach (Almacen a in model.almacenLista)
                     {
-
                         LogsAlmacenProductos logProducto = new LogsAlmacenProductos
                         {
                             IdLogsAlmacen = log.IdLogsAlmacen,
