@@ -18,28 +18,42 @@ namespace AgricolaDH_GApp.Services
         {
             try
             {
-                var almacenDb = context.Almacen.FirstOrDefault(x => x.IdAlmacen == model.almacen.IdAlmacen); 
-                var fechaDb = almacenDb?.Fecha ?? DateTime.Now; // fallback si no existe
-
-                foreach (Almacen a in model.almacenLista)
+                using (var transaction = context.Database.BeginTransaction())
                 {
+                    var i = model.almacenLista.First();
+                    model.almacen = context.Almacen.Single(x => x.IdAlmacen == i.IdAlmacen);
+
                     LogsAlmacen log = new LogsAlmacen
                     {
-                        IdProducto = a.IdProducto,
-                        SerialKey = a.SerialNumber,
-                        Fecha = fechaDb,
-                        IdSolicitante = a.IdSolicitante,
-                        IdAlmacenista = a.IdAlmacenista,
-                        IdMovimiento = a.IdEstatus,
+                        Fecha = model.almacen.Fecha,
+                        IdSolicitante = model.almacen.IdSolicitante,
+                        IdAlmacenista = model.almacen.IdAlmacenista,
+                        IdMovimiento = model.almacen.IdEstatus,
                     };
                     context.LogsAlmacen.Add(log);
+                    context.SaveChanges();
+
+                    foreach (Almacen a in model.almacenLista)
+                    {
+
+                        LogsAlmacenProductos logProducto = new LogsAlmacenProductos
+                        {
+                            IdLogsAlmacen = log.IdLogsAlmacen,
+                            IdProducto = a.IdProducto,
+                            SerialKey = a.SerialNumber
+                        };
+                        context.LogsAlmacenProductos.Add(logProducto);
+                        context.SaveChanges();
+                    }
+                    transaction.Commit();
                 }
-                context.SaveChanges();
             }
             catch (Exception ex)
             {
+                // Si ocurre un error, la transacción se revierte automáticamente al salir del using
                 throw new Exception("Error al guardar los logs de almacén: " + ex.Message, ex);
             }
+
         }
     }
 }

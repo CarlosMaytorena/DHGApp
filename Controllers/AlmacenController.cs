@@ -88,7 +88,7 @@ namespace AgricolaDH_GApp.Controllers
             try 
             { 
                 almacenService.Entrada(model);
-                //logsAlmacenService.InsertarLog(model);
+                logsAlmacenService.InsertarLog(model);
             }
             catch { return BadRequest("Password incorrect."); }
             return Ok("Re-authentication successful.");
@@ -101,7 +101,7 @@ namespace AgricolaDH_GApp.Controllers
             try
             { 
                 almacenService.Salida(model);
-                //logsAlmacenService.InsertarLog(model);
+                logsAlmacenService.InsertarLog(model);
             }
             catch { return BadRequest("Password incorrect."); }
             return Ok("Re-authentication successful.");
