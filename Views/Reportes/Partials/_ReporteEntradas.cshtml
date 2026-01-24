@@ -18,14 +18,18 @@
             {
                 <tr>
                     <td>@item.SerialEgreso</td>
-                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @(item.Fecha.HasValue
+                                        ? item.Fecha.Value.ToString("dd/MM/yyyy")
+                                        : "-")
+                    </td>
                     <td>@item.NombreProducto</td>
                     <td>@item.SerialAlmacen</td>
                     <td>@item.Solicitante</td>
                     <td>
-                        @if (!string.IsNullOrEmpty(item.Path))
+                        @if (!string.IsNullOrEmpty(item.Folio))
                         {
-                            <a href="@item.Path" target="_blank">Ver</a>
+                            <a href="@item.Folio" target="_blank">Ver</a>
                         }
                     </td>
                 </tr>
