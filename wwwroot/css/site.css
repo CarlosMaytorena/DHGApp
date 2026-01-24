@@ -1,4 +1,4 @@
-    html {
+html {
   font-size: 14px;
 }
 
@@ -399,8 +399,8 @@ body {
 }
 
 .custom-tabs .nav-link.active {
-    background-color: #0f172a;
-    color: #ffffff;
+    background-color: #0f172a !important;
+    color: #4AB09E;
     border-bottom: 3px solid #38bdf8;
 }
 
