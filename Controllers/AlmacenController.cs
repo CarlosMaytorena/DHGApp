@@ -70,6 +70,7 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult Entrada()
         {
             InicializarSesionUsuario(model);
+            model.sourceView = "Entrada";
             return PartialView("~/Views/Almacen/Entrada.cshtml", model);
         }
 
@@ -77,6 +78,7 @@ namespace AgricolaDH_GApp.Controllers
         public IActionResult Salida()
         {
             InicializarSesionUsuario(model);
+            model.sourceView = "Salida";
             return PartialView("~/Views/Almacen/Salida.cshtml", model);
         }
         [HttpPost]
@@ -86,7 +88,6 @@ namespace AgricolaDH_GApp.Controllers
             try 
             { 
                 almacenService.Entrada(model);
-
                 //logsAlmacenService.InsertarLog(model);
             }
             catch { return BadRequest("Password incorrect."); }
@@ -100,7 +101,6 @@ namespace AgricolaDH_GApp.Controllers
             try
             { 
                 almacenService.Salida(model);
-
                 //logsAlmacenService.InsertarLog(model);
             }
             catch { return BadRequest("Password incorrect."); }
@@ -108,17 +108,16 @@ namespace AgricolaDH_GApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AgregarProductoLista(AlmacenVM model, string SourceView)
+        public IActionResult AgregarProductoLista(AlmacenVM model)
         {
             try
             {
                 InicializarSesionUsuario(model);
 
                 // Verificar si existe en el estado contrario Entrada o Salida segun el caso
-                bool validarSiProductoEnOtroEstado = !almacenService.ValidarEstadoProducto(model.almacen, SourceView);
-
-                //bool cond1 = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados Almacen
-                bool duplicadosListaProductos = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber)); // duplicados en ListaProductos
+                bool validarSiProductoEnOtroEstado = !almacenService.ValidarEstadoProducto(model.almacen, model.sourceView);
+                // Duplicados en ListaProductos
+                bool duplicadosListaProductos = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
 
                 if (duplicadosListaProductos && validarSiProductoEnOtroEstado)
                 {

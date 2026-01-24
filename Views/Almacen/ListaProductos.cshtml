@@ -12,7 +12,7 @@
 }
 
 <form id="lista">
-    @Html.Hidden("SourceView", ViewData["SourceView"])
+    @Html.HiddenFor(m => m.sourceView)
     <div class="card card-margin">
         <div class="row card-row-spacer">
             <div class="col-md-12">
@@ -51,7 +51,7 @@
 
                 @for (int i = 0; i < Model.almacenLista.Count; i++)
                 {
-                    <div class="row card-row-spacer">
+                    <div class="row card-row-spacer .producto-item">
                         @Html.HiddenFor(m => m.almacenLista[i].IdAlmacen)
                         @Html.HiddenFor(m => m.almacenLista[i].IdProducto)
                         @Html.HiddenFor(m => m.almacenLista[i].IdEstatus)
@@ -118,7 +118,7 @@
                     $("#ListaDeProductos").html(data.html);
                     $("input[name='almacen.SerialNumber']").val("").focus();
                 },
-                error: function (xhr, status, error) { alert("Error: " + xhr.responseText); }
+                error: function (xhr, status, error) { }
             });
         }
 

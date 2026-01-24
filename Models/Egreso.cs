@@ -19,6 +19,7 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
+        public int? IdLogsEgresos { get; set; }
         public int IdEvidencia { get; set; }
         [NotMapped]
         public string? PathAntes { get; set; }

@@ -1,5 +1,16 @@
 ﻿@model AgricolaDH_GApp.ViewModels.EgresosVM
 
+@functions {
+    string ScrambleSerial(string s)
+    {
+        s = (s ?? "").Trim().ToUpper();
+        if (s.Length < 2) return s;
+
+        int mid = s.Length / 2;
+        return s.Substring(mid) + s.Substring(0, mid);
+    }
+}
+
     <div class="row top-row-spacer">
         <div class="col-md-5">
             <h4 class="page-title">Egresos</h4>
@@ -53,8 +64,10 @@
                                             <i class="nav-icon fas fa-search"></i>
                                         </button>
                                     </td>
-                                    <td>@egreso.SerialNumber</td>
-                                    <td>@egreso.Producto</td>
+                                <td title="@egreso.SerialNumber">
+                                    @ScrambleSerial(egreso.SerialNumber)
+                                </td>
+                                <td>@egreso.Producto</td>
                                     <td>@egreso.Solicitante</td>
                                     <td>@egreso.PathAntes</td>
                                     <td>@egreso.PathDespues</td>
