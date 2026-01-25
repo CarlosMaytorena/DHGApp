@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using System.Security.Policy;
 
 namespace AgricolaDH_GApp.Controllers
 {
@@ -73,34 +74,40 @@ namespace AgricolaDH_GApp.Controllers
             InicializarSesionUsuario(model);
             return PartialView("~/Views/Egresos/EgresoForm.cshtml", model);
         }
-		[HttpPost]
+
+        [HttpPost]
         public async Task<IActionResult> GenerarEgreso(EgresosVM model)
         {
-            int res = 1;
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
+                Evidencia e = new Evidencia();
                 context.Evidencia.Add(new Evidencia());
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
-                LogsEgresos log = new LogsEgresos()
+                // Insertar log
+                LogsEgresos log = new LogsEgresos
                 {
                     IdSolicitante = model.egreso.IdSolicitante,
                     Fecha = DateTime.Now
                 };
                 int idLogsEgresos = logsEgresosService.InsertarLog(log);
 
-                model.egreso.IdEvidencia = context.Evidencia.OrderByDescending(e => e.IdEvidencia).FirstOrDefault().IdEvidencia;
-
+                // Subir archivos a BlobStorage
+                model.egreso.IdEvidencia = e.IdEvidencia;
                 model.egreso.PathAntes = egresoService.UploadFile(model, "Antes");
                 model.egreso.PathDespues = egresoService.UploadFile(model, "Despues");
-                egresoService.Generar(model, idLogsEgresos);                
-            }
-			catch
-			{
-                res = -1;
-            }
-            return base.Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Egresos/Index.cshtml", model) });
 
+                egresoService.Generar(model, idLogsEgresos);
+
+                await transaction.CommitAsync();
+                return Ok(new { message = "Egreso generado correctamente."});
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest(new { message = "Error al generar egreso", error = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -144,7 +151,9 @@ namespace AgricolaDH_GApp.Controllers
             bool existeAlmacen = context.Almacen.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool dupliLista = !model.almacenLista.Exists(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
             bool existeEgreso = context.Egresos.Any(x => x.SerialNumber.Equals(model.almacen.SerialNumber));
-            bool usado = context.Almacen.SingleOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber)).Uso;
+
+            Almacen row = context.Almacen.SingleOrDefault(x => x.SerialNumber == model.almacen.SerialNumber);
+            bool usado = context.Almacen.Any(x => x.SerialNumber == row.SerialNumber && x.Uso == true);
             if (existeAlmacen && dupliLista && !existeEgreso && usado)
             {
                 Almacen a = context.Almacen.FirstOrDefault(x => x.SerialNumber.Equals(model.almacen.SerialNumber));

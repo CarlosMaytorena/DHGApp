@@ -73,7 +73,8 @@
 </form>
 
 <div id="ListaDeProductos">
-    @Html.Partial("~/Views/Egresos/ListaProductos.cshtml", Model)
+    <partial name="~/Views/Egresos/ListaProductos.cshtml"
+             model="Model"/>
 </div>
 
 <div class="modal fade" id="modal-confirmacion">
@@ -127,14 +128,8 @@
                 url: '@Url.Action("Index", "Egresos")',
                 contentType: "application/json; charset=utf-8",
                 data: {},
-                success: function (data) {
-                    console.log("AJAX Success Response:", data);
-                    $("#HtmlBody").html(data);
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error, xhr.responseText);
-                    alert("Error loading content. Please try again.");
-                }
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function (xhr, status, error) { }
             });
         });
 
@@ -149,8 +144,8 @@
 
             var egresoForm = $("#egreso-form")[0];
             var listaProductos = $("#lista")[0].querySelectorAll('input, select, textarea');
+            
             var formData = new FormData(egresoForm);
-
             listaProductos.forEach(function (input) {
                 formData.append(input.name, input.value);
             });
@@ -159,46 +154,56 @@
                 type: "POST",
                 url: '@Url.Action("GenerarEgreso", "Egresos")',
                 data: formData,
-                processData: false, // Important: Prevent jQuery from processing the data
-                contentType: false, // Important: Prevent jQuery from overriding the Content-Type
+                processData: false, // evita que jQuery procese el FormData
+                contentType: false, // evita que jQuery cambie el Content-Type
                 success: function (data) {
-                    if (data.res > 0) {
-                        $("#modal-success").modal("show");
-                    }
-                    else {
-                        $("#modal-warning").modal("show");
-                        $(".egreso").click();
-                    }
+                    $("#modal-success").modal("show");
+                },
+                error: function (xhr) {
+                    $("#modal-warning").modal("show");
                 }
             });
         });
 
+
         function Validation() {
-            var validation = true;
-            $('.validar').each(function () {
+            let validation = true;
 
-                $("#" + this.id).css("border-color", "");
-
-                if ($("#" + this.id).val() == null || $("#" + this.id).val() == "" || $("#" + this.id).val() == "0") {
-                    $("#" + this.id).css("border-color", "red");
+            // Validar campos generales (inputs con clase .validar que no estén deshabilitados)
+            $('.validar:not(:disabled)').each(function () {
+                const $field = $(this);
+                $field.css("border-color", "");
+                const value = $field.val()?.trim();
+                if (!value || value === "0") {
+                    $field.css("border-color", "red");
                     validation = false;
                 }
             });
+
+            // Validar archivos (inputs tipo file con clase .custom-file-input)
             $('.custom-file-input').each(function () {
-                var fileInput = $(this);
-                var label = fileInput.next(".custom-file-label");
+                const fileInput = $(this);
+                const label = fileInput.next(".custom-file-label");
                 fileInput.css("border-color", "");
                 label.css("border-color", "");
 
-                if (label.text() == null || label.text() == "") {
+                if (!label.text()) {
                     fileInput.css("border-color", "red");
                     label.css("border-color", "red");
                     validation = false;
                 }
             });
 
-            return validation;
-        };
+            // Validar que haya al menos un producto en la lista
+            const productos = $('#ListaDeProductos input[type="hidden"][name*="almacenLista"][name*="IdProducto"]').length;
+            const $scanInput = $('#ListaDeProductos .escanear'); $scanInput.css("border-color", "");
+            //limpiar siempre antes
+            if (productos === 0) {
+                $scanInput.css("border-color", "red");
+                validation = false;
+            } return validation;
+        }
+
 
         $(".custom-file-input").change(function () {
             var fileInput = $(this);

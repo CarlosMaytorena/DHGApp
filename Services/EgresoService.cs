@@ -42,7 +42,7 @@ namespace AgricolaDH_GApp.Services.Admin
                 {
                     item.Producto = context.Productos.FirstOrDefault(x => x.IdProducto.Equals(item.IdProducto)).NombreProducto;
                     item.Solicitante = context.Usuarios.FirstOrDefault(x => x.IdUsuario.Equals(item.IdSolicitante)).Username;
-                    item.SerialNumber = context.Almacen.FirstOrDefault(x => x.IdAlmacen.Equals(item.IdAlmacen)).SerialNumber;
+                    //item.SerialNumber = context.Almacen.FirstOrDefault(x => x.IdAlmacen.Equals(item.IdAlmacen)).SerialNumber;
                     item.PathAntes = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(item.IdEvidencia)).PathAntes;
                     item.PathDespues = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(item.IdEvidencia)).PathDespues;
                 }
@@ -56,35 +56,36 @@ namespace AgricolaDH_GApp.Services.Admin
 
         public void Generar(EgresosVM model, int IdLogsEgresos)
         {
-            try
+            List<Egreso>egresos = new List<Egreso>();
+            var serialNumbers = model.almacenLista.Select(a => a.SerialNumber).ToList();
+            foreach (Almacen a in model.almacenLista)
             {
-                foreach (Almacen a in model.almacenLista)
+                egresos.Add(new Egreso
                 {
-                    Egreso e = new Egreso {
-                        IdAlmacen = a.IdAlmacen,
-                        IdProducto = a.IdProducto,
-                        Fecha = DateTime.Now,
-                        SerialNumber = a.SerialNumber,
-                        IdEvidencia = model.egreso.IdEvidencia,
-                        IdSolicitante = model.egreso.IdSolicitante,
-                        PathAntes = model.egreso.PathAntes,
-                        PathDespues = model.egreso.PathDespues,
-                        IdLogsEgresos = IdLogsEgresos
-                    };
-                    context.Egresos.Add(e);
-                }
+                    IdAlmacen = a.IdAlmacen,
+                    IdProducto = a.IdProducto,
+                    Fecha = DateTime.Now,
+                    SerialNumber = a.SerialNumber,
+                    IdEvidencia = model.egreso.IdEvidencia,
+                    IdSolicitante = model.egreso.IdSolicitante,
+                    PathAntes = model.egreso.PathAntes,
+                    PathDespues = model.egreso.PathDespues,
+                    IdLogsEgresos = IdLogsEgresos
 
-                Evidencia evi = context.Evidencia.FirstOrDefault(x => x.IdEvidencia.Equals(model.egreso.IdEvidencia));
-                evi.PathDespues = model.egreso.PathDespues;
-                evi.PathAntes = model.egreso.PathAntes;
-                context.Evidencia.Update(evi);
-                context.SaveChanges();
-                return;
+                });
             }
-            catch
-            {
-                throw new Exception();
-            }
+            context.Egresos.AddRange(egresos);
+
+            // Eliminar todos los registros de Almacen en bloque
+            var almacenes = context.Almacen.Where(x => serialNumbers.Contains(x.SerialNumber)).ToList();
+            context.Almacen.RemoveRange(almacenes);
+
+            // Actualizar evidencia
+            var evidencia = context.Evidencia.FirstOrDefault(x => x.IdEvidencia == model.egreso.IdEvidencia);
+            evidencia.PathAntes = model.egreso.PathAntes;
+            evidencia.PathDespues = model.egreso.PathDespues;
+            context.Evidencia.Update(evidencia);
+            context.SaveChanges();
         }
 
         public Egreso SelectEgreso(int IdEgreso)

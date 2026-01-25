@@ -216,5 +216,6 @@ namespace AgricolaDH_GApp.Services.Admin
             exists = context.Almacen.Any(x => x.SerialNumber.Equals(a.SerialNumber) && x.Movimiento.Equals(SourceView));
             return exists;
         }
+
     }
 }

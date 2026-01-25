@@ -14,18 +14,18 @@ namespace AgricolaDH_GApp.Services
             context = _ctx;
         }
 
-        public int InsertarLog(LogsEgresos model)
+        public int InsertarLog(LogsEgresos log)
         {
             try
             {
-                context.LogsEgresos.Add(model);                
+                context.LogsEgresos.Add(log);                
                 context.SaveChanges();
 
-                return model.IdLogsEgresos;
+                return log.IdLogsEgresos;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al guardar los logs de egresos: " + ex.Message, ex);
+                throw new Exception("Error al generar logs de Egresos: " + ex.Message, ex);
             }
         }
     }
