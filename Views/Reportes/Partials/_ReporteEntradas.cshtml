@@ -3,10 +3,12 @@
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Folio</th>
-            <th>Serial Number</th>
-            <th>Solicitante</th>
+            <th>Serial Egreso</th>
             <th>Fecha</th>
+            <th>Producto</th>
+            <th>Serial Almacén</th>
+            <th>Solicitante</th>
+            <th>Evidencia</th>
         </tr>
     </thead>
     <tbody>
@@ -15,22 +17,20 @@
             foreach (var item in Model)
             {
                 <tr>
+                    <td>@item.SerialEgreso</td>
+                    <td>
+                        @(item.Fecha.HasValue
+                                        ? item.Fecha.Value.ToString("dd/MM/yyyy")
+                                        : "-")
+                    </td>
+                    <td>@item.NombreProducto</td>
+                    <td>@item.SerialAlmacen</td>
+                    <td>@item.Solicitante</td>
                     <td>
                         @if (!string.IsNullOrEmpty(item.Folio))
                         {
                             <a href="@item.Folio" target="_blank">Ver</a>
                         }
-                        else
-                        {
-                            <span class="text-muted">Sin evidencia</span>
-                        }
-                    </td>
-                    <td>@item.SerialEgreso</td>
-                    <td>@item.Solicitante</td>
-                    <td>
-                        @(item.Fecha.HasValue
-                                        ? item.Fecha.Value.ToString("dd/MM/yyyy")
-                                        : "-")
                     </td>
                 </tr>
             }
@@ -38,7 +38,7 @@
         else
         {
             <tr>
-                <td colspan="4" class="text-center text-muted">
+                <td colspan="6" class="text-center text-muted">
                     No hay datos para mostrar
                 </td>
             </tr>

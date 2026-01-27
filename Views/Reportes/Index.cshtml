@@ -1,18 +1,24 @@
+<div class="row top-row-spacer" style="margin-bottom: 2vh">
+    <div class="col-md-6">
+        <h4 class="page-title">Reportes</h4>
+    </div>
+</div>
+
 <div class="card" style="margin:20px;">
     <div class="card-header p-0">
         <ul class="nav nav-tabs d-flex" id="tabsReportes">
             <li class="nav-item">
-                <a class="nav-link active custom-tabs" href="#" data-tipo="egresos" style="color: #000000">
+                <a class="nav-link active custom-tabs" href="#" data-tipo="egresos" style="color: #0f0f0f">
                     Egresos
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link custom-tabs" href="#" data-tipo="salidas" style="color: #000000">
+                <a class="nav-link custom-tabs" href="#" data-tipo="salidas" style="color: #0f0f0f">
                     Salidas
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link custom-tabs" href="#" data-tipo="entradas" style="color: #000000">
+                <a class="nav-link custom-tabs" href="#" data-tipo="entradas" style="color: #0f0f0f">
                     Entradas
                 </a>
             </li>
@@ -116,6 +122,9 @@
             tipo: tipoActual
         };
 
+        console.log("fecha inicio"+fechaInicio);
+        console.log("fecha fin"+fechaFin);
+        
         if (fechaInicio && fechaFin) {
             params.fechaInicio = fechaInicio;
             params.fechaFin = fechaFin;

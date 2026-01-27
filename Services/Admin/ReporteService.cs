@@ -1,5 +1,7 @@
-﻿using AgricolaDH_GApp.DataAccess;
+﻿using System.Diagnostics;
+using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgricolaDH_GApp.Services.Admin
 {
@@ -14,61 +16,63 @@ namespace AgricolaDH_GApp.Services.Admin
         public List<ReporteEgresosVM> SelectReporteEgresos(
             DateTime? fechaInicio,
             DateTime? fechaFin
-            )
+        )
         {
-            List<ReporteEgresosVM> lista;
-
             try
             {
                 var query =
-                    from e in context.Egresos
-                    join p in context.Productos on e.IdProducto equals p.IdProducto
-                    join u in context.Usuarios on e.IdSolicitante equals u.IdUsuario
-                    join ev in context.Evidencia on e.IdEvidencia equals ev.IdEvidencia
-                    join a in context.Almacen on e.IdAlmacen equals a.IdAlmacen
+                    from log in context.LogsEgresos
+                    join e in context.Egresos
+                        on log.IdLogsEgresos equals e.IdLogsEgresos
+                    join u in context.Usuarios
+                        on log.IdSolicitante equals u.IdUsuario
                     select new
                     {
-                        e,
-                        p,
-                        u,
-                        ev,
-                        a
+                        Log = log,
+                        Egreso = e,
+                        Usuario = u
                     };
 
-                // 🔥 FILTRO DE FECHAS
+                var totalAntesDeFechas = query.Count();
+                Debug.WriteLine("TOTAL ANTES DE FILTROS: " + totalAntesDeFechas);
+
+
+
+                // 🔹 FILTRO FECHAS
                 if (fechaInicio.HasValue)
                 {
-                    query = query.Where(x => x.e.Fecha >= fechaInicio.Value);
+                    query = query.Where(x => x.Log.Fecha >= fechaInicio.Value);
                 }
 
                 if (fechaFin.HasValue)
                 {
-                    // incluye todo el día final
-                    var finDia = fechaFin.Value.Date.AddDays(1);
-                    query = query.Where(x => x.e.Fecha < finDia);
+                    var fechaFinCompleta = fechaFin.Value.Date.AddDays(1);
+                    query = query.Where(x => x.Log.Fecha < fechaFinCompleta);
                 }
 
-                lista = query
-                    .Select(x => new ReporteEgresosVM
-                    {
-                        SerialEgreso = x.e.SerialNumber,
-                        Fecha = x.e.Fecha,
-                        NombreProducto = x.p.NombreProducto,
-                        SerialAlmacen = x.a.SerialNumber,
-                        Solicitante = x.u.Nombre + " " + x.u.ApellidoPaterno,
-                        Path = x.ev.PathDespues
-                    })
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                // si quieres debuggear:
-                // Debug.WriteLine(ex.Message);
-                lista = new List<ReporteEgresosVM>();
-            }
+                var totalDespuesDeFechas = query.Count();
+                Debug.WriteLine("TOTAL DESPUÉS DE FILTROS: " + totalDespuesDeFechas);
 
-            return lista;
+
+                return query
+                .AsNoTracking()
+                .Select(x => new ReporteEgresosVM
+                {
+                    Folio = x.Log.Folio ?? "",   // 🔥 AQUÍ
+                    SerialEgreso = x.Egreso.SerialNumber ?? "",
+                    Solicitante =
+                        (x.Usuario.Nombre ?? "") + " " + (x.Usuario.ApellidoPaterno ?? ""),
+                    Fecha = x.Log.Fecha
+                })
+                .ToList();
+
+            }
+            catch
+            {
+                return new List<ReporteEgresosVM>();
+            }
         }
+
 
 
 
