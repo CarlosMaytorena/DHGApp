@@ -115,9 +115,15 @@ namespace AgricolaDH_GApp.Controllers
                 var producto = _productoService.SelectProducto(productoOrdenar.IdProducto);
                 if (producto == null) continue;
 
+                // Modelo para Almacen y Logs
+                AlmacenVM model = new AlmacenVM
+                {
+                    almacenLista = new List<Almacen>(),
+                };
                 // Save the short 12-char serials to SerialMap
                 if (item.SerialesCortos != null)
                 {
+
                     foreach (var serial in item.SerialesCortos)
                     {
                         try
@@ -130,16 +136,9 @@ namespace AgricolaDH_GApp.Controllers
                             _almacenService.GuardarEnAlmacen(producto.IdProducto, serial);
 
                             // Registro de log en Almacen
-                            AlmacenVM model = new AlmacenVM
-                            {
-                                almacenLista = new List<Almacen>(),
-                            };
                             Almacen a = _context.Almacen.
                                 Single(x => x.IdProducto == producto.IdProducto && x.SerialNumber == serial);
-                            model.almacen = a;
-
                             model.almacenLista.Add(a);
-                            _logsAlmacenService.InsertarLog(model);
                         }
                         catch (System.Exception ex)
                         {
@@ -147,17 +146,10 @@ namespace AgricolaDH_GApp.Controllers
                             _logger.LogWarning(ex, "SerialMap insert failed for {SerialKey}", serial);
                         }
                     }
+                    //Agregar logs
+                    model.logsAlmacen = _logsAlmacenService.InsertarLogsAlmacen(model);
+                    _logsAlmacenService.InsertarLogsAlmacenProductos(model);
                 }
-
-                // If you still want to store the long serials in Almacén, keep this block.
-                // (Otherwise you can remove it.)
-                // if (item.Seriales != null)
-                // {
-                //     foreach (var longSerial in item.Seriales)
-                //     {
-                //         _almacenService.GuardarEnAlmacen(producto.IdProducto, longSerial);
-                //     }
-                // }
             }
 
             var productosOrden = _ordenDeCompraService.SelectProductosOrdenarSelected(idOrdenDeCompra);

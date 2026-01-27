@@ -2,6 +2,7 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
+using System.Transactions;
 
 namespace AgricolaDH_GApp.Services
 {
@@ -14,7 +15,7 @@ namespace AgricolaDH_GApp.Services
             context = _ctx;
         }
 
-        public void InsertarLog(AlmacenVM model)
+        public LogsAlmacen InsertarLogsAlmacen(AlmacenVM model)
         {
             try
             {
@@ -32,18 +33,33 @@ namespace AgricolaDH_GApp.Services
                     };
                     context.LogsAlmacen.Add(log);
                     context.SaveChanges();
-
+                    transaction.Commit();
+                    return log;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al guardar el log de almacén: " + ex.Message, ex);
+            }
+        }
+        public void InsertarLogsAlmacenProductos(AlmacenVM model)
+        {
+            try
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    
                     foreach (Almacen a in model.almacenLista)
                     {
                         LogsAlmacenProductos logProducto = new LogsAlmacenProductos
                         {
-                            IdLogsAlmacen = log.IdLogsAlmacen,
+                            IdLogsAlmacen = model.logsAlmacen.IdLogsAlmacen,
                             IdProducto = a.IdProducto,
                             SerialKey = a.SerialNumber
                         };
                         context.LogsAlmacenProductos.Add(logProducto);
-                        context.SaveChanges();
                     }
+                    context.SaveChanges();
                     transaction.Commit();
                 }
             }
