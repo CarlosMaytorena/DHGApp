@@ -17,7 +17,7 @@ namespace AgricolaDH_GApp.Controllers
         private readonly ProductoService _productoService;
         private readonly SerialMapService _serialMapService;
         private readonly LogsAlmacenService _logsAlmacenService;
-        private readonly AppDbContext context;
+        private readonly AppDbContext _context;
 
         public IngresosController(
             ILogger<IngresosController> logger,
@@ -25,7 +25,8 @@ namespace AgricolaDH_GApp.Controllers
             AlmacenService almacenService,
             ProductoService productoService,
             SerialMapService serialMapService,
-            LogsAlmacenService logsAlmacenService)
+            LogsAlmacenService logsAlmacenService,
+            AppDbContext context)
         {
             _logger = logger;
             _ordenDeCompraService = ordenDeCompraService;
@@ -33,6 +34,7 @@ namespace AgricolaDH_GApp.Controllers
             _productoService = productoService;
             _serialMapService = serialMapService;
             _logsAlmacenService = logsAlmacenService;
+            _context = context;
         }
 
         [HttpGet]
@@ -132,7 +134,7 @@ namespace AgricolaDH_GApp.Controllers
                             {
                                 almacenLista = new List<Almacen>(),
                             };
-                            Almacen a = context.Almacen.
+                            Almacen a = _context.Almacen.
                                 Single(x => x.IdProducto == producto.IdProducto && x.SerialNumber == serial);
                             model.almacen = a;
 
