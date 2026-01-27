@@ -93,12 +93,42 @@
 
 <script type="module">
     // ---- Short serial (12-char Crockford Base32 from SHA-256) ----
-    const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"; // no I/L/O/U
+    const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     
     function scrambleSerial(serial) {
         if (!serial || serial.length !== 12) return serial;
         // "123456ABCDEF" -> "ABCDEF123456"
         return serial.substring(6) + serial.substring(0, 6);
+    }
+    
+    function allRestantesBaseCero() {
+        let allZero = true;
+
+        $(".product-row").each(function () {
+            const restanteBase = parseInt(
+                $(this).find(".cantidad-restante").data("restante-inicial"),
+                10
+            ) || 0;
+
+            if (restanteBase > 0) {
+                allZero = false;
+            }
+        });
+
+        return allZero;
+    }
+
+    function goToIngresosIndex() {
+        $.ajax({
+            url: '@Url.Action("Index", "Ingresos")',
+            type: 'GET',
+            success: function (data) {
+                $("#HtmlBody").html(data);
+            },
+            error: function () {
+                showWarning("Error al regresar al listado de Ingresos.");
+            }
+        });
     }
     
     function bytesToBase32(bytes, outLen) {
@@ -152,6 +182,29 @@
 
 
     $(document).ready(function () {
+
+        function initRecibirDefaults() {
+            $(".product-row").each(function () {
+                const $row = $(this);
+                const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
+
+                const $recibir = $row.find(".cantidad-recibida");
+                $recibir.val(restanteBase); 
+                updateRestante($recibir[0]); 
+
+                
+                if (restanteBase === 0) {
+                    $recibir.prop("disabled", true);
+                } else {
+                    $recibir.prop("disabled", false);
+                }
+            });
+        }
+
+        initRecibirDefaults();
+
+
+
         $("#volverAIndex").click(function () {
             $.ajax({
                 url: '@Url.Action("Index", "Ingresos")',
@@ -265,6 +318,8 @@
                         if (labelsToPrint.length > 0) {
                             openPrintWindow(labelsToPrint.join(''), workOrderNumber);
                         }
+
+                        window.salirAlIndex = allRestantesBaseCero();
                     } else {
                         showWarning("Hubo un error al actualizar los datos.");
                     }
@@ -274,6 +329,13 @@
                 }
 
             });
+        });
+
+        $("#modal-success").on("hidden.bs.modal", function () {
+            if (window.salirAlIndex) {
+                goToIngresosIndex();
+                window.salirAlIndex = false;
+            }
         });
     });
 </script>
