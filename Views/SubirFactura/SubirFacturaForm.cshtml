@@ -63,6 +63,12 @@
                     @Html.EditorFor(m => m.ordenDeCompra.Temporada, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
                 </div>
             </div>
+            <div class="row card-row-spacer">
+                <div class="col-md-4">
+                    <label style="font-weight: normal; text-align: left; float: left">Referencia</label>
+                    @Html.EditorFor(m => m.ordenDeCompra.Referencia, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
+                </div>
+            </div>
             <div id="productosOrdenarContent">
                 @Html.Partial("~/Views/SubirFactura/ProductosOrdenar.cshtml", Model)
             </div>            

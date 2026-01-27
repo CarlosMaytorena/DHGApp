@@ -21,6 +21,7 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
+        public string? Referencia { get; set; }
 
         [NotMapped]
         public string? AreaName { get; set; }
@@ -43,6 +44,6 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
-
+        public string? Referencia { get; set; }
     }
 }
