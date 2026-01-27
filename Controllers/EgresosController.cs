@@ -82,7 +82,7 @@ namespace AgricolaDH_GApp.Controllers
             try
             {
                 Evidencia e = new Evidencia();
-                context.Evidencia.Add(new Evidencia());
+                context.Evidencia.Add(e);
                 await context.SaveChangesAsync();
 
                 // Insertar log
