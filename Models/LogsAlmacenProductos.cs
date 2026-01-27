@@ -9,7 +9,7 @@ namespace AgricolaDH_GApp.Models
     {
         public int IdLogsAlmacenProducto { get; set; }
         public int? IdLogsAlmacen { get; set; }
-        public int IdProducto { get; set; }
+        public int? IdProducto { get; set; }
         public string? SerialKey { get; set; }
     }
 }
