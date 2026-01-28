@@ -1,3 +1,6 @@
+@model AgricolaDH_GApp.ViewModels.ReporteEgresosPageVM
+
+
 <div class="row top-row-spacer" style="margin-bottom: 2vh">
     <div class="col-md-6">
         <h4 class="page-title">Reportes</h4>
@@ -23,7 +26,48 @@
                 </a>
             </li>
 
-            <li class="nav-item ms-auto me-3 d-flex align-items-center" style="margin-left: auto; margin-right: 20px; padding: 5px;">
+            <li class="nav-item ms-auto me-3 d-flex align-items-center" style="margin-left: auto; margin-right: 5px; padding: 5px;">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+                        🗂 Área
+                    </button>
+
+                    <div class="dropdown-menu p-3" style="min-width: 220px;">
+                        <select id="filtroArea" class="form-control">
+                            <option value="">Todas las áreas</option>
+                            @foreach (var a in Model.Filtros.Areas)
+                            {
+                                <option value="@a.Value">@a.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item me-3 d-flex align-items-center" style="margin-right: 5px; padding: 5px;">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+                        👤 Solicitante
+                    </button>
+
+                    <div class="dropdown-menu p-3" style="min-width: 220px;">
+                        <select id="filtroSolicitante" class="form-control">
+                            <option value="">Todos</option>
+                            @foreach (var s in Model.Filtros.Solicitantes)
+                            {
+                                <option value="@s.Value">@s.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </li>
+
+
+            <li class="nav-item ms-auto me-3 d-flex align-items-center" style="margin-right: 20px; padding: 5px;">
                 <!-- DROPDOWN CALENDARIO -->
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle"
@@ -83,7 +127,7 @@
             $(this).addClass('active');
 
             tipoActual = $(this).data('tipo');
-            cargarReporte();
+            cargarReporte(tipoActual);
         });
 
     });
@@ -115,36 +159,20 @@
         cargarReporte();
     });
 
-        function cargarReporte() {
-
-        let url = `/Reportes/LoadReporte`;
-        let params = {
-            tipo: tipoActual
-        };
-
-        console.log("fecha inicio"+fechaInicio);
-        console.log("fecha fin"+fechaFin);
-        
-        if (fechaInicio && fechaFin) {
-            params.fechaInicio = fechaInicio;
-            params.fechaFin = fechaFin;
-        }
-
-
-
-        $.get(url, params)
-            .done(function (html) {
-                $('#contenedorReporte').html(html);
-            })
-            .fail(function (err) {
-                console.error(err);
-                $('#contenedorReporte').html(`
-                    <div class="alert alert-danger">
-                        Error al cargar el reporte
-                    </div>
-                `);
-            });
+    function cargarReporte() {
+        $.get("/Reportes/LoadReporte", {
+            tipo: "egresos",
+            fechaInicio: $("#fechaInicio").val(),
+            fechaFin: $("#fechaFin").val(),
+            idArea: $("#filtroArea").val(),
+            idSolicitante: $("#filtroSolicitante").val()
+        }, function (html) {
+            $("#contenedorReporte").html(html);
+        });
     }
+
+    $("#filtroArea, #filtroSolicitante").change(cargarReporte);
+
 
 
 

@@ -1,21 +1,21 @@
 ﻿@model List<AgricolaDH_GApp.ViewModels.ReporteEgresosVM>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Folio</th>
-            <th>Serial Number</th>
-            <th>Solicitante</th>
-            <th>Fecha</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
+
+<div class="card-body table-responsive p-0" style="height: 100%;">
+    <table class="table table-head-fixed text-nowrap">
+        <thead>
+            <tr>
+                <th>Folio</th>
+                <th>Solicitante</th>
+                <th>Fecha</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
             {
-                <tr>
-                    <td>
+                <tr class="main-row" data-id="@item.IdLogsEgresos">
+                    <td class="expand-btn" style="cursor:pointer; color:#007bff;">
                         @if (!string.IsNullOrEmpty(item.Folio))
                         {
                             <a href="@item.Folio" target="_blank">Ver</a>
@@ -25,23 +25,55 @@
                             <span class="text-muted">Sin evidencia</span>
                         }
                     </td>
-                    <td>@item.SerialEgreso</td>
                     <td>@item.Solicitante</td>
-                    <td>
-                        @(item.Fecha.HasValue
-                                        ? item.Fecha.Value.ToString("dd/MM/yyyy")
-                                        : "-")
+                    <td>@item.Fecha?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Seriales.Count</td>
+                </tr>
+
+                <tr class="details-row" id="details-@item.IdLogsEgresos" style="display:none;">
+                    <td colspan="4" class="p-0">
+                        <div class="p-3">
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Serial</th>
+                                        <th>Solicitante</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var d in item.Detalles)
+                                    {
+                                        <tr>
+                                            <td>@d.Serial</td>
+                                            <td>@d.Solicitante</td>
+                                            <td>@d.Fecha?.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </td>
                 </tr>
+
             }
-        }
-        else
-        {
-            <tr>
-                <td colspan="4" class="text-center text-muted">
-                    No hay datos para mostrar
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    document.querySelectorAll(".main-row .expand-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const row = this.closest(".main-row");
+            const id = row.dataset.id;
+            const detailRow = document.getElementById("details-" + id);
+
+            if (detailRow.style.display === "none") {
+                detailRow.style.display = "table-row";
+            } else {
+                detailRow.style.display = "none";
+            }
+        });
+    });
+</script>

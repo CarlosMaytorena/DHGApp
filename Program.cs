@@ -52,6 +52,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<RazorViewEngine>();
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddScoped<ViewRenderService>();
+builder.Services.AddScoped<ReporteService>();
+
 
 builder.Services.AddSingleton<Email>();
 builder.Services.AddSession();
