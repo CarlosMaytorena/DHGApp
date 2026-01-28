@@ -102,5 +102,74 @@ namespace AgricolaDH_GApp.Services.Admin
                 .ToList();
         }
 
+        public ReporteMovimientosVM SelectReporteMovimientos(
+            int idMovimiento, // 2 = Entradas, 3 = Salidas
+            DateTime? fechaInicio,
+            DateTime? fechaFin,
+            int? idArea,
+            int? idSolicitante
+        )
+        {
+            var query =
+                from lap in context.LogsAlmacenProductos
+                join la in context.LogsAlmacen
+                    on lap.IdLogsAlmacen equals la.IdLogsAlmacen
+                join sol in context.Usuarios
+                    on la.IdSolicitante equals sol.IdUsuario
+                join alm in context.Usuarios
+                    on la.IdAlmacenista equals alm.IdUsuario
+                select new
+                {
+                    lap.IdLogsAlmacen,
+                    lap.SerialKey,
+                    la.Fecha,
+                    la.IdMovimiento,
+                    sol.IdUsuario,
+                    sol.IdArea,
+                    Solicitante = (sol.Nombre ?? "") + " " + (sol.ApellidoPaterno ?? ""),
+                    Almacenista = (alm.Nombre ?? "") + " " + (alm.ApellidoPaterno ?? "")
+                };
+
+            // 🔹 Tipo movimiento
+            query = query.Where(x => x.IdMovimiento == idMovimiento);
+
+            // 🔹 Filtros
+            if (fechaInicio.HasValue)
+                query = query.Where(x => x.Fecha >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                query = query.Where(x => x.Fecha < fechaFin.Value.Date.AddDays(1));
+
+            if (idArea.HasValue)
+                query = query.Where(x => x.IdArea == idArea.Value);
+
+            if (idSolicitante.HasValue)
+                query = query.Where(x => x.IdUsuario == idSolicitante.Value);
+
+            var data = query.AsNoTracking().ToList();
+
+            var movimientos = data
+                .GroupBy(x => x.IdLogsAlmacen)
+                .Select(g => new MovimientoAlmacenVM
+                {
+                    IdLogsAlmacen = (int)g.Key,
+                    Fecha = g.First().Fecha,
+                    Solicitante = g.First().Solicitante,
+                    Almacenista = g.First().Almacenista,
+                    Productos = g.Select(p => new MovimientoProductoVM
+                    {
+                        SerialKey = p.SerialKey,
+                        Solicitante = p.Solicitante
+                    }).ToList()
+                })
+                .ToList();
+
+            return new ReporteMovimientosVM
+            {
+                Movimientos = movimientos
+            };
+        }
+
+
     }
 }

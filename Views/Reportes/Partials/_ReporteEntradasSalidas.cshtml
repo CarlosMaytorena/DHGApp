@@ -1,0 +1,64 @@
+﻿@model AgricolaDH_GApp.ViewModels.ReporteMovimientosVM
+
+@if (Model.Movimientos == null || !Model.Movimientos.Any())
+{
+    <div class="alert alert-info text-center">
+        No hay datos para mostrar
+    </div>
+    return;
+}
+
+<div class="card-body table-responsive p-0" style="height: 100%;">
+
+    <table class="table table-head-fixed text-nowrap">
+        <thead class="table-light">
+            <tr>
+                <th>ID Movimiento</th>
+                <th>Almacenista</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mov in Model.Movimientos)
+            {
+                var collapseId = $"mov-{mov.IdLogsAlmacen}";
+
+                <tr data-bs-toggle="collapse"
+                    data-bs-target="#@collapseId"
+                    style="cursor:pointer;">
+                    <td>@mov.IdLogsAlmacen</td>
+                    <td>@mov.Almacenista</td>
+                    <td>@mov.Fecha.ToString("dd/MM/yyyy")</td>
+                </tr>
+
+                <tr class="collapse bg-light" id="@collapseId">
+                    <td colspan="5">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Serial</th>
+                                    <th>Solicitante</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in mov.Productos)
+                                {
+                                    <tr>
+                                        <td>@p.SerialKey</td>
+                                        <td>@p.Solicitante</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+
+
+</script>

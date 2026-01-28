@@ -116,8 +116,12 @@
     var fechaFin = null;
 
     $(document).ready(function () {
+        const hoy = new Date();
+        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
 
-        // Al cargar, dispara Egresos por default
+        $('#fechaInicio').val(primerDia.toISOString().split('T')[0]);
+        $('#fechaFin').val(hoy.toISOString().split('T')[0]);
+
         cargarReporte('egresos');
 
         $('#tabsReportes .nav-link').click(function (e) {
@@ -131,16 +135,6 @@
         });
 
     });
-
-    $(document).ready(function () {
-        const hoy = new Date();
-        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-
-        $('#fechaInicio').val(primerDia.toISOString().split('T')[0]);
-        $('#fechaFin').val(hoy.toISOString().split('T')[0]);
-    });
-
-
 
     $('#btnAplicarFechas').on('click', function () {
 
@@ -161,7 +155,7 @@
 
     function cargarReporte() {
         $.get("/Reportes/LoadReporte", {
-            tipo: "egresos",
+            tipo: tipoActual,
             fechaInicio: $("#fechaInicio").val(),
             fechaFin: $("#fechaFin").val(),
             idArea: $("#filtroArea").val(),
@@ -172,8 +166,4 @@
     }
 
     $("#filtroArea, #filtroSolicitante").change(cargarReporte);
-
-
-
-
 </script>

@@ -56,4 +56,39 @@ namespace AgricolaDH_GApp.ViewModels
 
 
 
+
+    public class MovimientoPlanoVM
+    {
+        public int IdLogsAlmacen { get; set; }
+        public string Almacenista { get; set; }
+        public string Solicitante { get; set; }
+        public string SerialKey { get; set; }
+        public DateTime Fecha { get; set; }
+    }
+
+
+    public class MovimientoProductoVM
+    {
+        public string SerialKey { get; set; }
+        public string Solicitante { get; set; }
+
+    }
+
+    public class MovimientoAlmacenVM
+    {
+        public int IdLogsAlmacen { get; set; }
+        public string Almacenista { get; set; }
+        public string Solicitante { get; set; }
+        public DateTime Fecha { get; set; }
+
+        public List<MovimientoProductoVM> Productos { get; set; } = new();
+    }
+
+    public class ReporteMovimientosVM
+    {
+        public List<MovimientoAlmacenVM> Movimientos { get; set; }
+    }
+
+
+
 }

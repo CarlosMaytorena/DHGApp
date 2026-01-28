@@ -8,7 +8,6 @@
                 <th>Folio</th>
                 <th>Solicitante</th>
                 <th>Fecha</th>
-                <th>Total</th>
             </tr>
         </thead>
         <tbody>
@@ -27,35 +26,31 @@
                     </td>
                     <td>@item.Solicitante</td>
                     <td>@item.Fecha?.ToString("dd/MM/yyyy")</td>
-                    <td>@item.Seriales.Count</td>
                 </tr>
 
-                <tr class="details-row" id="details-@item.IdLogsEgresos" style="display:none;">
-                    <td colspan="4" class="p-0">
-                        <div class="p-3">
-                            <table class="table table-sm table-bordered mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Serial</th>
-                                        <th>Solicitante</th>
-                                        <th>Fecha</th>
-                                    </tr>
+                <tr class="collapse bg-light" id="details-@item.IdLogsEgresos" style="display:none;">
+                    <td colspan="5">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Serial</th>
+                                    <th>Solicitante</th>
+                                    <th>Fecha</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var d in item.Detalles)
-                                    {
-                                        <tr>
-                                            <td>@d.Serial</td>
-                                            <td>@d.Solicitante</td>
-                                            <td>@d.Fecha?.ToString("dd/MM/yyyy")</td>
-                                        </tr>
-                                    }
+                                @foreach (var d in item.Detalles)
+                                {
+                                    <tr>
+                                        <td>@d.Serial</td>
+                                        <td>@d.Solicitante</td>
+                                        <td>@d.Fecha?.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
                                 </tbody>
-                            </table>
-                        </div>
+                        </table>
                     </td>
                 </tr>
-
             }
         </tbody>
     </table>
