@@ -17,11 +17,11 @@
                     <td class="expand-btn" style="cursor:pointer; color:#007bff;">
                         @if (!string.IsNullOrEmpty(item.Folio))
                         {
-                            <a href="@item.Folio" target="_blank">Ver</a>
+                            <span class="text-muted">@item.Folio</span>
                         }
                         else
                         {
-                            <span class="text-muted">Sin evidencia</span>
+                            <span class="text-muted"></span>
                         }
                     </td>
                     <td>@item.Solicitante</td>

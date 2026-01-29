@@ -16,6 +16,7 @@ namespace AgricolaDH_GApp.Models
         public DateTime Fecha { get; set; }
 
         public string? Folio { get; set; }
+        public int SecuenciaDia { get; set; }
     }
 
 }

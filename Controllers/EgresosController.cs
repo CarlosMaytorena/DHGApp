@@ -4,6 +4,7 @@ using AgricolaDH_GApp.Services;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
@@ -85,11 +86,25 @@ namespace AgricolaDH_GApp.Controllers
                 context.Evidencia.Add(e);
                 await context.SaveChangesAsync();
 
+
+                DateTime hoy = DateTime.Today;
+                DateTime mañana = hoy.AddDays(1);
+
+                // obtener última secuencia del día (por rango)
+                int ultimaSecuencia = await context.LogsEgresos
+                    .Where(x => x.Fecha >= hoy && x.Fecha < mañana)
+                    .MaxAsync(x => (int?)x.SecuenciaDia) ?? 0;
+
+                int nuevaSecuencia = ultimaSecuencia + 1;
+
                 // Insertar log
+
                 LogsEgresos log = new LogsEgresos
                 {
                     IdSolicitante = model.egreso.IdSolicitante,
-                    Fecha = DateTime.Now
+                    Fecha = DateTime.Now,
+                    SecuenciaDia = nuevaSecuencia,
+                    Folio = $"{hoy:yyyyMMdd}-{nuevaSecuencia:D4}"
                 };
                 int idLogsEgresos = logsEgresosService.InsertarLog(log);
 
