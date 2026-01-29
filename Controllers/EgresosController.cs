@@ -86,7 +86,6 @@ namespace AgricolaDH_GApp.Controllers
                 context.Evidencia.Add(e);
                 await context.SaveChangesAsync();
 
-
                 DateTime hoy = DateTime.Today;
                 DateTime mañana = hoy.AddDays(1);
 

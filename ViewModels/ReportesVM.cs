@@ -81,6 +81,7 @@ namespace AgricolaDH_GApp.ViewModels
         public int IdLogsAlmacen { get; set; }
         public string Almacenista { get; set; }
         public string Solicitante { get; set; }
+        public string? Folio { get; set; }
         public DateTime Fecha { get; set; }
 
         public List<MovimientoProductoVM> Productos { get; set; } = new();

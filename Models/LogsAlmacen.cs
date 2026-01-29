@@ -13,5 +13,7 @@ namespace AgricolaDH_GApp.Models
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
+        public int SecuenciaDia { get; set; }
+        public string? Folio { get; set; }
     }
 }

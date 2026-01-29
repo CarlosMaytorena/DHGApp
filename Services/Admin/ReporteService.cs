@@ -130,7 +130,8 @@ namespace AgricolaDH_GApp.Services.Admin
                     sol.IdArea,
                     Solicitante = (sol.Nombre ?? "") + " " + (sol.ApellidoPaterno ?? ""),
                     Almacenista = (alm.Nombre ?? "") + " " + (alm.ApellidoPaterno ?? ""),
-                    Nombre = productos.NombreInterno + " - " + productos.Contenido + " " + productos.UnidadDeSKU
+                    Nombre = productos.NombreInterno + " - " + productos.Contenido + " " + productos.UnidadDeSKU,
+                    la.Folio
                 };
 
             // 🔹 Tipo movimiento
@@ -159,6 +160,7 @@ namespace AgricolaDH_GApp.Services.Admin
                     Fecha = g.First().Fecha,
                     Solicitante = g.First().Solicitante,
                     Almacenista = g.First().Almacenista,
+                    Folio = g.First().Folio,
                     Productos = g.Select(p => new MovimientoProductoVM
                     {
                         SerialKey = p.SerialKey,

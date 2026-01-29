@@ -2,6 +2,7 @@
 using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Transactions;
 
 namespace AgricolaDH_GApp.Services
@@ -24,12 +25,23 @@ namespace AgricolaDH_GApp.Services
                     var i = model.almacenLista.First();
                     model.almacen = context.Almacen.Single(x => x.IdAlmacen == i.IdAlmacen);
 
+                    DateTime hoy = DateTime.Today;
+                    DateTime mañana = hoy.AddDays(1);
+
+                    // obtener última secuencia del día (por rango)
+                    int ultimaSecuencia = context.LogsAlmacen.Where(x => x.Fecha >= hoy && x.Fecha < mañana).Max(x => (int?)x.SecuenciaDia) ?? 0;
+
+                    int nuevaSecuencia = ultimaSecuencia + 1;
+
+                    // Insertar log
                     LogsAlmacen log = new LogsAlmacen
                     {
                         Fecha = model.almacen.Fecha,
                         IdSolicitante = model.almacen.IdSolicitante,
                         IdAlmacenista = model.almacen.IdAlmacenista,
                         IdMovimiento = model.almacen.IdEstatus,
+                        SecuenciaDia = nuevaSecuencia,
+                        Folio = $"{hoy:yyyyMMdd}-{nuevaSecuencia:D4}"
                     };
                     context.LogsAlmacen.Add(log);
                     context.SaveChanges();
