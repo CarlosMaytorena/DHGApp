@@ -118,6 +118,8 @@ namespace AgricolaDH_GApp.Services.Admin
                     on la.IdSolicitante equals sol.IdUsuario
                 join alm in context.Usuarios
                     on la.IdAlmacenista equals alm.IdUsuario
+                join productos in context.Productos
+                    on lap.IdProducto equals productos.IdProducto
                 select new
                 {
                     lap.IdLogsAlmacen,
@@ -127,7 +129,8 @@ namespace AgricolaDH_GApp.Services.Admin
                     sol.IdUsuario,
                     sol.IdArea,
                     Solicitante = (sol.Nombre ?? "") + " " + (sol.ApellidoPaterno ?? ""),
-                    Almacenista = (alm.Nombre ?? "") + " " + (alm.ApellidoPaterno ?? "")
+                    Almacenista = (alm.Nombre ?? "") + " " + (alm.ApellidoPaterno ?? ""),
+                    Nombre = productos.NombreInterno + " - " + productos.Contenido + " " + productos.UnidadDeSKU
                 };
 
             // 🔹 Tipo movimiento
@@ -159,7 +162,8 @@ namespace AgricolaDH_GApp.Services.Admin
                     Productos = g.Select(p => new MovimientoProductoVM
                     {
                         SerialKey = p.SerialKey,
-                        Solicitante = p.Solicitante
+                        Solicitante = p.Solicitante,
+                        Nombre = p.Nombre
                     }).ToList()
                 })
                 .ToList();

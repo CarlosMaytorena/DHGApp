@@ -71,6 +71,8 @@ namespace AgricolaDH_GApp.ViewModels
     {
         public string SerialKey { get; set; }
         public string Solicitante { get; set; }
+        public string Nombre { get; set; }
+
 
     }
 

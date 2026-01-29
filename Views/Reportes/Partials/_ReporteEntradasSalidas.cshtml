@@ -14,6 +14,7 @@
         <thead class="table-light">
             <tr>
                 <th>ID Movimiento</th>
+                <th>Solicitante</th>
                 <th>Almacenista</th>
                 <th>Fecha</th>
             </tr>
@@ -27,6 +28,7 @@
                     data-bs-target="#@collapseId"
                     style="cursor:pointer;">
                     <td>@mov.IdLogsAlmacen</td>
+                    <td>@mov.Solicitante</td>
                     <td>@mov.Almacenista</td>
                     <td>@mov.Fecha.ToString("dd/MM/yyyy")</td>
                 </tr>
@@ -37,7 +39,8 @@
                             <thead>
                                 <tr>
                                     <th>Serial</th>
-                                    <th>Solicitante</th>
+                                    <th>Producto</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,7 +48,7 @@
                                 {
                                     <tr>
                                         <td>@p.SerialKey</td>
-                                        <td>@p.Solicitante</td>
+                                        <td>@p.Nombre</td>
                                     </tr>
                                 }
                             </tbody>
