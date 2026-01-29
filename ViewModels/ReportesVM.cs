@@ -37,6 +37,8 @@ namespace AgricolaDH_GApp.ViewModels
         public string Serial { get; set; }
         public string Solicitante { get; set; }
         public DateTime? Fecha { get; set; }
+        public string NombreProducto { get; set; }
+
     }
 
     public class ReporteEgresosFiltroVM

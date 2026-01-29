@@ -55,17 +55,19 @@ namespace AgricolaDH_GApp.Services.Admin
                     on log.IdSolicitante equals u.IdUsuario
                 join a in context.Areas
                     on u.IdArea equals a.IdArea
+                join productos in context.Productos
+                    on e.IdProducto equals productos.IdProducto
                 select new
                 {
                     log.IdLogsEgresos,
                     log.Folio,
                     Serial = e.SerialNumber,
-                    Solicitante =
-                        (u.Nombre ?? "") + " " + (u.ApellidoPaterno ?? ""),
+                    Solicitante = (u.Nombre ?? "") + " " + (u.ApellidoPaterno ?? ""),
                     log.Fecha,
                     u.IdArea,
                     Area = a.Descripcion,
-                    u.IdUsuario
+                    u.IdUsuario,
+                    NombreProducto = productos.NombreInterno + " - " + productos.Contenido + " " + productos.UnidadDeSKU
                 };
 
             // 🔹 Filtros
@@ -96,7 +98,8 @@ namespace AgricolaDH_GApp.Services.Admin
                     {
                         Serial = x.Serial,
                         Solicitante = x.Solicitante,
-                        Fecha = x.Fecha
+                        Fecha = x.Fecha,
+                        NombreProducto = x.NombreProducto
                     }).ToList()
                 })
                 .ToList();
