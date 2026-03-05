@@ -15,13 +15,14 @@ namespace AgricolaDH_GApp.Models
         public int IdArea { get; set; }
         public int IdCultivo { get; set; }
         public int IdRancho { get; set; }
-        public int IdEtapa { get; set; }
+        public int? IdEtapa { get; set; }
         public int IdTemporada { get; set; }
         public int IdOrdenDeCompraStatus { get; set; }
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
         public string? Referencia { get; set; }
+        public string? Comentarios { get; set; }
 
         [NotMapped]
         public string? AreaName { get; set; }
@@ -38,12 +39,13 @@ namespace AgricolaDH_GApp.Models
         public string Area { get; set; }
         public string Cultivo { get; set; }
         public string Rancho { get; set; }
-        public string Etapa { get; set; }
+        public string? Etapa { get; set; }
         public string Temporada { get; set; }
         public int IdOrdenDeCompraStatus { get; set; }
         [DataType(DataType.Date, ErrorMessage = "Date only")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FechaOrdenDeCompra { get; set; }
+        public string? Comentarios { get; set; }
         public string? Referencia { get; set; }
     }
 }
