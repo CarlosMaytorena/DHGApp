@@ -97,7 +97,9 @@
             var selectFile = ($("#myfile"))[0].files[0];
             var dataString = new FormData();
 
-            if(selectFile != null){
+            console.log("Archivo:", selectFile);
+
+            if (selectFile && selectFile.size > 0){
                 dataString.append("IdOrdenDeCompra", IdOrdenDeCompra);
                 dataString.append("file", selectFile);
 
@@ -108,12 +110,20 @@
                     contentType: false,
                     processData: false,
                     success: function (data) {
-                        $("#productosOrdenarContent").html(data.url);
+                        console.log("Respuesta:", data);
+
+                        if (data.res === 1) {
+                            $("#productosOrdenarContent").html(data.url);
+                        } else {
+                            alert(data.msg || "Error procesando archivo");
+                        }
+                    },
+                    error: function (err) {
+                        console.error("Error AJAX:", err);
+                        alert("Error al subir archivo");
                     }
                 });
             }
-
-
         })
 
     });
