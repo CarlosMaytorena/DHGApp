@@ -167,7 +167,8 @@ namespace AgricolaDH_GApp.Controllers
             }
             catch(Exception ex)
             {
-                res = -1;
+                _logger.LogError(ex, "Error procesando archivo");
+                return Json(new { res = -1, msg = ex.Message });
             }
 
 
