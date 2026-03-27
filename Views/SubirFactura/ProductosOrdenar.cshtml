@@ -110,9 +110,7 @@
                     contentType: false,
                     processData: false,
                     success: function (data) {
-                        console.log("Respuesta:", data);
-
-                        if (data.res === 1) {
+                        if (data.res == 0) {
                             $("#productosOrdenarContent").html(data.url);
                         } else {
                             alert(data.msg || "Error procesando archivo");
