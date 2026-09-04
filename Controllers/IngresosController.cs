@@ -100,6 +100,12 @@ namespace AgricolaDH_GApp.Controllers
                 .SelectProductoOrdenar(receivedProducts[0].IdProductoOrdenar)?.IdOrdenDeCompra ?? 0;
 
             var orden = _ordenDeCompraService.SelectOrdenDeCompra(idOrdenDeCompra);
+
+            if (orden == null || orden.IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.Cerrado)
+            {
+                return Json(new { success = false });
+            }
+
             var orderNumber = orden?.IdOrdenDeCompra.ToString() ?? string.Empty;
 
             foreach (var item in receivedProducts)

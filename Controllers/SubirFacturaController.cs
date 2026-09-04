@@ -60,6 +60,15 @@ namespace AgricolaDH_GApp.Controllers
         {
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
 
+            OrdenDeCompraTable ordenActual = ordenDeCompraService.SelectOrdenDeCompra(model.ordenDeCompra.IdOrdenDeCompra);
+            if (ordenActual == null || ordenActual.IdOrdenDeCompraStatus != OrdenDeCompraStatusEnumerators.Aceptado)
+            {
+                SubirFacturaVM blockedModel = new SubirFacturaVM();
+                blockedModel.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
+
+                return Json(new { res = -1, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", blockedModel) });
+            }
+
             int res = 0;
             bool allZero = true;
             foreach (var productoOrdenar in model.productosOrdenar)

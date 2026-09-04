@@ -1,0 +1,107 @@
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+@{
+    Layout = null;
+
+    string EstatusDescripcion(int idStatus) => idStatus switch
+    {
+        OrdenDeCompraStatusEnumerators.Enviado => "Enviado",
+        OrdenDeCompraStatusEnumerators.Aceptado => "Aceptado",
+        OrdenDeCompraStatusEnumerators.Rechazado => "Rechazado",
+        OrdenDeCompraStatusEnumerators.PorIngresar => "Por Ingresar",
+        OrdenDeCompraStatusEnumerators.Ingresado => "Ingresado",
+        OrdenDeCompraStatusEnumerators.Cancelado => "Cancelado",
+        OrdenDeCompraStatusEnumerators.Cerrado => "Cerrado",
+        _ => "-"
+    };
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Requisición #@Model.ordenDeCompra.IdOrdenDeCompra</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+        }
+        table.border td, table.border th {
+            border: 1px solid #999;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        .toolbar {
+            margin-bottom: 20px;
+        }
+        @@media print {
+            .toolbar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="toolbar">
+        <button onclick="window.print()">Imprimir</button>
+    </div>
+
+    <p><strong>Requisición #@Model.ordenDeCompra.IdOrdenDeCompra</strong></p>
+    <p><strong>Fecha:</strong> @Model.ordenDeCompra.FechaRequisicion.ToShortDateString()</p>
+    <p><strong>Estatus:</strong> @EstatusDescripcion(Model.ordenDeCompra.IdOrdenDeCompraStatus)</p>
+    @if (Model.ordenDeCompra.FechaOrdenDeCompra != null)
+    {
+        <p><strong>Fecha de decisión:</strong> @Model.ordenDeCompra.FechaOrdenDeCompra.Value.ToShortDateString()</p>
+    }
+    @if (!string.IsNullOrEmpty(Model.ordenDeCompra.Autorizador))
+    {
+        <p><strong>Autorizado por:</strong> @Model.ordenDeCompra.Autorizador</p>
+    }
+
+    <table class="border">
+        <tr>
+            <td><strong>Solicitante:</strong> @Model.ordenDeCompra.Solicitante</td>
+            <td><strong>Proveedor:</strong> @Model.ordenDeCompra.Proveedor</td>
+        </tr>
+        <tr>
+            <td><strong>Área:</strong> @Model.ordenDeCompra.Area</td>
+            <td><strong>Temporada:</strong> @Model.ordenDeCompra.Temporada</td>
+        </tr>
+        <tr>
+            <td><strong>Cultivo:</strong> @Model.ordenDeCompra.Cultivo</td>
+            <td><strong>Rancho:</strong> @Model.ordenDeCompra.Rancho</td>
+        </tr>
+        <tr>
+            <td><strong>Etapa:</strong> @Model.ordenDeCompra.Etapa</td>
+            <td><strong>Referencia:</strong> @Model.ordenDeCompra.Referencia</td>
+        </tr>
+        <tr>
+            <td colspan="2"><strong>Comentarios:</strong> @Model.ordenDeCompra.Comentarios</td>
+        </tr>
+    </table>
+
+    <table class="border">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model.productosOrdenar)
+            {
+                <tr>
+                    <td>@producto.Producto</td>
+                    <td>@producto.Cantidad</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

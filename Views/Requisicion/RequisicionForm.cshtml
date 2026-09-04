@@ -10,6 +10,8 @@
             edit = true;
             title = "Editar Requisición";
         }
+
+        bool soloLectura = edit && Model.requisicion.IdOrdenDeCompraStatus > OrdenDeCompraStatusEnumerators.Enviado;
     }
     <div class="text-center">
 
@@ -67,11 +69,18 @@
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Fecha de Requisición</label>
-                    @Html.EditorFor(m => m.requisicion.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                    @if (soloLectura)
+                    {
+                        @Html.EditorFor(m => m.requisicion.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus", @disabled = "disabled" } })
+                    }
+                    else
+                    {
+                        @Html.EditorFor(m => m.requisicion.FechaRequisicion, new { htmlAttributes = new { @class = "form-control input-focus" } })
+                    }
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Solicitante</label>
-                    @if(Model.esAutorizado)
+                    @if(Model.esAutorizado && !soloLectura)
                     {
                         @Html.DropDownListFor(m => m.requisicion.IdSolicitante, new SelectList(Model.solicitanteList, "IdUsuario", "NombreCompleto"), " ", new { @class = "form-control input-focus requisicion" })
                     }
@@ -94,21 +103,49 @@
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Proveedor</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    @if (soloLectura)
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdProveedor, new SelectList(Model.proveedorList, "IdProveedor", "Nombre"), " ", new { @class = "form-control input-focus requisicion" })
+                    }
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Temporada</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @if (soloLectura)
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdTemporada, new SelectList(Model.temporadaList, "IdTemporada", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    }
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Cultivo</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @if (soloLectura)
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdCultivo, new SelectList(Model.cultivoList, "IdCultivo", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    }
                 </div>
             </div>
             <div class="row card-row-spacer">
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Rancho</label>
-                    @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    @if (soloLectura)
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion", @disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.requisicion.IdRancho, new SelectList(Model.ranchoList, "IdRancho", "Descripcion"), " ", new { @class = "form-control input-focus requisicion" })
+                    }
                 </div>
                 @*<div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Etapa</label>
@@ -116,11 +153,25 @@
                 </div> *@
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Comentario</label>
-                    @Html.EditorFor(m => m.requisicion.Comentarios, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100" } })
+                    @if (soloLectura)
+                    {
+                        @Html.EditorFor(m => m.requisicion.Comentarios, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100", @disabled = "disabled" } })
+                    }
+                    else
+                    {
+                        @Html.EditorFor(m => m.requisicion.Comentarios, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100" } })
+                    }
                 </div>
                 <div class="col-md-4">
                     <label style="font-weight: normal; text-align: left; float: left">Referencia</label>
-                    @Html.EditorFor(m => m.requisicion.Referencia, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100" } })
+                    @if (soloLectura)
+                    {
+                        @Html.EditorFor(m => m.requisicion.Referencia, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100", @disabled = "disabled" } })
+                    }
+                    else
+                    {
+                        @Html.EditorFor(m => m.requisicion.Referencia, new { htmlAttributes = new { @class = "form-control input-focus", maxlength = "100" } })
+                    }
                 </div>
             </div>
             <div id="productosOrdenarContent">

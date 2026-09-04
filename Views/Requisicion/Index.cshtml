@@ -1,7 +1,6 @@
 ﻿@model AgricolaDH_GApp.ViewModels.RequisicionesVM
 @{
-    // Semanas actuales para aceptadas / rechazadas (default 1 semana)
-    var aw = (ViewBag.AcceptedWeeks as int?) ?? 1;
+    var cw = (ViewBag.ClosedWeeks as int?) ?? 1;
     var rw = (ViewBag.RejectedWeeks as int?) ?? 1;
 }
 
@@ -76,6 +75,9 @@
                                         <a href="#" id="@Model.requisicionList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
                                             <i class="nav-icon fas fa-pen"></i>
                                         </a>
+                                        <a href="#" id="@Model.requisicionList[i].IdOrdenDeCompra" class="imprimirRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-print"></i>
+                                        </a>
                                     </td>
                                     <td>@Model.requisicionList[i].IdOrdenDeCompra</td>
                                     <td>@Model.requisicionList[i].FechaRequisicion.ToShortDateString()</td>
@@ -98,34 +100,6 @@
                     <h3 class="card-title mb-0">Requisiciones Aceptadas</h3>
 
                     <div class="tools-inline">
-                        <!-- Dropdown de semanas para aceptadas -->
-                        <select id="acceptedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
-                            @if (aw == 1)
-                            {
-                                <option value="1" selected>Últimos 7 días</option>
-                            }
-                            else
-                            {
-                                <option value="1">Últimos 7 días</option>
-                            }
-                            @if (aw == 2)
-                            {
-                                <option value="2" selected>Últimas 2 semanas</option>
-                            }
-                            else
-                            {
-                                <option value="2">Últimas 2 semanas</option>
-                            }
-                            @if (aw == 0)
-                            {
-                                <option value="0" selected>Sin filtro</option>
-                            }
-                            else
-                            {
-                                <option value="0">Sin filtro</option>
-                            }
-                        </select>
-
                         <!-- Search local por ID en aceptadas -->
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" id="requisicionesAceptadas_tableSearch" class="form-control" placeholder="Search">
@@ -142,7 +116,7 @@
                     <table id="requisicionesAceptadasTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th style="width:30px">Acción</th>
+                                <th style="width:60px">Acción</th>
                                 <th>ID</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
@@ -162,6 +136,15 @@
                                         <a href="#" id="@Model.requisicionAceptadaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
                                             <i class="nav-icon fas fa-eye"></i>
                                         </a>
+                                        <a href="#" id="@Model.requisicionAceptadaList[i].IdOrdenDeCompra" class="imprimirRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-print"></i>
+                                        </a>
+                                        @if (Model.puedeCerrar)
+                                        {
+                                            <a href="#" id="@Model.requisicionAceptadaList[i].IdOrdenDeCompra" class="cerrarRequisicion" style="color: #2E2E2E">
+                                                <i class="nav-icon fas fa-lock"></i>
+                                            </a>
+                                        }
                                     </td>
                                     <td>@Model.requisicionAceptadaList[i].IdOrdenDeCompra</td>
                                     <td>@Model.requisicionAceptadaList[i].FechaRequisicion.ToShortDateString()</td>
@@ -178,38 +161,87 @@
                     </table>
                 </div>
             </div>
+            <!-- Requisiciones Cerradas -->
+            <div class="card card-margin">
+                <div class="card-header d-flex align-items-center">
+                    <h3 class="card-title mb-0">Requisiciones Cerradas</h3>
+
+                    <div class="tools-inline">
+                        <!-- Filtro de periodo para cerradas -->
+                        <select id="closedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
+                            <option value="1" selected="@(cw == 1 ? "selected" : null)">Última semana</option>
+                            <option value="4" selected="@(cw == 4 ? "selected" : null)">Último mes</option>
+                            <option value="52" selected="@(cw == 52 ? "selected" : null)">Último año</option>
+                            <option value="0" selected="@(cw == 0 ? "selected" : null)">Todas</option>
+                        </select>
+
+                        <!-- Search local por ID en cerradas -->
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" id="requisicionesCerradas_tableSearch" class="form-control" placeholder="Search">
+                            <div class="input-group-append">
+                                <button type="button" id="requisicionesCerradas_searchButton" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+                    <table id="requisicionesCerradasTable" class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">Acción</th>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Solicitante</th>
+                                <th>Status</th>
+                                <th>Área</th>
+                                <th>Cultivo</th>
+                                <th>Rancho</th>
+                                <th>Temporada</th>
+                                <th>Comentarios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.requisicionCerradaList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" id="@Model.requisicionCerradaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" id="@Model.requisicionCerradaList[i].IdOrdenDeCompra" class="imprimirRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-print"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Model.requisicionCerradaList[i].IdOrdenDeCompra</td>
+                                    <td>@Model.requisicionCerradaList[i].FechaRequisicion.ToShortDateString()</td>
+                                    <td>@Model.requisicionCerradaList[i].Solicitante</td>
+                                    <td>@Model.requisicionCerradaList[i].Proveedor</td>
+                                    <td>@Model.requisicionCerradaList[i].Area</td>
+                                    <td>@Model.requisicionCerradaList[i].Cultivo</td>
+                                    <td>@Model.requisicionCerradaList[i].Rancho</td>
+                                    <td>@Model.requisicionCerradaList[i].Temporada</td>
+                                    <td>@Model.requisicionCerradaList[i].Comentarios</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <!-- Requisiciones Rechazadas -->
             <div class="card card-margin">
                 <div class="card-header d-flex align-items-center">
                     <h3 class="card-title mb-0">Requisiciones Rechazadas</h3>
 
                     <div class="tools-inline">
-                        <!-- Dropdown de semanas para rechazadas -->
+                        <!-- Filtro de periodo para rechazadas -->
                         <select id="rejectedWeeksSelect" class="form-control form-control-sm" style="width: 160px;">
-                            @if (rw == 1)
-                            {
-                                <option value="1" selected>Últimos 7 días</option>
-                            }
-                            else
-                            {
-                                <option value="1">Últimos 7 días</option>
-                            }
-                            @if (rw == 2)
-                            {
-                                <option value="2" selected>Últimas 2 semanas</option>
-                            }
-                            else
-                            {
-                                <option value="2">Últimas 2 semanas</option>
-                            }
-                            @if (rw == 0)
-                            {
-                                <option value="0" selected>Sin filtro</option>
-                            }
-                            else
-                            {
-                                <option value="0">Sin filtro</option>
-                            }
+                            <option value="1" selected="@(rw == 1 ? "selected" : null)">Última semana</option>
+                            <option value="4" selected="@(rw == 4 ? "selected" : null)">Último mes</option>
+                            <option value="52" selected="@(rw == 52 ? "selected" : null)">Último año</option>
+                            <option value="0" selected="@(rw == 0 ? "selected" : null)">Todas</option>
                         </select>
 
                         <!-- Search local por ID en rechazadas -->
@@ -228,7 +260,7 @@
                     <table id="requisicionesRechazadasTable" class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th style="width:30px">Acción</th>
+                                <th style="width:60px">Acción</th>
                                 <th>ID</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
@@ -247,6 +279,9 @@
                                     <td>
                                         <a href="#" id="@Model.requisicionRechazadaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
                                             <i class="nav-icon fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" id="@Model.requisicionRechazadaList[i].IdOrdenDeCompra" class="imprimirRequisicion" style="color: #2E2E2E">
+                                            <i class="nav-icon fas fa-print"></i>
                                         </a>
                                     </td>
                                     <td>@Model.requisicionRechazadaList[i].IdOrdenDeCompra</td>
@@ -267,6 +302,28 @@
 
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="modal-cerrarRequisicionConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cerrar Requisición</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea cerrar esta requisición? Ya no se podrán subir facturas ni registrar ingresos.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="cerrarRequisicionConfirm" type="button" class="btn btn-danger">Cerrar Requisición</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
 
 <script>
@@ -293,6 +350,33 @@
                 data: { IdOrdenDeCompra: IdOrdenDeCompra },
                 success: function (data) {
                     $("#HtmlBody").html(data);
+                }
+            });
+        });
+
+        $(".imprimirRequisicion").click(function (e) {
+            e.preventDefault();
+            var IdOrdenDeCompra = $(this).attr("id");
+            window.open('@Url.Action("ImprimirRequisicion", "Requisicion")' + '?IdOrdenDeCompra=' + IdOrdenDeCompra, '_blank');
+        });
+
+        var idOrdenDeCompraACerrar = null;
+
+        $(".cerrarRequisicion").click(function (e) {
+            e.preventDefault();
+            idOrdenDeCompraACerrar = $(this).attr("id");
+            $("#modal-cerrarRequisicionConfirm").modal("show");
+        });
+
+        $("#cerrarRequisicionConfirm").click(function () {
+            $("#modal-cerrarRequisicionConfirm").modal("hide");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CerrarRequisicion", "Requisicion")',
+                data: { IdOrdenDeCompra: idOrdenDeCompraACerrar },
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
                 }
             });
         });
@@ -330,6 +414,18 @@
             }
         });
 
+        // Cerradas
+        $("#requisicionesCerradas_searchButton").click(function () {
+            const q = $("#requisicionesCerradas_tableSearch").val();
+            searchTableById($("#requisicionesCerradasTable"), q);
+        });
+        $("#requisicionesCerradas_tableSearch").keypress(function (e) {
+            if (e.which === 13) {
+                const q = $(this).val();
+                searchTableById($("#requisicionesCerradasTable"), q);
+            }
+        });
+
         // Rechazadas
         $("#requisicionesRechazadas_searchButton").click(function () {
             const q = $("#requisicionesRechazadas_tableSearch").val();
@@ -342,20 +438,21 @@
             }
         });
 
-        $("#acceptedWeeksSelect").on("change", function () {
-            var newAccepted = $(this).val() || 1;
-            var currRejected = $("#rejectedWeeksSelect").val() || @rw;
-            $.get('@Url.Action("Index", "Requisicion")', { acceptedWeeks: newAccepted, rejectedWeeks: currRejected }, function (html) {
+        $("#closedWeeksSelect").on("change", function () {
+            var closedWeeks = $(this).val();
+            var rejectedWeeks = $("#rejectedWeeksSelect").val() || @rw;
+            $.get('@Url.Action("Index", "Requisicion")', { closedWeeks: closedWeeks, rejectedWeeks: rejectedWeeks }, function (html) {
                 $("#HtmlBody").html(html);
             });
         });
 
         $("#rejectedWeeksSelect").on("change", function () {
-            var newRejected = $(this).val() || 1;
-            var currAccepted = $("#acceptedWeeksSelect").val() || @aw;
-            $.get('@Url.Action("Index", "Requisicion")', { acceptedWeeks: currAccepted, rejectedWeeks: newRejected }, function (html) {
+            var rejectedWeeks = $(this).val();
+            var closedWeeks = $("#closedWeeksSelect").val() || @cw;
+            $.get('@Url.Action("Index", "Requisicion")', { closedWeeks: closedWeeks, rejectedWeeks: rejectedWeeks }, function (html) {
                 $("#HtmlBody").html(html);
             });
         });
+
     });
 </script>

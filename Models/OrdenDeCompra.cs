@@ -23,6 +23,7 @@ namespace AgricolaDH_GApp.Models
         public DateTime? FechaOrdenDeCompra { get; set; }
         public string? Referencia { get; set; }
         public string? Comentarios { get; set; }
+        public int? IdAutorizador { get; set; }
 
         [NotMapped]
         public string? AreaName { get; set; }
@@ -47,5 +48,6 @@ namespace AgricolaDH_GApp.Models
         public DateTime? FechaOrdenDeCompra { get; set; }
         public string? Comentarios { get; set; }
         public string? Referencia { get; set; }
+        public string? Autorizador { get; set; }
     }
 }

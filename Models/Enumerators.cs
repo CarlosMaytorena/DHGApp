@@ -20,5 +20,6 @@ namespace AgricolaDH_GApp.Models
         public const int PorIngresar = 4;
         public const int Ingresado = 5;
         public const int Cancelado = 6;
+        public const int Cerrado = 7;
     }
 }

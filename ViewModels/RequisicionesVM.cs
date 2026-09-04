@@ -7,6 +7,7 @@ namespace AgricolaDH_GApp.ViewModels
     {
         public List<OrdenDeCompraTable> requisicionList { get; set; }
         public List<OrdenDeCompraTable> requisicionAceptadaList { get; set; }
+        public List<OrdenDeCompraTable> requisicionCerradaList { get; set; }
         public List<OrdenDeCompraTable> requisicionRechazadaList { get; set; }
         public OrdenDeCompra requisicion { get; set; }
         public List<ProductoOrdenar> productosOrdenar { get; set; }
@@ -21,6 +22,7 @@ namespace AgricolaDH_GApp.ViewModels
         public List<Temporada> temporadaList { get; set; }
         public List<Producto> productoList { get; set; }
         public bool esAutorizado { get; set; }
+        public bool puedeCerrar { get; set; }
 
         public RequisicionesVM()
         {
@@ -36,6 +38,7 @@ namespace AgricolaDH_GApp.ViewModels
             temporadaList = new List<Temporada>();
             productoList = new List<Producto>();
             esAutorizado = true;
-        }        
+            puedeCerrar = true;
+        }
     }
 }

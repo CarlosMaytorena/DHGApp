@@ -45,17 +45,21 @@ namespace AgricolaDH_GApp.Controllers
         }
 
 		[HttpGet]
-		public IActionResult Index(int acceptedWeeks = 1, int rejectedWeeks = 1)
+		public IActionResult Index(int closedWeeks = 1, int rejectedWeeks = 1)
 		{
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
             var model = new RequisicionesVM
             {
-                requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),              
-                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, acceptedWeeks),
-                requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, rejectedWeeks)
+                requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),
+                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0),
+                requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, closedWeeks),
+                requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, rejectedWeeks),
+                puedeCerrar = idRol == RolEnumerators.Administrador || idRol == RolEnumerators.Contabilidad
             };
 
-            ViewBag.AcceptedWeeks = acceptedWeeks;
+            ViewBag.ClosedWeeks = closedWeeks;
             ViewBag.RejectedWeeks = rejectedWeeks;
 
             return PartialView("~/Views/Requisicion/Index.cshtml", model);
@@ -104,23 +108,24 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult EditarRequisicion(int IdOrdenDeCompra)
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             int? idRol = HttpContext.Session.GetInt32("IdRol");
-
-            Usuario usuario = usuarioService.SelectUsuario(Convert.ToInt32(idUsuario));
-            Area area = areaService.SelectArea(Convert.ToInt32(usuario.IdArea));
 
             RequisicionesVM model = new RequisicionesVM();
 
 			model.requisicion = requisicionService.SelectRequisicion(IdOrdenDeCompra);
             model.productosOrdenar = requisicionService.SelectProductosOrdenar(IdOrdenDeCompra);
 
+            // El área mostrada es la de la requisición (ya cargada en model.requisicion),
+            // no la del usuario que la está revisando — Contabilidad/Administrador no
+            // necesariamente tienen un área asignada.
+            Area area = areaService.SelectArea(model.requisicion.IdArea);
+
             model.solicitanteList = usuarioService.SelectUsuariosByIdRol(RolEnumerators.Administrador);
             model.solicitanteList.AddRange(usuarioService.SelectUsuariosByIdRol(RolEnumerators.Ingeniero));
             model.proveedorList = proveedorService.SelectProveedores();
             model.areaList = areaService.SelectAreas();
             model.cultivoList = cultivoService.SelectCultivos();
-            model.ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == area.IdArea).ToList();
+            model.ranchoList = ranchoService.SelectRanchos().Where(r => r.IdArea == model.requisicion.IdArea).ToList();
             model.temporadaList = temporadaService.SelectTemporadas();
             model.productoList = productoService.SelectProductos().Where(p => p.IdProveedor == model.requisicion.IdProveedor).ToList();
 
@@ -131,8 +136,7 @@ namespace AgricolaDH_GApp.Controllers
                 r.IdRancho == model.requisicion.IdRancho
             ).ToList();
 
-            model.requisicion.IdArea = Convert.ToInt32(usuario.IdArea);
-            model.requisicion.AreaName = area.Descripcion;
+            model.requisicion.AreaName = area?.Descripcion;
 
             if (idRol == RolEnumerators.Ingeniero)
             {
@@ -185,8 +189,11 @@ namespace AgricolaDH_GApp.Controllers
 
             model = new RequisicionesVM();
             model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 2);
-            model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 2);
+            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+            model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
+            model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
+            ViewBag.ClosedWeeks = 1;
+            ViewBag.RejectedWeeks = 1;
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
@@ -196,6 +203,20 @@ namespace AgricolaDH_GApp.Controllers
         public async Task<IActionResult> AcceptRejectRequisicion(RequisicionesVM model, int IdOrdenDeCompraStatus)
         {
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
+
+            OrdenDeCompraTable requisicionActual = requisicionService.SelectOrdenDeCompra(model.requisicion.IdOrdenDeCompra);
+            if (requisicionActual == null || requisicionActual.IdOrdenDeCompraStatus != OrdenDeCompraStatusEnumerators.Enviado)
+            {
+                model = new RequisicionesVM();
+                model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
+                model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+                model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
+                model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
+                ViewBag.ClosedWeeks = 1;
+                ViewBag.RejectedWeeks = 1;
+
+                return Json(new { res = -1, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
+            }
 
             int res = 0;
             foreach (var productoOrdenar in model.productosOrdenar)
@@ -218,6 +239,7 @@ namespace AgricolaDH_GApp.Controllers
             {
                 model.requisicion.FechaOrdenDeCompra = DateTime.Now;
                 model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
+                model.requisicion.IdAutorizador = idUsuario;
                 res = requisicionService.UpdateOrdenDeCompra(model.requisicion);
 
                 OrdenDeCompraTable ordenDeCompra = requisicionService.SelectOrdenDeCompra(model.requisicion.IdOrdenDeCompra);
@@ -240,11 +262,66 @@ namespace AgricolaDH_GApp.Controllers
 
             model = new RequisicionesVM();
             model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 2);
-            model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 2);
+            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+            model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
+            model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
+            ViewBag.ClosedWeeks = 1;
+            ViewBag.RejectedWeeks = 1;
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CerrarRequisicion(int IdOrdenDeCompra)
+        {
+            int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
+            int? idRol = HttpContext.Session.GetInt32("IdRol");
+
+            int res;
+
+            if (idRol != RolEnumerators.Administrador && idRol != RolEnumerators.Contabilidad)
+            {
+                res = -1;
+            }
+            else
+            {
+                OrdenDeCompraTable requisicionActual = requisicionService.SelectOrdenDeCompra(IdOrdenDeCompra);
+
+                if (requisicionActual == null || requisicionActual.IdOrdenDeCompraStatus != OrdenDeCompraStatusEnumerators.Aceptado)
+                {
+                    res = -1;
+                }
+                else
+                {
+                    res = requisicionService.UpdateOrdenDeCompraStatus(IdOrdenDeCompra, OrdenDeCompraStatusEnumerators.Cerrado);
+                }
+            }
+
+            var model = new RequisicionesVM
+            {
+                requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),
+                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0),
+                requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1),
+                requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1),
+                puedeCerrar = idRol == RolEnumerators.Administrador || idRol == RolEnumerators.Contabilidad
+            };
+            ViewBag.ClosedWeeks = 1;
+            ViewBag.RejectedWeeks = 1;
+
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
+        }
+
+        [HttpGet]
+        public IActionResult ImprimirRequisicion(int IdOrdenDeCompra)
+        {
+            SubirFacturaVM model = new SubirFacturaVM
+            {
+                ordenDeCompra = requisicionService.SelectOrdenDeCompra(IdOrdenDeCompra),
+                productosOrdenar = requisicionService.SelectProductosOrdenarSelected(IdOrdenDeCompra)
+            };
+
+            return View("~/Views/Requisicion/RequisicionPrint.cshtml", model);
         }
 
         [HttpGet]
