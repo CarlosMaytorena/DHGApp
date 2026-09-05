@@ -1,5 +1,6 @@
 name: Deploy to Azure App Service
-run-name: "Env: ${{inputs.azure_env}}"
+run-name: "Env: ${{ inputs.azure_env }}"
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,37 +17,44 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: ${{github.event.inputs.azure_env}}
+    environment: ${{ github.event.inputs.azure_env }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '8.0'  # Change to your .NET version
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Publish
-      run: dotnet publish --configuration Release --output ./output
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./output
 
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }} # JSON format
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.ACTIVE_DIRECTORY_GHA_CLIENT_ID }}
+          tenant-id: ${{ vars.ACTIVE_DIRECTORY_GHA_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ vars.APP_SERVICE_NAME }}
-        package: ./output
-        app-settings: |
-          AzureAD__TenantId=${{ vars.ACTIVE_DIRECTORY_TENANT_ID }}
-          AzureAD__ClientId=${{ vars.ACTIVE_DIRECTORY_CLIENT_ID }}
-          AzureAD__ClientSecret=${{ secrets.ACTIVE_DIRECTORY_CLIENT_SECRET }}
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.APP_SERVICE_NAME }}
+          package: ./output
+
+      - name: Set App Settings
+        run: |
+          az webapp config appsettings set \
+            --name ${{ vars.APP_SERVICE_NAME }} \
+            --resource-group {{ vars.RESOURCE_GROUP }} \
+            --settings AzureAD__TenantId=${{ vars.AAD_TENANT_ID }} \
+                       AzureAD__ClientId=${{ vars.AAD_CLIENT_ID }} \
+                       AzureAD__ClientSecret=${{ secrets.AZURE_CLIENT_SECRET }}
