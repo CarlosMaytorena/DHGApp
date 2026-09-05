@@ -4,18 +4,21 @@
 
     <div class="row top-row-spacer">
         <div class="col-md-8">
-            <h4 class="page-title">Ingresar</h4>
+            <h4 class="page-title">@(Model.soloLectura ? "Ver orden" : "Ingresar")</h4>
         </div>
         <div class="col-md-2">
             <button id="volverAIndex" class="btn btn-block btn-secondary">
                 Regresar
             </button>
         </div>
-        <div class="col-md-2">
-            <button id="realizarIngresoConfirm" class="btn btn-block secondary-background-color" style="color: white">
-                <i class="nav-icon fas fa-arrow-right"></i> Recibir
-            </button>
-        </div>
+        @if (!Model.soloLectura)
+        {
+            <div class="col-md-2">
+                <button id="realizarIngresoConfirm" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-arrow-right"></i> Recibir
+                </button>
+            </div>
+        }
     </div>
 
     <div class="card card-margin">
@@ -33,22 +36,53 @@
 
         <!-- Dynamic Product Section -->
         <div class="row card-row-spacer">
-            <label style="font-weight: normal; text-align: left; float: left; margin-right: 10px;">Productos a Ordenar</label>
+            <label style="font-weight: normal; text-align: left; float: left; margin-right: 10px;">Productos</label>
+            @if (!Model.soloLectura)
+            {
+                <select id="catalogoProductoSelect" class="form-control input-focus" style="width: auto; display: inline-block; margin-right: 10px;">
+                    <option value="">Seleccionar producto...</option>
+                    @foreach (var producto in Model.productoList)
+                    {
+                        <option value="@producto.IdProducto">@producto.NombreDropdown</option>
+                    }
+                </select>
+                <button type="button" id="agregarProductoCatalogo" class="btn-sm secondary-background-color" style="color: white; border: 0px">
+                    <i class="nav-icon fas fa-plus"></i>
+                </button>
+            }
         </div>
 
         <div id="productContainer">
             @if (Model.productosOrdenar != null && Model.productosOrdenar.Any())
             {
+                <div class="row card-row-spacer">
+                    <div class="col-md-3"><label style="font-weight: normal; text-align: left; float: left">Producto</label></div>
+                    <div class="col-md-2"><label style="font-weight: normal; text-align: left; float: left">Cantidad Ordenada</label></div>
+                    <div class="col-md-1"><label style="font-weight: normal; text-align: left; float: left">Recibido acumulado</label></div>
+                    @if (!Model.soloLectura)
+                    {
+                        <div class="col-md-1"><label style="font-weight: normal; text-align: left; float: left">Recibir</label></div>
+                    }
+                    <div class="col-md-2"><label style="font-weight: normal; text-align: left; float: left">Precio unitario (factura)</label></div>
+                    <div class="col-md-3"><label style="font-weight: normal; text-align: left; float: left">Total recibido</label></div>
+                </div>
                 @for (int i = 0; i < Model.productosOrdenar.Count; i++)
                 {
+                    bool esQuitable = !Model.soloLectura && Model.productosOrdenar[i].Cantidad == 0 && Model.productosOrdenar[i].RecibidoAcumulado == 0;
                     <div class="row card-row-spacer product-row">
-                        <div class="col-md-4">
-                            <label style="font-weight: normal; text-align: left; float: left">Producto</label>
-
+                        <div class="col-md-3">
                             @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
 
-                            @Html.EditorFor(m => m.productosOrdenar[i].NombreDropdown,
-                                new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @readonly = "true", @data_index = i } })
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                @Html.EditorFor(m => m.productosOrdenar[i].NombreDropdown,
+                                    new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @readonly = "true", @data_index = i } })
+                                @if (esQuitable)
+                                {
+                                    <button type="button" class="btn-sm secondary-background-color quitar-producto-catalogo" style="color: white; border: 0px" title="Quitar">
+                                        <i class="nav-icon fas fa-minus"></i>
+                                    </button>
+                                }
+                            </div>
                             <input type="hidden" class="product-name-raw" value="@Model.productosOrdenar[i].Producto" />
 
                             <input type="hidden" class="product-id" value="@Model.productosOrdenar[i].IdProductoOrdenar" />
@@ -56,32 +90,33 @@
                         </div>
 
                         <div class="col-md-2">
-                            <label style="font-weight: normal; text-align: left; float: left">Cantidad Esperada</label>
-                            <input type="number" class="form-control cantidad-esperada" value="@Model.productosOrdenar[i].Cantidad" readonly />
+                            <input type="text" class="form-control cantidad-esperada" value="@Model.productosOrdenar[i].Cantidad" readonly />
                         </div>
                         <div class="col-md-1">
-                            <label style="font-weight: normal; text-align: left; float: left">Restante</label>
-                            <input type="number"
-                                   class="form-control cantidad-restante"
-                                   value="@Model.productosOrdenar[i].PorRecibir"
+                            <input type="text"
+                                   class="form-control cantidad-acumulada"
+                                   value="@Model.productosOrdenar[i].RecibidoAcumulado"
                                    readonly
-                                   data-restante-inicial="@Model.productosOrdenar[i].PorRecibir" />
+                                   data-acumulado-inicial="@Model.productosOrdenar[i].RecibidoAcumulado" />
                         </div>
-                        <div class="col-md-1">
-                            <label style="font-weight: normal; text-align: left; float: left">Recibir</label>
-                            <input type="number"
-                                   class="form-control cantidad-recibida"
-                                   min="0"
-                                   oninput="updateRestante(this)"
-                                   onchange="updateRestante(this)" />
-                        </div>
+                        @if (!Model.soloLectura)
+                        {
+                            <div class="col-md-1">
+                                <input type="number"
+                                       class="form-control cantidad-recibida"
+                                       min="0"
+                                       value="@Model.productosOrdenar[i].CantidadCapturada" />
+                            </div>
+                        }
                         <div class="col-md-2">
-                            <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-                            <input class="form-control" value="@Model.productosOrdenar[i].Unidad" readonly />
+                            <input class="form-control" value="@(Model.productosOrdenar[i].PrecioUnitarioFactura?.ToString("C2") ?? "‚Äî")" readonly />
                         </div>
-                        <div class="col-md-2">
-                            <label style="font-weight: normal; text-align: left; float: left">Total</label>
-                            <input class="form-control" value="@Model.productosOrdenar[i].Total" readonly />
+                        <div class="col-md-3">
+                            <input class="form-control"
+                                   value="@(Model.productosOrdenar[i].PrecioUnitarioFactura.HasValue
+                                                ? (Model.productosOrdenar[i].RecibidoAcumulado * Model.productosOrdenar[i].PrecioUnitarioFactura.Value).ToString("C2")
+                                                : "‚Äî")"
+                                   readonly />
                         </div>
                     </div>
                 }
@@ -94,28 +129,11 @@
 <script type="module">
     // ---- Short serial (12-char Crockford Base32 from SHA-256) ----
     const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-    
+
     function scrambleSerial(serial) {
         if (!serial || serial.length !== 12) return serial;
         // "123456ABCDEF" -> "ABCDEF123456"
         return serial.substring(6) + serial.substring(0, 6);
-    }
-    
-    function allRestantesBaseCero() {
-        let allZero = true;
-
-        $(".product-row").each(function () {
-            const restanteBase = parseInt(
-                $(this).find(".cantidad-restante").data("restante-inicial"),
-                10
-            ) || 0;
-
-            if (restanteBase > 0) {
-                allZero = false;
-            }
-        });
-
-        return allZero;
     }
 
     function goToIngresosIndex() {
@@ -130,7 +148,7 @@
             }
         });
     }
-    
+
     function bytesToBase32(bytes, outLen) {
         let bits = 0, value = 0, out = "";
         for (let i = 0; i < bytes.length && out.length < outLen; i++) {
@@ -156,18 +174,6 @@
 
     // --------------------------------------------------------------
 
-    function updateRestante(input) {
-        const $row = $(input).closest(".product-row");
-        const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
-        let recibida = parseInt($(input).val(), 10) || 0;
-        if (recibida < 0) recibida = 0;
-        if (recibida > restanteBase) recibida = restanteBase;
-        $(input).val(recibida);
-        $row.find(".cantidad-restante").val(restanteBase - recibida);
-    }
-    window.updateRestante = updateRestante;
-
-    //  restauramos tu script original de impresiÛn
     import { openPrintWindow } from "/js/labelPrinter.js";
 
     function showWarning(msg) {
@@ -175,49 +181,21 @@
         $("#modal-warning").modal("show");
     }
 
-    function showSuccess(msg) {
+    function showSuccess(msg, showCancelar) {
         $("#modal-success-msg").text(msg);
+        $("#modal-cancelarIngreso").toggle(!!showCancelar);
         $("#modal-success").modal("show");
     }
 
+    // Id del √∫ltimo ingreso confirmado en esta sesi√≥n (mientras no se salga del m√≥dulo).
+    window.lastIngresoId = null;
 
     $(document).ready(function () {
 
-        function initRecibirDefaults() {
-            $(".product-row").each(function () {
-                const $row = $(this);
-                const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
-
-                const $recibir = $row.find(".cantidad-recibida");
-                $recibir.val(restanteBase); 
-                updateRestante($recibir[0]); 
-
-                
-                if (restanteBase === 0) {
-                    $recibir.prop("disabled", true);
-                } else {
-                    $recibir.prop("disabled", false);
-                }
-            });
-        }
-
-        initRecibirDefaults();
-
-
-
-        $("#volverAIndex").click(function () {
-            $.ajax({
-                url: '@Url.Action("Index", "Ingresos")',
-                type: 'GET',
-                success: function (data) { $("#HtmlBody").html(data); },
-                error: function () {
-                    showWarning("Error al regresar al listado de Ûrdenes.");
-                }
-            });
-        });
-
         $(document).on('input', '.cantidad-recibida', function () {
-            updateRestante(this);
+            let v = parseInt($(this).val(), 10);
+            if (isNaN(v) || v < 0) v = 0;
+            $(this).val(v);
         });
 
         $(".product-row").each(function () {
@@ -240,6 +218,96 @@
             });
         });
 
+        function recargarFormulario() {
+            const idOrdenDeCompra = $("#orderNumber").val();
+            $.ajax({
+                url: '@Url.Action("VerOrden", "Ingresos")',
+                type: 'POST',
+                data: { idOrdenDeCompra: idOrdenDeCompra },
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function () { showWarning("Error al recargar la orden."); }
+            });
+        }
+
+        $("#volverAIndex").click(function () {
+            window.lastIngresoId = null;
+            goToIngresosIndex();
+        });
+
+        function capturaPreviaActual() {
+            const captura = [];
+            $(".product-row").each(function () {
+                const $row = $(this);
+                const idProductoOrdenar = parseInt($row.find(".product-id").val(), 10);
+                const cantidad = parseInt($row.find(".cantidad-recibida").val(), 10) || 0;
+                if (idProductoOrdenar && cantidad > 0) {
+                    captura.push({ IdProductoOrdenar: idProductoOrdenar, Cantidad: cantidad });
+                }
+            });
+            return captura;
+        }
+
+        $("#agregarProductoCatalogo").click(function () {
+            const idProducto = $("#catalogoProductoSelect").val();
+            if (!idProducto) {
+                showWarning("Selecciona un producto del cat√°logo.");
+                return;
+            }
+            const idOrdenDeCompra = $("#orderNumber").val();
+            $.ajax({
+                url: '@Url.Action("AgregarProductoCatalogo", "Ingresos")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    IdOrdenDeCompra: idOrdenDeCompra,
+                    IdProducto: idProducto,
+                    CapturaPrevia: capturaPreviaActual()
+                }),
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function () { showWarning("Error al agregar el producto."); }
+            });
+        });
+
+        $(document).on("click", ".quitar-producto-catalogo", function () {
+            const $row = $(this).closest(".product-row");
+            const idProductoOrdenar = $row.find(".product-id").val();
+            const idOrdenDeCompra = $("#orderNumber").val();
+            $.ajax({
+                url: '@Url.Action("EliminarProductoCatalogo", "Ingresos")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    IdOrdenDeCompra: idOrdenDeCompra,
+                    IdProductoOrdenar: idProductoOrdenar,
+                    CapturaPrevia: capturaPreviaActual()
+                }),
+                success: function (data) { $("#HtmlBody").html(data); },
+                error: function () { showWarning("Error al quitar el producto."); }
+            });
+        });
+
+        $("#modal-cancelarIngreso").click(function () {
+            if (!window.lastIngresoId) return;
+            $.ajax({
+                url: '@Url.Action("CancelarIngreso", "Ingresos")',
+                type: 'POST',
+                data: { idIngreso: window.lastIngresoId },
+                success: function (response) {
+                    if (response.success) {
+                        window.lastIngresoId = null;
+                    }
+                    $("#modal-success").modal("hide");
+                    if (!response.success) {
+                        showWarning(response.message || "No se pudo cancelar el ingreso.");
+                    }
+                },
+                error: function () {
+                    $("#modal-success").modal("hide");
+                    showWarning("Error al cancelar el ingreso.");
+                }
+            });
+        });
+
         $("#realizarIngresoConfirm").off("click").on("click", async function () {
             const receivedProducts = [];
             const labelsToPrint = [];
@@ -252,36 +320,25 @@
                 const productName = $row.find("input[readonly]").first().val();
                 const partNumber = $row.find(".product-barcode").data("barcode-value");
                 const recibida = parseInt($row.find(".cantidad-recibida").val(), 10) || 0;
-                const esperada = parseInt($row.find(".cantidad-esperada").val(), 10) || 0;
-                const restanteBase = parseInt($row.find(".cantidad-restante").data("restante-inicial"), 10) || 0;
+                const acumuladoBase = parseInt($row.find(".cantidad-acumulada").data("acumulado-inicial"), 10) || 0;
 
                 if (!productName || !partNumber) continue;
-                if (restanteBase === 0) continue;
                 if (recibida <= 0) continue;
-                if (recibida > restanteBase) {
-                    showWarning(`No puedes recibir m·s de lo que queda en Restante para: ${productName}`);
-                    return;
-                }
-
-                const newRestante = restanteBase - recibida;
-                const yaRecibido = esperada - restanteBase;
 
                 const shortSerials = [];
                 for (let i = 1; i <= recibida; i++) {
-                    const unitIndex = yaRecibido + i;
+                    const unitIndex = acumuladoBase + i;
                     const shortSerial = (await shortSerialFrom(partNumber, workOrderNumber, unitIndex)).toUpperCase();
                     shortSerials.push(shortSerial);
 
                     const scrambled = scrambleSerial(shortSerial);
 
-
-                    // usamos tu formato original
                     labelsToPrint.push(`
                             <div class="label">
                                 <h4>Orden: ${workOrderNumber}</h4>
                                 <h4>Producto: ${productName}</h4>
                                 <h4 class="serial-header">Serial: ${scrambled}</h4>
-                                <svg class="barcode" 
+                                <svg class="barcode"
                                     data-barcode-value="${shortSerial}"
                                     data-scrambled="${scrambled}"></svg>
                                 <div class="serial-below">${scrambled}</div>
@@ -289,20 +346,15 @@
                         `);
                 }
 
-                $row.find(".cantidad-restante").val(newRestante).data("restante-inicial", newRestante);
-
                 receivedProducts.push({
                     IdProductoOrdenar: productId,
                     Recibida: recibida,
-                    PorRecibir: newRestante,
                     SerialesCortos: shortSerials
                 });
             }
 
-            console.log(receivedProducts);
-
             if (receivedProducts.length === 0) {
-                showWarning("No se han ingresado productos v·lidos.");
+                showWarning("No se han ingresado cantidades v√°lidas.");
                 return;
             }
 
@@ -313,13 +365,13 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     if (response.success) {
-                        showSuccess("Ingreso registrado correctamente.");
+                        window.lastIngresoId = response.idIngreso;
 
                         if (labelsToPrint.length > 0) {
                             openPrintWindow(labelsToPrint.join(''), workOrderNumber);
                         }
 
-                        window.salirAlIndex = allRestantesBaseCero();
+                        showSuccess("Ingreso registrado correctamente.", true);
                     } else {
                         showWarning("Hubo un error al actualizar los datos.");
                     }
@@ -332,10 +384,9 @@
         });
 
         $("#modal-success").on("hidden.bs.modal", function () {
-            if (window.salirAlIndex) {
-                goToIngresosIndex();
-                window.salirAlIndex = false;
-            }
+            // Se muestra tras "Recibir" o "Cancelar"; en ambos casos hay que refrescar
+            // el "Recibido acumulado" y la disponibilidad del bot√≥n Cancelar.
+            recargarFormulario();
         });
     });
 </script>
@@ -344,7 +395,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">ConfirmaciÛn</h4>
+                <h4 class="modal-title">Confirmaci√≥n</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -353,6 +404,9 @@
                 <p id="modal-success-msg">Ingreso registrado correctamente.</p>
             </div>
             <div class="modal-footer justify-content-between">
+                <button type="button" id="modal-cancelarIngreso" class="btn btn-outline-danger" style="display:none">
+                    Cancelar este ingreso
+                </button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
             </div>
         </div>
@@ -372,7 +426,6 @@
                 <p id="modal-warning-msg"></p>
             </div>
             <div class="modal-footer justify-content-between">
-                @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>*@
                 <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Aceptar</button>
             </div>
         </div>

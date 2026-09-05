@@ -50,14 +50,28 @@ namespace AgricolaDH_GApp.Services.Admin
         }
 
         // Convenience overload
-        public int InsertSerial(string serialKey, string orderNumber, string partNumber)
+        public int InsertSerial(string serialKey, string orderNumber, string partNumber, int? idIngreso = null)
         {
             return InsertSerial(new SerialMap
             {
                 SerialKey = serialKey,
                 OrderNumber = orderNumber,
-                PartNumber = partNumber
+                PartNumber = partNumber,
+                IdIngreso = idIngreso
             });
+        }
+
+        public int DeleteSerialsByIdIngreso(int idIngreso)
+        {
+            int res = 0;
+            try
+            {
+                var rows = context.SerialMap.Where(s => s.IdIngreso == idIngreso).ToList();
+                context.SerialMap.RemoveRange(rows);
+                context.SaveChanges();
+            }
+            catch { res = -1; }
+            return res;
         }
 
         public int DeleteSerial(string serialKey)

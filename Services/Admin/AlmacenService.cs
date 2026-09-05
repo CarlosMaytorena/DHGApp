@@ -131,7 +131,7 @@ namespace AgricolaDH_GApp.Services.Admin
             }
         }
         // Entrada de Ingreso a Almacen
-        public int GuardarEnAlmacen(int idProducto, string serial)
+        public int GuardarEnAlmacen(int idProducto, string serial, int? idIngreso = null)
         {
             try
             {
@@ -149,7 +149,8 @@ namespace AgricolaDH_GApp.Services.Admin
                         Uso = false,
                         IdAlmacenista = 0,
                         IdSolicitante = 0,
-                        Fecha = now
+                        Fecha = now,
+                        IdIngreso = idIngreso
                     });
                 }
                 else
@@ -159,6 +160,7 @@ namespace AgricolaDH_GApp.Services.Admin
                     existente.IdEstatus = 2;   // <-- Almacén
                     existente.Uso = false;
                     existente.Fecha = now;
+                    existente.IdIngreso = idIngreso;
 
                     context.Almacen.Update(existente);
                 }
@@ -170,6 +172,22 @@ namespace AgricolaDH_GApp.Services.Admin
             {
                 return -1;
             }
+        }
+
+        public int EliminarPorIdIngreso(int idIngreso)
+        {
+            int res = 0;
+            try
+            {
+                var rows = context.Almacen.Where(a => a.IdIngreso == idIngreso).ToList();
+                context.Almacen.RemoveRange(rows);
+                context.SaveChanges();
+            }
+            catch
+            {
+                res = -1;
+            }
+            return res;
         }
 
         public List<string> ObtenerSerialesValidosPorOrden(string orden, IEnumerable<string> seriales)

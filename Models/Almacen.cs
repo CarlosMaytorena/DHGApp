@@ -23,6 +23,7 @@ namespace AgricolaDH_GApp.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
         public int IdEstatus { get; set; }
+        public int? IdIngreso { get; set; }
         [NotMapped]
         public string? NombreProducto { get; set; }
         [NotMapped]

@@ -177,6 +177,27 @@ namespace AgricolaDH_GApp.Services.Admin
 
         }
 
+        public int EliminarProductoOrdenar(int idProductoOrdenar)
+        {
+            int res = 0;
+
+            try
+            {
+                var productoOrdenar = context.ProductosOrdenar.Find(idProductoOrdenar);
+                if (productoOrdenar != null)
+                {
+                    context.ProductosOrdenar.Remove(productoOrdenar);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                res = -1;
+            }
+
+            return res;
+        }
+
         public int UpdateOrdenDeCompra(OrdenDeCompra ordenDeCompra)
         {
             int res = 0;

@@ -16,7 +16,7 @@ namespace AgricolaDH_GApp.Services
             context = _ctx;
         }
 
-        public LogsAlmacen InsertarLogsAlmacen(AlmacenVM model)
+        public LogsAlmacen InsertarLogsAlmacen(AlmacenVM model, int? idIngreso = null)
         {
             try
             {
@@ -41,7 +41,8 @@ namespace AgricolaDH_GApp.Services
                         IdAlmacenista = model.almacen.IdAlmacenista,
                         IdMovimiento = model.almacen.IdEstatus,
                         SecuenciaDia = nuevaSecuencia,
-                        Folio = $"{hoy:yyyyMMdd}-{nuevaSecuencia:D4}"
+                        Folio = $"{hoy:yyyyMMdd}-{nuevaSecuencia:D4}",
+                        IdIngreso = idIngreso
                     };
                     context.LogsAlmacen.Add(log);
                     context.SaveChanges();
@@ -81,6 +82,58 @@ namespace AgricolaDH_GApp.Services
                 throw new Exception("Error al guardar los logs de almacén: " + ex.Message, ex);
             }
 
+        }
+
+        public List<LogsAlmacen> SelectByIdIngresoDescending(int idIngreso)
+        {
+            try
+            {
+                return context.LogsAlmacen
+                    .Where(l => l.IdIngreso == idIngreso)
+                    .OrderByDescending(l => l.SecuenciaDia)
+                    .ToList();
+            }
+            catch
+            {
+                return new List<LogsAlmacen>();
+            }
+        }
+
+        /// <summary>
+        /// Borra el folio de LogsAlmacen (y sus LogsAlmacenProductos) solo si sigue siendo
+        /// la secuencia máxima del día para esa fecha. Si ya se generó un folio posterior,
+        /// no se borra (dejaría un hueco en la secuencia) y se retorna false.
+        /// </summary>
+        public bool EliminarLogsAlmacenSiEsElUltimo(int idLogsAlmacen)
+        {
+            try
+            {
+                var log = context.LogsAlmacen.Find(idLogsAlmacen);
+                if (log == null) return true; // nada que borrar
+
+                DateTime hoy = log.Fecha.Date;
+                DateTime mañana = hoy.AddDays(1);
+
+                int maxSecuencia = context.LogsAlmacen
+                    .Where(x => x.Fecha >= hoy && x.Fecha < mañana)
+                    .Max(x => (int?)x.SecuenciaDia) ?? 0;
+
+                if (log.SecuenciaDia != maxSecuencia)
+                {
+                    return false; // ya no es el último folio del día, no se puede borrar sin dejar hueco
+                }
+
+                var detalles = context.LogsAlmacenProductos.Where(p => p.IdLogsAlmacen == idLogsAlmacen).ToList();
+                context.LogsAlmacenProductos.RemoveRange(detalles);
+                context.LogsAlmacen.Remove(log);
+                context.SaveChanges();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el log de almacén: " + ex.Message, ex);
+            }
         }
     }
 }

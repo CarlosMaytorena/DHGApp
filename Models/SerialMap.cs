@@ -12,5 +12,7 @@ namespace AgricolaDH_GApp.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string ScrambledSerial { get; set; } = default!;
+
+        public int? IdIngreso { get; set; }
     }
 }

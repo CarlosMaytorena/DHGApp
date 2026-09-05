@@ -46,6 +46,7 @@ builder.Services.AddScoped<ReporteService>();
 
 builder.Services.AddScoped<SerialMapService>();
 builder.Services.AddScoped<LogsAlmacenService>();
+builder.Services.AddScoped<IngresoService>();
 builder.Services.AddScoped<LogsEgresosService>();
 
 builder.Services.AddHttpContextAccessor();
