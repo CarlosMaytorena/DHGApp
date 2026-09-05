@@ -54,7 +54,7 @@ jobs:
         run: |
           az webapp config appsettings set \
             --name ${{ vars.APP_SERVICE_NAME }} \
-            --resource-group {{ vars.RESOURCE_GROUP }} \
+            --resource-group ${{ vars.RESOURCE_GROUP }} \
             --settings AzureAD__TenantId=${{ vars.AAD_TENANT_ID }} \
                        AzureAD__ClientId=${{ vars.AAD_CLIENT_ID }} \
                        AzureAD__ClientSecret=${{ secrets.AZURE_CLIENT_SECRET }}
