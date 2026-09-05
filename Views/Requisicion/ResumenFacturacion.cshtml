@@ -1,0 +1,59 @@
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+
+@{
+    decimal costoTotalOrden = Model.resumenFacturacion.Sum(r => r.CostoTotal ?? 0);
+    Func<decimal?, string> money = v => v.HasValue ? "$" + v.Value.ToString("N2") : "";
+}
+
+<p style="margin-left: 10px">Comparación de lo facturado contra lo ingresado. Esto es solo informativo: puedes cerrar la requisición aunque haya diferencias.</p>
+
+<div style="overflow-x: auto">
+<table class="table table-sm text-nowrap">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad Ordenada</th>
+            <th>Cantidad Facturada</th>
+            <th>Cantidad Ingresada</th>
+            <th>Precio Unitario</th>
+            <th>Costo Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.resumenFacturacion.Where(r => !r.EsExtra))
+        {
+            <tr style="@(item.Cantidad != item.CantidadFacturada ? "color: #b71c1c" : "")">
+                <td>@item.Producto</td>
+                <td>@item.Cantidad</td>
+                <td>@item.CantidadFacturada</td>
+                <td>@item.CantidadIngresada</td>
+                <td>@money(item.PrecioUnitario)</td>
+                <td>@money(item.CostoTotal)</td>
+            </tr>
+        }
+        @if (Model.resumenFacturacion.Any(r => r.EsExtra))
+        {
+            <tr>
+                <td colspan="6"><strong>Materiales adicionales (no estaban en la orden)</strong></td>
+            </tr>
+            @foreach (var item in Model.resumenFacturacion.Where(r => r.EsExtra))
+            {
+                <tr>
+                    <td>@item.Producto</td>
+                    <td>-</td>
+                    <td>@item.CantidadFacturada</td>
+                    <td>-</td>
+                    <td>@money(item.PrecioUnitario)</td>
+                    <td>@money(item.CostoTotal)</td>
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: right"><strong>Costo Total de la Orden</strong></td>
+            <td><strong>@money(costoTotalOrden)</strong></td>
+        </tr>
+    </tfoot>
+</table>
+</div>

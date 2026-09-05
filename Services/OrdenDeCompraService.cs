@@ -269,6 +269,86 @@ namespace AgricolaDH_GApp.Services.Admin
             return res;
         }
 
+        public List<OrdenDeCompraTable> SelectOrdenDeCompraTableEnProceso(int IdUsuario, int LimiteDeSemanas = 0)
+        {
+            List<OrdenDeCompraTable> ordenDeCompraList;
+
+            try
+            {
+                ordenDeCompraList = context.OrdenDeCompraTable.FromSqlRaw("exec SP_SelectOrdenDeCompraTableEnProceso @IdUsuario, @LimiteDeSemanas",
+                    new SqlParameter("@IdUsuario", IdUsuario),
+                    new SqlParameter("@LimiteDeSemanas", LimiteDeSemanas)
+                    ).ToList();
+
+            }
+            catch
+            {
+                ordenDeCompraList = new List<OrdenDeCompraTable>();
+            }
+
+            return ordenDeCompraList;
+        }
+
+        public List<FacturaHistorial> SelectFacturasByIdOrdenDeCompra(int IdOrdenDeCompra)
+        {
+            List<FacturaHistorial> facturas;
+
+            try
+            {
+                facturas = context.FacturaHistorial.FromSqlRaw("exec SP_SelectFacturasByIdOrdenDeCompra @IdOrdenDeCompra",
+                    new SqlParameter("@IdOrdenDeCompra", IdOrdenDeCompra)).ToList();
+            }
+            catch
+            {
+                facturas = new List<FacturaHistorial>();
+            }
+
+            return facturas;
+        }
+
+        public List<ResumenFacturacionProducto> SelectResumenFacturacionByIdOrdenDeCompra(int IdOrdenDeCompra)
+        {
+            List<ResumenFacturacionProducto> resumen;
+
+            try
+            {
+                resumen = context.ResumenFacturacionProducto.FromSqlRaw("exec SP_SelectResumenFacturacionByIdOrdenDeCompra @IdOrdenDeCompra",
+                    new SqlParameter("@IdOrdenDeCompra", IdOrdenDeCompra)).ToList();
+            }
+            catch
+            {
+                resumen = new List<ResumenFacturacionProducto>();
+            }
+
+            return resumen;
+        }
+
+        public int InsertFactura(Factura factura, List<FacturaDetalle> detalles)
+        {
+            int res;
+
+            try
+            {
+                context.Facturas.Add(factura);
+                context.SaveChanges();
+
+                foreach (var detalle in detalles)
+                {
+                    detalle.IdFactura = factura.IdFactura;
+                    context.FacturaDetalle.Add(detalle);
+                }
+                context.SaveChanges();
+
+                res = factura.IdFactura;
+            }
+            catch (Exception ex)
+            {
+                res = -1;
+            }
+
+            return res;
+        }
+
         public int DeleteRequisiciones(int IdRequisicion)
         {
             int res = 0;

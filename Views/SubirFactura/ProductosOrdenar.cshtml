@@ -1,103 +1,239 @@
-﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+
+@{
+    bool ordenCerrada = Model.ordenDeCompra.IdOrdenDeCompraStatus == AgricolaDH_GApp.Models.OrdenDeCompraStatusEnumerators.Cerrado;
+    decimal costoTotalOrden = Model.resumenFacturacion.Sum(r => r.CostoTotal ?? 0);
+    Func<decimal?, string> money = v => v.HasValue ? "$" + v.Value.ToString("N2") : "";
+}
 
 <div class="row card-row-spacer">
-    <label style="font-weight: normal; text-align: left; float: left">Productos a Ordenar</label>
-</div>
-
-<div class="row row-spacer" style="margin-bottom: -5px">
-    <label for="myfile">Seleccionar factura de proveedor:</label>
-</div>
-<div class="row row-spacer" style="margin-bottom: 10px">
-    <input type="file" id="myfile" name="myfile" accept=".xml"><br><br>
-    <input type="button" name="submit" id="submit" value="Cargar Archivo" class="btn btn-primary btn-sm upload" style="height: 50%" />
+    <label style="font-weight: normal; text-align: left; float: left">Productos de la Orden</label>
 </div>
 
 <div class="row card-row-spacer">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <label style="font-weight: normal; text-align: left; float: left">Producto</label>
     </div>
-    <div class="col-md-2">
-        <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+    <div class="col-md-3">
+        <label style="font-weight: normal; text-align: left; float: left">Cantidad Ordenada</label>
     </div>
-    <div class="col-md-2">
-        <label style="font-weight: normal; text-align: left; float: left">Unidad</label>
-    </div>
-    <div class="col-md-2">
-        <label style="font-weight: normal; text-align: left; float: left">Total</label>
-    </div>
-    <div class="col-md-2">
-        <label style="font-weight: normal; text-align: left; float: left">Moneda</label>
+    <div class="col-md-3">
+        <label style="font-weight: normal; text-align: left; float: left">Pendiente por Ingresar</label>
     </div>
 </div>
 
 @for (int i = 0; i < Model.productosOrdenar.Count; i++)
 {
     <div class="row card-row-spacer">
-        @Html.HiddenFor(m => m.productosOrdenar[i].IdProductoOrdenar)
-        @Html.HiddenFor(m => m.productosOrdenar[i].MonedaNacional)
-        <div class="col-md-4">
-            @Html.EditorFor(m => m.productosOrdenar[i].NombreDropdown, new { htmlAttributes = new { @class = "form-control input-focus subirFactura", @readonly = "true", @data_index = i } })
+        <div class="col-md-6">
+            <input type="text" class="form-control input-focus" readonly value="@Model.productosOrdenar[i].NombreDropdown" />
         </div>
-        <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Cantidad, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "true" } })
+        <div class="col-md-3">
+            <input type="text" class="form-control input-focus" readonly value="@Model.productosOrdenar[i].Cantidad" />
         </div>
-        <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Unidad, new { htmlAttributes = new { @class = "form-control input-focus ", @readonly = "true" } })
-        </div>
-        <div class="col-md-2">
-            @Html.EditorFor(m => m.productosOrdenar[i].Total, new { htmlAttributes = new { @class = "form-control input-focus", @readonly = "true" } })
-        </div>
-        <div class="col-md-2">
-            <input type="text"
-                   class="form-control input-focus"
-                   readonly
-                   value="@(Model.productosOrdenar[i].MonedaNacional == true ? "MXN" : Model.productosOrdenar[i].MonedaNacional == false ? "USD" : "")" />
+        <div class="col-md-3">
+            <input type="text" class="form-control input-focus" readonly value="@Model.productosOrdenar[i].PorRecibir" />
         </div>
     </div>
 }
 
 <div class="row card-row-spacer">
+    <label style="font-weight: normal; text-align: left; float: left">Historial de Facturas</label>
 </div>
 
+@if (Model.historialFacturas.Count == 0)
+{
+    <div class="row row-spacer">
+        <div class="col-md-12">No se han subido facturas para esta orden.</div>
+    </div>
+}
+else
+{
+    <table class="table table-sm text-nowrap">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Moneda</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var factura in Model.historialFacturas)
+            {
+                <tr>
+                    <td>@factura.FechaCarga.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@factura.UsuarioCarga</td>
+                    <td>@(factura.MonedaNacional == true ? "MXN" : factura.MonedaNacional == false ? "USD" : "")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="row card-row-spacer">
+    <label style="font-weight: normal; text-align: left; float: left">Resumen de Facturación por Producto</label>
+</div>
+
+<table class="table table-sm text-nowrap">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad Ordenada</th>
+            <th>Cantidad Facturada</th>
+            <th>Cantidad Ingresada</th>
+            <th>Precio Unitario</th>
+            <th>Costo Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.resumenFacturacion.Where(r => !r.EsExtra))
+        {
+            <tr>
+                <td>@item.Producto</td>
+                <td>@item.Cantidad</td>
+                <td>@item.CantidadFacturada</td>
+                <td>@item.CantidadIngresada</td>
+                <td>@money(item.PrecioUnitario)</td>
+                <td>@money(item.CostoTotal)</td>
+            </tr>
+        }
+        @if (Model.resumenFacturacion.Any(r => r.EsExtra))
+        {
+            <tr>
+                <td colspan="6"><strong>Materiales adicionales (no estaban en la orden)</strong></td>
+            </tr>
+            @foreach (var item in Model.resumenFacturacion.Where(r => r.EsExtra))
+            {
+                <tr>
+                    <td>@item.Producto</td>
+                    <td>-</td>
+                    <td>@item.CantidadFacturada</td>
+                    <td>-</td>
+                    <td>@money(item.PrecioUnitario)</td>
+                    <td>@money(item.CostoTotal)</td>
+                </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: right"><strong>Costo Total de la Orden</strong></td>
+            <td><strong>@money(costoTotalOrden)</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
+@if (!ordenCerrada)
+{
+    <div class="row card-row-spacer">
+        <label style="font-weight: normal; text-align: left; float: left">Agregar Factura</label>
+    </div>
+
+    <div class="row row-spacer" style="margin-bottom: -5px">
+        <label for="myfile">Seleccionar factura de proveedor:</label>
+    </div>
+    <div class="row row-spacer" style="margin-bottom: 10px">
+        <input type="file" id="myfile" name="myfile" accept=".xml"><br><br>
+        <input type="button" name="submit" id="submit" value="Cargar Archivo" class="btn btn-primary btn-sm upload" style="height: 50%" />
+    </div>
+
+    @if (Model.facturaDetallePreview.Count > 0)
+    {
+        <input type="hidden" name="IdOrdenDeCompra" value="@Model.ordenDeCompra.IdOrdenDeCompra" />
+        <input type="hidden" name="MonedaNacional" value="@((Model.monedaNacionalPreview ?? false) ? "true" : "false")" />
+
+        <div class="row card-row-spacer">
+            <label style="font-weight: normal; text-align: left; float: left">
+                Vista previa de la factura (@(Model.monedaNacionalPreview == true ? "MXN" : "USD"))
+            </label>
+        </div>
+
+        <div class="row card-row-spacer">
+            <div class="col-md-5">
+                <label style="font-weight: normal; text-align: left; float: left">Producto</label>
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Cantidad</label>
+            </div>
+            <div class="col-md-2">
+                <label style="font-weight: normal; text-align: left; float: left">Precio Unitario</label>
+            </div>
+            <div class="col-md-3">
+                <label style="font-weight: normal; text-align: left; float: left">Precio Total</label>
+            </div>
+        </div>
+
+        @for (int i = 0; i < Model.facturaDetallePreview.Count; i++)
+        {
+            <div class="row card-row-spacer">
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].IdProductoOrdenar)
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].Producto)
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].EsExtra)
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].CantidadFacturada)
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].PrecioUnitario)
+                @Html.HiddenFor(m => m.facturaDetallePreview[i].PrecioTotal)
+                <div class="col-md-5">
+                    <input type="text" class="form-control input-focus" readonly
+                           value="@Model.facturaDetallePreview[i].Producto"
+                           style="@(Model.facturaDetallePreview[i].EsExtra ? "border-color: #e0a800" : "")" />
+                    @if (Model.facturaDetallePreview[i].EsExtra)
+                    {
+                        <small style="color: #b8860b">No estaba en la orden</small>
+                    }
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control input-focus" readonly value="@Model.facturaDetallePreview[i].CantidadFacturada" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control input-focus" readonly value="@money(Model.facturaDetallePreview[i].PrecioUnitario)" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control input-focus" readonly value="@money(Model.facturaDetallePreview[i].PrecioTotal)" />
+                </div>
+            </div>
+        }
+
+        <div class="row bottom-row-spacer" style="margin-top: 15px">
+            <div class="col-md-10">
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="guardarFactura" class="btn btn-block secondary-background-color" style="color: white">
+                    <i class="nav-icon fas fa-upload"></i>
+                    Guardar Factura
+                </button>
+            </div>
+        </div>
+    }
+}
+
+<div class="modal fade" id="modal-guardarFacturaConfirm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Guardar Factura</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-crear-body">
+                <p style="margin-left: 10px">¿Seguro que desea guardar esta factura?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarFacturaConfirm" type="button" class="btn btn-primary">Guardar Factura</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     $(document).ready(function () {
-
-        $("#agregarProductoOrdenar").click(function () {
-            
-            var dataform = $("#dataform");
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("AgregarProductoOrdenar", "Requisicion")',
-                data: dataform.serialize(),
-                success: function (data) {
-                    $("#productosOrdenarContent").html(data);
-                }
-            });
-        });
-
-        $("#eliminarProductoOrdenar").click(function () {
-
-            var dataform = $("#dataform");
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("EliminarProductoOrdenar", "Requisicion")',
-                data: dataform.serialize(),
-                success: function (data) {
-                    $("#productosOrdenarContent").html(data);
-                }
-            });
-        });
 
         $(".upload").click(function () {
 
             var IdOrdenDeCompra = $("#ordenDeCompra_IdOrdenDeCompra").val();
             var selectFile = ($("#myfile"))[0].files[0];
             var dataString = new FormData();
-
-            console.log("Archivo:", selectFile);
 
             if (selectFile && selectFile.size > 0){
                 dataString.append("IdOrdenDeCompra", IdOrdenDeCompra);
@@ -123,6 +259,29 @@
                 });
             }
         })
+
+        $("#guardarFactura").click(function () {
+            $("#modal-guardarFacturaConfirm").modal("show");
+        });
+
+        $("#guardarFacturaConfirm").click(function () {
+
+            $("#modal-guardarFacturaConfirm").modal("hide");
+
+            var dataform = $("#dataform");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GuardarFactura", "SubirFactura")',
+                data: dataform.serialize(),
+                success: function (data) {
+                    $("#HtmlBody").html(data.url);
+                    if (data.res != 0) {
+                        alert("No se pudo guardar la factura");
+                    }
+                }
+            });
+        });
 
     });
 </script>

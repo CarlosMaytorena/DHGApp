@@ -28,6 +28,11 @@ namespace AgricolaDH_GApp.DataAccess
             modelBuilder.Entity<ProductoOrdenarSelected>().HasKey(m => new { m.IdProductoOrdenar});
             modelBuilder.Entity<OrdenDeCompraTable>().HasKey(m => new { m.IdOrdenDeCompra});
 
+            modelBuilder.Entity<Factura>().HasKey(m => new { m.IdFactura });
+            modelBuilder.Entity<FacturaDetalle>().HasKey(m => new { m.IdFacturaDetalle });
+            modelBuilder.Entity<FacturaHistorial>().HasKey(m => new { m.IdFactura });
+            modelBuilder.Entity<ResumenFacturacionProducto>().HasKey(m => new { m.IdResumen });
+
             modelBuilder.Entity<Almacen>().HasKey(m => new { m.IdAlmacen });
             modelBuilder.Entity<Egreso>().HasKey(m => new { m.IdEgreso });
             modelBuilder.Entity<Estatus>().HasKey(m => new { m.IdEstatus });
@@ -44,6 +49,10 @@ namespace AgricolaDH_GApp.DataAccess
         public DbSet<OrdenDeCompraTable> OrdenDeCompraTable { get; set; }
         public DbSet<ProductoOrdenar> ProductosOrdenar { get; set; }
         public DbSet<ProductoOrdenarSelected> ProductoOrdenarSelected { get; set; }
+        public DbSet<Factura> Facturas { get; set; }
+        public DbSet<FacturaDetalle> FacturaDetalle { get; set; }
+        public DbSet<FacturaHistorial> FacturaHistorial { get; set; }
+        public DbSet<ResumenFacturacionProducto> ResumenFacturacionProducto { get; set; }
 
 
         //Catalogos

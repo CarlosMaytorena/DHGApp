@@ -53,7 +53,7 @@ namespace AgricolaDH_GApp.Controllers
             var model = new RequisicionesVM
             {
                 requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),
-                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0),
+                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableEnProceso(idUsuario, 0),
                 requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, closedWeeks),
                 requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, rejectedWeeks),
                 puedeCerrar = idRol == RolEnumerators.Administrador || idRol == RolEnumerators.Contabilidad
@@ -189,7 +189,7 @@ namespace AgricolaDH_GApp.Controllers
 
             model = new RequisicionesVM();
             model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableEnProceso(idUsuario, 0);
             model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
             model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
             ViewBag.ClosedWeeks = 1;
@@ -209,7 +209,7 @@ namespace AgricolaDH_GApp.Controllers
             {
                 model = new RequisicionesVM();
                 model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-                model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+                model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableEnProceso(idUsuario, 0);
                 model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
                 model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
                 ViewBag.ClosedWeeks = 1;
@@ -237,8 +237,15 @@ namespace AgricolaDH_GApp.Controllers
 
             if (res == 0)
             {
+                // Al aceptar, la orden salta directo a PorIngresar: Subir Factura ya no
+                // gatea esta transición (es informativo), así que la orden debe quedar
+                // visible en Ingresos en cuanto se acepta.
+                int statusFinal = (IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.Aceptado)
+                    ? OrdenDeCompraStatusEnumerators.PorIngresar
+                    : IdOrdenDeCompraStatus;
+
                 model.requisicion.FechaOrdenDeCompra = DateTime.Now;
-                model.requisicion.IdOrdenDeCompraStatus = IdOrdenDeCompraStatus; //Status Change
+                model.requisicion.IdOrdenDeCompraStatus = statusFinal; //Status Change
                 model.requisicion.IdAutorizador = idUsuario;
                 res = requisicionService.UpdateOrdenDeCompra(model.requisicion);
 
@@ -262,7 +269,7 @@ namespace AgricolaDH_GApp.Controllers
 
             model = new RequisicionesVM();
             model.requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario);
-            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0);
+            model.requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableEnProceso(idUsuario, 0);
             model.requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1);
             model.requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1);
             ViewBag.ClosedWeeks = 1;
@@ -288,7 +295,13 @@ namespace AgricolaDH_GApp.Controllers
             {
                 OrdenDeCompraTable requisicionActual = requisicionService.SelectOrdenDeCompra(IdOrdenDeCompra);
 
-                if (requisicionActual == null || requisicionActual.IdOrdenDeCompraStatus != OrdenDeCompraStatusEnumerators.Aceptado)
+                bool enProceso = requisicionActual != null && (
+                    requisicionActual.IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.Aceptado ||
+                    requisicionActual.IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.PorIngresar ||
+                    requisicionActual.IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.Ingresado
+                );
+
+                if (!enProceso)
                 {
                     res = -1;
                 }
@@ -301,7 +314,7 @@ namespace AgricolaDH_GApp.Controllers
             var model = new RequisicionesVM
             {
                 requisicionList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Enviado, idUsuario, 0),
-                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario, 0),
+                requisicionAceptadaList = requisicionService.SelectOrdenDeCompraTableEnProceso(idUsuario, 0),
                 requisicionCerradaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Cerrado, idUsuario, 1),
                 requisicionRechazadaList = requisicionService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Rechazado, idUsuario, 1),
                 puedeCerrar = idRol == RolEnumerators.Administrador || idRol == RolEnumerators.Contabilidad
@@ -310,6 +323,17 @@ namespace AgricolaDH_GApp.Controllers
             ViewBag.RejectedWeeks = 1;
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/Requisicion/Index.cshtml", model) });
+        }
+
+        [HttpPost]
+        public IActionResult ResumenFacturacion(int IdOrdenDeCompra)
+        {
+            SubirFacturaVM model = new SubirFacturaVM
+            {
+                resumenFacturacion = requisicionService.SelectResumenFacturacionByIdOrdenDeCompra(IdOrdenDeCompra)
+            };
+
+            return PartialView("~/Views/Requisicion/ResumenFacturacion.cshtml", model);
         }
 
         [HttpGet]

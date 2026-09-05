@@ -1,22 +1,12 @@
-﻿@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
+@model AgricolaDH_GApp.ViewModels.SubirFacturaVM
 
 <form id="dataform">
     <div class="text-center">
 
         <div class="row top-row-spacer">
-            <div class="col-md-6">
-                <h4 class="page-title">Subir Factura a Orden de Compra</h4>
+            <div class="col-md-12">
+                <h4 class="page-title">Facturas de Orden de Compra</h4>
             </div>
-
-            <div class="col-md-4">
-            </div>
-            <div class="col-md-2">
-                <button type="button" id="subirFacturaUpdate" class="btn btn-block secondary-background-color" style="color: white">
-                    <i class="nav-icon fas fa-upload"></i>
-                    Subir Factura
-                </button>
-            </div>
-
         </div>
 
         <div class="card card-margin">
@@ -71,7 +61,7 @@
             </div>
             <div id="productosOrdenarContent">
                 @Html.Partial("~/Views/SubirFactura/ProductosOrdenar.cshtml", Model)
-            </div>            
+            </div>
         </div>
         <div class="row bottom-row-spacer">
             <div class="col-md-10">
@@ -79,81 +69,15 @@
             <div class="col-md-2">
                 <button type="button" id="cancelarSubirFactura" class="btn btn-block btn-danger" style="color: white">
                     <i class="nav-icon fas fa-ban"></i>
-                    Cancelar
+                    Cerrar
                 </button>
             </div>
         </div>
     </div>
 </form>
 
-<div class="modal fade" id="modal-subirFacturaConfirm">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Subir Factura</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-crear-body">
-                <p style="margin-left: 10px">¿Seguro que desea subir factura?</p>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-                <button id="subirFacturaConfirm" type="button" class="btn btn-primary">Subir Factura</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-
 <script>
     $(document).ready(function () {
-
-        $("#subirFacturaUpdate").click(function () {
-
-            if(Validation()){
-                $("#modal-subirFacturaConfirm").modal("show");
-            }
-
-        });
-
-        $("#subirFacturaConfirm").click(function () {
-
-            $("#modal-subirFacturaConfirm").modal("hide");
-
-            var dataform = $("#dataform");
-
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("SubirFacturaUpdate", "SubirFactura")',
-                data: dataform.serialize(),
-                success: function (data) {
-                    $("#HtmlBody").html(data.url);
-                }
-            });
-            
-
-        });
-
-        $("#negarRequisicion").click(function () {
-
-            var dataform = $("#dataform");
-
-            if(Validation())
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("AcceptRejectRequisicion", "Requisicion")',
-                    data: dataform.serialize() + "&IdOrdenDeCompraStatus=3",
-                    success: function (data) {
-                        $("#HtmlBody").html(data.url);
-                    }
-                });
-            }
-
-        });
 
         $("#cancelarSubirFactura").click(function () {
 
@@ -168,39 +92,6 @@
             });
 
         });
-
-        function Validation() {
-
-            var validation = true
-
-            $('.subirFactura').each(function() {
-
-                var index = $(this).attr("data-index");
-                
-                console.log(index);
-
-                $("#productosOrdenar_" + index + "__Unidad").css("border-color", "");
-                $("#productosOrdenar_" + index + "__Total").css("border-color", "");
-
-                if($("#productosOrdenar_" + index + "__Cantidad").val() != 0 ){
-
-                    if($("#productosOrdenar_" + index + "__Unidad").val() == 0 ){
-                        $("#productosOrdenar_" + index + "__Unidad").css("border-color", "red");
-                        validation = false;
-                    }
-                    
-                    if($("#productosOrdenar_" + index + "__Total").val() == 0 ){
-                        $("#productosOrdenar_" + index + "__Total").css("border-color", "red");
-                        validation = false;
-                    }
-                }
-            });
-
-            return validation;
-
-        }
-
-
 
     });
 </script>

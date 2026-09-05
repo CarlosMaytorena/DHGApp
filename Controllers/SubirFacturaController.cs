@@ -1,4 +1,4 @@
-﻿using AgricolaDH_GApp.DataAccess;
+using AgricolaDH_GApp.DataAccess;
 using AgricolaDH_GApp.Models;
 using AgricolaDH_GApp.Services.Admin;
 using AgricolaDH_GApp.ViewModels;
@@ -20,7 +20,7 @@ namespace AgricolaDH_GApp.Controllers
     public class SubirFacturaController : Controller
 	{
 		private readonly ILogger<RequisicionController> _logger;
-		
+
 		private readonly AppDbContext context;
         private ViewRenderService renderService;
 		private OrdenDeCompraService ordenDeCompraService;
@@ -39,7 +39,7 @@ namespace AgricolaDH_GApp.Controllers
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
 
             SubirFacturaVM model = new SubirFacturaVM();
-			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
+			model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableEnProceso(idUsuario);
 
 			return PartialView("~/Views/SubirFactura/Index.cshtml", model);
 		}
@@ -47,71 +47,61 @@ namespace AgricolaDH_GApp.Controllers
         [HttpPost]
         public IActionResult SubirFactura(int IdOrdenDeCompra)
         {
-            SubirFacturaVM model = new SubirFacturaVM();
-
-			model.ordenDeCompra = ordenDeCompraService.SelectOrdenDeCompra(IdOrdenDeCompra);
-            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenarSelected(IdOrdenDeCompra);
+            SubirFacturaVM model = CargarDetalleOrden(IdOrdenDeCompra);
 
             return PartialView("~/Views/SubirFactura/SubirFacturaForm.cshtml", model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubirFacturaUpdate(SubirFacturaVM model)
+        public async Task<IActionResult> GuardarFactura(int IdOrdenDeCompra, bool? MonedaNacional, List<FacturaDetalleVM> facturaDetallePreview)
         {
             int idUsuario = Convert.ToInt32(HttpContext.Session.GetInt32("IdUsuario"));
 
-            OrdenDeCompraTable ordenActual = ordenDeCompraService.SelectOrdenDeCompra(model.ordenDeCompra.IdOrdenDeCompra);
-            if (ordenActual == null || ordenActual.IdOrdenDeCompraStatus != OrdenDeCompraStatusEnumerators.Aceptado)
-            {
-                SubirFacturaVM blockedModel = new SubirFacturaVM();
-                blockedModel.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
+            OrdenDeCompraTable ordenActual = ordenDeCompraService.SelectOrdenDeCompra(IdOrdenDeCompra);
+            int res;
 
-                return Json(new { res = -1, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", blockedModel) });
-            }
-
-            int res = 0;
-            bool allZero = true;
-            foreach (var productoOrdenar in model.productosOrdenar)
-            {
-                if(productoOrdenar.Cantidad != 0)
-                {
-                    allZero = false;
-                }
-                res = ordenDeCompraService.UpdateProductoOrdenarConFactura(productoOrdenar);
-            }
-
-            if (res == 0)
-            {
-                if (allZero)
-                {
-                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraStatusEnumerators.Cancelado);
-                }
-                else
-                {
-                    res = ordenDeCompraService.UpdateOrdenDeCompraStatus(model.ordenDeCompra.IdOrdenDeCompra, OrdenDeCompraStatusEnumerators.PorIngresar);
-                }
-
-            }
-            else
+            if (ordenActual == null || ordenActual.IdOrdenDeCompraStatus == OrdenDeCompraStatusEnumerators.Cerrado)
             {
                 res = -1;
             }
+            else if (facturaDetallePreview == null || facturaDetallePreview.Count == 0)
+            {
+                res = -1;
+            }
+            else
+            {
+                Factura factura = new Factura()
+                {
+                    IdOrdenDeCompra = IdOrdenDeCompra,
+                    MonedaNacional = MonedaNacional,
+                    FechaCarga = DateTime.Now,
+                    IdUsuarioCarga = idUsuario
+                };
 
-            model = new SubirFacturaVM();
-            model.subirFacturaList = ordenDeCompraService.SelectOrdenDeCompraTableList(OrdenDeCompraStatusEnumerators.Aceptado, idUsuario);
+                List<FacturaDetalle> detalles = facturaDetallePreview.Select(d => new FacturaDetalle()
+                {
+                    IdProductoOrdenar = d.EsExtra ? null : d.IdProductoOrdenar,
+                    DescripcionExtra = d.EsExtra ? d.Producto : null,
+                    CantidadFacturada = d.CantidadFacturada,
+                    PrecioUnitario = d.PrecioUnitario,
+                    PrecioTotal = d.PrecioTotal
+                }).ToList();
 
-            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/Index.cshtml", model) });
+                int idFactura = ordenDeCompraService.InsertFactura(factura, detalles);
+                res = idFactura > 0 ? 0 : -1;
+            }
 
+            SubirFacturaVM model = CargarDetalleOrden(IdOrdenDeCompra);
+
+            return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/SubirFacturaForm.cshtml", model) });
         }
 
         [HttpPost]
         public async Task<ActionResult> UploadFileAsync(int IdOrdenDeCompra, IFormFile file)
         {
-
             int res = 0;
 
-            SubirFacturaVM model = new SubirFacturaVM();
-            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenarSelected(IdOrdenDeCompra);
+            SubirFacturaVM model = CargarDetalleOrden(IdOrdenDeCompra);
 
             try
             {
@@ -135,45 +125,63 @@ namespace AgricolaDH_GApp.Controllers
                     .Cast<XmlElement>()
                     .FirstOrDefault()?.GetAttribute("Moneda");
 
+                model.monedaNacionalPreview = moneda == "MXN";
+
+                List<FacturaDetalleVM> preview = new List<FacturaDetalleVM>();
 
                 foreach (XmlElement item in doc.GetElementsByTagName("cfdi:Concepto"))
                 {
-                    string descripcion = item.GetAttribute("Descripcion").ToLower();
+                    string descripcionOriginal = item.GetAttribute("Descripcion");
+                    string descripcion = Regex.Replace(ReplaceDiacritics(descripcionOriginal.ToLower()), @"[^a-zA-Z0-9]", "");
+                    string noIdentificacion = item.GetAttribute("NoIdentificacion");
 
-                    //RegexOptions options = RegexOptions.None;
-                    //Regex regex = new Regex("[ ]{2,}", options);
-                    descripcion = Regex.Replace(ReplaceDiacritics(descripcion), @"[^a-zA-Z0-9]", "");
-
-                    string? noIdentificacion = item.GetAttribute("NoIdentificacion");
-
-                    int i = 0;
-                    foreach(var productoOrdenar in model.productosOrdenar)
+                    ProductoOrdenarSelected productoEncontrado = null;
+                    foreach (var productoOrdenar in model.productosOrdenar)
                     {
                         var productoOrdenarName = Regex.Replace(ReplaceDiacritics(productoOrdenar.Producto), @"[^a-zA-Z0-9]", "").ToLower();
 
-                        if ((descripcion != null && descripcion == productoOrdenarName) || 
-                            (noIdentificacion != null && Convert.ToInt32(noIdentificacion) == productoOrdenar.ClaveProveedor)
-                        ) {
-                            var cantidad = Convert.ToDecimal(item.GetAttribute("Cantidad"));
+                        bool matchDescripcion = !string.IsNullOrEmpty(descripcion) && descripcion == productoOrdenarName;
+                        bool matchClaveProveedor = !string.IsNullOrEmpty(noIdentificacion) && int.TryParse(noIdentificacion, out int claveProveedor) && claveProveedor == productoOrdenar.ClaveProveedor;
 
-                            model.productosOrdenar[i].Cantidad = (!productoOrdenar.CalculoAlterno) ? Convert.ToInt32(cantidad) : Convert.ToInt32(cantidad / productoOrdenar.Contenido);
-                            model.productosOrdenar[i].Total = Convert.ToDecimal(item.GetAttribute("Importe"));
-                            model.productosOrdenar[i].Unidad = model.productosOrdenar[i].Total / model.productosOrdenar[i].Cantidad;
-                            model.productosOrdenar[i].MonedaNacional = (moneda == "MXN") ? true : false;
+                        if (matchDescripcion || matchClaveProveedor)
+                        {
+                            productoEncontrado = productoOrdenar;
+                            break;
                         }
-                        i++;
                     }
 
+                    decimal cantidadFactura = Convert.ToDecimal(item.GetAttribute("Cantidad"));
+                    decimal importe = Convert.ToDecimal(item.GetAttribute("Importe"));
 
-                }
-
-                foreach(var productoOrdenar in model.productosOrdenar)
-                {
-                    if(productoOrdenar.Total == null || productoOrdenar.Total == 0)
+                    if (productoEncontrado != null)
                     {
-                        productoOrdenar.Cantidad = 0;
+                        int cantidad = (!productoEncontrado.CalculoAlterno) ? Convert.ToInt32(cantidadFactura) : Convert.ToInt32(cantidadFactura / productoEncontrado.Contenido);
+
+                        preview.Add(new FacturaDetalleVM()
+                        {
+                            IdProductoOrdenar = productoEncontrado.IdProductoOrdenar,
+                            Producto = productoEncontrado.NombreDropdown,
+                            EsExtra = false,
+                            CantidadFacturada = cantidad,
+                            PrecioUnitario = cantidad != 0 ? importe / cantidad : 0,
+                            PrecioTotal = importe
+                        });
+                    }
+                    else
+                    {
+                        preview.Add(new FacturaDetalleVM()
+                        {
+                            IdProductoOrdenar = null,
+                            Producto = descripcionOriginal,
+                            EsExtra = true,
+                            CantidadFacturada = Convert.ToInt32(cantidadFactura),
+                            PrecioUnitario = cantidadFactura != 0 ? importe / cantidadFactura : 0,
+                            PrecioTotal = importe
+                        });
                     }
                 }
+
+                model.facturaDetallePreview = preview;
 
             }
             catch(Exception ex)
@@ -185,6 +193,18 @@ namespace AgricolaDH_GApp.Controllers
 
             return Json(new { res, url = await renderService.RenderViewToStringAsync("~/Views/SubirFactura/ProductosOrdenar.cshtml", model) });
 
+        }
+
+        private SubirFacturaVM CargarDetalleOrden(int IdOrdenDeCompra)
+        {
+            SubirFacturaVM model = new SubirFacturaVM();
+
+            model.ordenDeCompra = ordenDeCompraService.SelectOrdenDeCompra(IdOrdenDeCompra);
+            model.productosOrdenar = ordenDeCompraService.SelectProductosOrdenarSelected(IdOrdenDeCompra);
+            model.historialFacturas = ordenDeCompraService.SelectFacturasByIdOrdenDeCompra(IdOrdenDeCompra);
+            model.resumenFacturacion = ordenDeCompraService.SelectResumenFacturacionByIdOrdenDeCompra(IdOrdenDeCompra);
+
+            return model;
         }
 
         static string ReplaceDiacritics(string text)

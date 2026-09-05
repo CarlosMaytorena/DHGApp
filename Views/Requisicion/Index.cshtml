@@ -94,10 +94,10 @@
                     </table>
                 </div>
             </div>
-            <!-- Requisiciones Aceptadas -->
+            <!-- Requisiciones En Proceso (Aceptado/PorIngresar/Ingresado) -->
             <div class="card card-margin">
                 <div class="card-header d-flex align-items-center">
-                    <h3 class="card-title mb-0">Requisiciones Aceptadas</h3>
+                    <h3 class="card-title mb-0">Requisiciones En Proceso</h3>
 
                     <div class="tools-inline">
                         <!-- Search local por ID en aceptadas -->
@@ -120,6 +120,7 @@
                                 <th>ID</th>
                                 <th>Fecha</th>
                                 <th>Solicitante</th>
+                                <th>Proveedor</th>
                                 <th>Status</th>
                                 <th>Área</th>
                                 <th>Cultivo</th>
@@ -131,6 +132,13 @@
                         <tbody>
                             @for (int i = 0; i < Model.requisicionAceptadaList.Count; i++)
                             {
+                                string statusTexto = Model.requisicionAceptadaList[i].IdOrdenDeCompraStatus switch
+                                {
+                                    AgricolaDH_GApp.Models.OrdenDeCompraStatusEnumerators.Aceptado => "Aceptado",
+                                    AgricolaDH_GApp.Models.OrdenDeCompraStatusEnumerators.PorIngresar => "Por Ingresar",
+                                    AgricolaDH_GApp.Models.OrdenDeCompraStatusEnumerators.Ingresado => "Ingresado",
+                                    _ => ""
+                                };
                                 <tr>
                                     <td>
                                         <a href="#" id="@Model.requisicionAceptadaList[i].IdOrdenDeCompra" class="editarRequisicion" style="color: #2E2E2E">
@@ -150,6 +158,7 @@
                                     <td>@Model.requisicionAceptadaList[i].FechaRequisicion.ToShortDateString()</td>
                                     <td>@Model.requisicionAceptadaList[i].Solicitante</td>
                                     <td>@Model.requisicionAceptadaList[i].Proveedor</td>
+                                    <td>@statusTexto</td>
                                     <td>@Model.requisicionAceptadaList[i].Area</td>
                                     <td>@Model.requisicionAceptadaList[i].Cultivo</td>
                                     <td>@Model.requisicionAceptadaList[i].Rancho</td>
@@ -305,7 +314,7 @@
 </div>
 
 <div class="modal fade" id="modal-cerrarRequisicionConfirm">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Cerrar Requisición</h4>
@@ -315,6 +324,7 @@
             </div>
             <div class="modal-crear-body">
                 <p style="margin-left: 10px">¿Seguro que desea cerrar esta requisición? Ya no se podrán subir facturas ni registrar ingresos.</p>
+                <div id="resumenFacturacionCierre"></div>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
@@ -365,6 +375,18 @@
         $(".cerrarRequisicion").click(function (e) {
             e.preventDefault();
             idOrdenDeCompraACerrar = $(this).attr("id");
+
+            $("#resumenFacturacionCierre").html("");
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ResumenFacturacion", "Requisicion")',
+                data: { IdOrdenDeCompra: idOrdenDeCompraACerrar },
+                success: function (data) {
+                    $("#resumenFacturacionCierre").html(data);
+                }
+            });
+
             $("#modal-cerrarRequisicionConfirm").modal("show");
         });
 
